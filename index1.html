@@ -45,9 +45,8 @@
             text-align: center;
             border-bottom: 1px solid var(--oc-glass-border);
             position: sticky; top: 0; z-index: 1001;
-            display: flex; justify-content: center; align-items: center;
         }
-        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; cursor: pointer; }
+        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; }
 
         /* --- Header --- */
         .oc-main-header { padding: 25px 0; text-align: center; }
@@ -182,20 +181,6 @@
             width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
 
-        /* --- Profile Styles --- */
-        .profile-btn-logout {
-            background: #d93025; color: white; width: 100%; padding: 15px;
-            border-radius: 10px; border: none; font-weight: bold; margin-top: 15px; cursor: pointer;
-        }
-        .profile-btn-verify {
-            background: #25d366; color: white; width: 100%; padding: 15px;
-            border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;
-        }
-        .profile-input {
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--oc-glass-border);
-            background: rgba(0,0,0,0.3); color: white; text-align: center;
-        }
-
         .hidden { display: none; }
     </style>
 </head>
@@ -213,8 +198,7 @@
 
     <div class="oc-contact-nav">
         <a href="tel:78961175"><i class="fas fa-phone"></i> 78961175</a>
-        <span style="color:var(--oc-glass-border); margin:0 5px;">|</span>
-        <a id="profileLink" onclick="openProfileView()" style="display:none;"><i class="fas fa-user-circle"></i> حسابي</a>
+        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت، لبنان</a>
     </div>
 
     <header class="oc-main-header">
@@ -236,26 +220,6 @@
         <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
         <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
         <div class="oc-grid" id="prodGrid"></div>
-    </div>
-
-    <div id="vProfile" class="hidden oc-container">
-        <button class="back-btn" onclick="renderHomeView()">← العودة للرئيسية</button>
-        <div class="oc-hero-card">
-            <h2 style="color:var(--oc-neon-cyan)">إعدادات الحساب</h2>
-            <p>تعديل البيانات وتوثيق الحساب</p>
-            
-            <div style="margin-top:30px;">
-                <label style="display:block; text-align:right; font-size:12px; color:gray;">الاسم:</label>
-                <input type="text" id="editName" class="profile-input">
-                
-                <label style="display:block; text-align:right; font-size:12px; color:gray;">رقم الهاتف:</label>
-                <input type="tel" id="editPhone" class="profile-input">
-                
-                <button class="wa-btn" onclick="saveUserData()">حفظ التعديلات</button>
-                <button class="profile-btn-verify" onclick="requestVerify()">توثيق الحساب (Verify) <i class="fas fa-check-circle"></i></button>
-                <button class="profile-btn-logout" onclick="logoutUser()">تسجيل الخروج <i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </div>
     </div>
 
     <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
@@ -281,7 +245,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -299,92 +263,49 @@
 
         let productMemory = [];
         let activeProduct = null;
-        let currentUserData = null; // تخزين بيانات المستخدم كاملة (ID, Name, Phone, Role)
+        let currentUserRole = 'retail'; // افتراضياً السعر مفرق
 
-        // --- نظام تسجيل الدخول ---
+        // --- نظام تسجيل الدخول والأسعار ---
         window.performLogin = async () => {
             const name = document.getElementById('logName').value;
             const phone = document.getElementById('logPhone').value;
             
             if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
 
+            // البحث عن المستخدم في قاعدة البيانات
             const q = query(collection(db, "users"), where("phone", "==", phone));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
+                // المستخدم موجود، جلب صلاحيته (جملة/مفرق)
                 querySnapshot.forEach((doc) => {
-                    currentUserData = { id: doc.id, ...doc.data() };
+                    currentUserRole = doc.data().role || 'retail';
                 });
             } else {
-                const docRef = await addDoc(collection(db, "users"), {
+                // مستخدم جديد، تسجيله كـ retail افتراضياً
+                await addDoc(collection(db, "users"), {
                     name: name,
                     phone: phone,
                     role: 'retail',
                     joined: new Date()
                 });
-                currentUserData = { id: docRef.id, name, phone, role: 'retail' };
+                currentUserRole = 'retail';
             }
 
-            localStorage.setItem('oc_user', JSON.stringify(currentUserData));
+            // حفظ الجلسة وإخفاء النافذة
+            localStorage.setItem('oc_user', JSON.stringify({name, phone, role: currentUserRole}));
             document.getElementById('loginOverlay').style.display = 'none';
-            setupProfileUI();
-            initStore();
+            initStore(); // تحميل المتجر بعد الدخول
         };
 
-        // التحقق من الجلسة
+        // التحقق من الجلسة المحفوظة
         const savedUser = localStorage.getItem('oc_user');
         if(savedUser) {
             document.getElementById('loginOverlay').style.display = 'none';
-            currentUserData = JSON.parse(savedUser);
-            setupProfileUI();
+            currentUserRole = JSON.parse(savedUser).role;
             initStore();
         }
 
-        // إعداد واجهة المستخدم
-        function setupProfileUI() {
-            document.getElementById('profileLink').style.display = 'inline-block';
-            document.getElementById('editName').value = currentUserData.name;
-            document.getElementById('editPhone').value = currentUserData.phone;
-        }
-
-        // --- وظائف الحساب (Profile) ---
-        window.openProfileView = () => {
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.add('hidden');
-            document.getElementById('vProfile').classList.remove('hidden');
-        };
-
-        window.saveUserData = async () => {
-            const newName = document.getElementById('editName').value;
-            const newPhone = document.getElementById('editPhone').value;
-            
-            if(currentUserData && currentUserData.id) {
-                await updateDoc(doc(db, "users", currentUserData.id), {
-                    name: newName,
-                    phone: newPhone
-                });
-                
-                // تحديث البيانات المحلية
-                currentUserData.name = newName;
-                currentUserData.phone = newPhone;
-                localStorage.setItem('oc_user', JSON.stringify(currentUserData));
-                alert("تم تحديث البيانات بنجاح!");
-            }
-        };
-
-        window.requestVerify = () => {
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود توثيق حسابي:\nالاسم: ${currentUserData.name}\nرقم الهاتف: ${currentUserData.phone}\nيرجى تفعيل حساب الجملة.`);
-            window.open(`https://wa.me/${STORE_PHONE}?text=${msg}`, '_blank');
-        };
-
-        window.logoutUser = () => {
-            if(confirm("هل أنت متأكد من تسجيل الخروج؟ ستعود الأسعار لوضع المفرق.")) {
-                localStorage.removeItem('oc_user');
-                location.reload(); // إعادة تحميل الصفحة لفتح شاشة الدخول من جديد
-            }
-        };
-
-        // --- الملاحة ---
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
             else { renderHomeView(); closeM(); }
@@ -411,7 +332,6 @@
 
         function renderProductsView(n) {
             document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProfile').classList.add('hidden');
             document.getElementById('vProd').classList.remove('hidden');
             document.getElementById('viewCatTitle').innerText = n;
             fetchProducts(n);
@@ -428,8 +348,8 @@
                 const p = d.data();
                 if(p.category === catName) {
                     productMemory.push(p);
-                    // تحديد السعر حسب الرتبة
-                    const finalPrice = currentUserData.role === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+                    // تحديد السعر بناءً على الرتبة
+                    const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
                     
                     grid.innerHTML += `
                         <div class="oc-glass-card" onclick="openDetails(${i})">
@@ -447,8 +367,9 @@
 
         window.openDetails = (index) => {
             activeProduct = productMemory[index];
-            const finalPrice = currentUserData.role === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
-            activeProduct.displayPrice = finalPrice;
+            // تحديد السعر المعروض في المودال أيضاً
+            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
+            activeProduct.displayPrice = finalPrice; // تخزين السعر النهائي للاستخدام في الواتساب
 
             document.getElementById('qtyInput').value = 1;
             
@@ -475,8 +396,8 @@
             const qty = document.getElementById('qtyInput').value;
             const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
             
-            const userType = currentUserData.role === 'wholesale' ? '(سعر جملة)' : '';
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}\n- حساب: ${currentUserData.name}`);
+            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
             
             const area = document.getElementById('waAction');
             area.innerHTML = activeProduct.inStock ? 
@@ -485,11 +406,7 @@
         }
 
         window.goBack = () => history.back();
-        window.renderHomeView = () => {
-            document.getElementById('vHome').classList.remove('hidden');
-            document.getElementById('vProd').classList.add('hidden');
-            document.getElementById('vProfile').classList.add('hidden');
-        };
+        function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
     </script>
