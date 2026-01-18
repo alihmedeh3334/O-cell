@@ -45,8 +45,9 @@
             text-align: center;
             border-bottom: 1px solid var(--oc-glass-border);
             position: sticky; top: 0; z-index: 1001;
+            display: flex; justify-content: center; align-items: center;
         }
-        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; }
+        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; cursor: pointer; }
 
         /* --- Header --- */
         .oc-main-header { padding: 25px 0; text-align: center; }
@@ -160,34 +161,11 @@
             padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
         }
 
-        /* --- Login Floating Button --- */
-        .login-float {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: var(--oc-white);
-            color: var(--oc-vibrant-blue);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-            z-index: 2000;
-            cursor: pointer;
-            font-size: 20px;
-            transition: 0.3s;
-            border: 2px solid var(--oc-neon-cyan);
-        }
-        .login-float:hover { transform: scale(1.1); }
-
-        /* --- Profile Completion Overlay --- */
-        #profileOverlay {
-            display: none;
+        /* --- Login Overlay --- */
+        #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
-            z-index: 9999; justify-content: center; align-items: center;
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
             flex-direction: column; padding: 20px;
         }
         .login-box {
@@ -204,28 +182,39 @@
             width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
 
+        /* --- Profile Styles --- */
+        .profile-btn-logout {
+            background: #d93025; color: white; width: 100%; padding: 15px;
+            border-radius: 10px; border: none; font-weight: bold; margin-top: 15px; cursor: pointer;
+        }
+        .profile-btn-verify {
+            background: #25d366; color: white; width: 100%; padding: 15px;
+            border-radius: 10px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer;
+        }
+        .profile-input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--oc-glass-border);
+            background: rgba(0,0,0,0.3); color: white; text-align: center;
+        }
+
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="login-float" onclick="loginWithGoogle()">
-        <i class="fab fa-google"></i>
-    </div>
-
-    <div id="profileOverlay">
+    <div id="loginOverlay">
         <div class="login-box">
-            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">إكمال التسجيل</h2>
-            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
-            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
-            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
-            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
+            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">تسجيل الدخول</h2>
+            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أدخل اسمك ورقم هاتفك لرؤية الأسعار المخصصة لك</p>
+            <input type="text" id="logName" class="login-input" placeholder="الاسم الكامل">
+            <input type="tel" id="logPhone" class="login-input" placeholder="رقم الهاتف">
+            <button class="login-btn" onclick="performLogin()">دخول</button>
         </div>
     </div>
 
     <div class="oc-contact-nav">
         <a href="tel:78961175"><i class="fas fa-phone"></i> 78961175</a>
-        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت، لبنان</a>
+        <span style="color:var(--oc-glass-border); margin:0 5px;">|</span>
+        <a id="profileLink" onclick="openProfileView()" style="display:none;"><i class="fas fa-user-circle"></i> حسابي</a>
     </div>
 
     <header class="oc-main-header">
@@ -247,6 +236,26 @@
         <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
         <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
         <div class="oc-grid" id="prodGrid"></div>
+    </div>
+
+    <div id="vProfile" class="hidden oc-container">
+        <button class="back-btn" onclick="renderHomeView()">← العودة للرئيسية</button>
+        <div class="oc-hero-card">
+            <h2 style="color:var(--oc-neon-cyan)">إعدادات الحساب</h2>
+            <p>تعديل البيانات وتوثيق الحساب</p>
+            
+            <div style="margin-top:30px;">
+                <label style="display:block; text-align:right; font-size:12px; color:gray;">الاسم:</label>
+                <input type="text" id="editName" class="profile-input">
+                
+                <label style="display:block; text-align:right; font-size:12px; color:gray;">رقم الهاتف:</label>
+                <input type="tel" id="editPhone" class="profile-input">
+                
+                <button class="wa-btn" onclick="saveUserData()">حفظ التعديلات</button>
+                <button class="profile-btn-verify" onclick="requestVerify()">توثيق الحساب (Verify) <i class="fas fa-check-circle"></i></button>
+                <button class="profile-btn-logout" onclick="logoutUser()">تسجيل الخروج <i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
     </div>
 
     <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
@@ -272,8 +281,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -287,71 +295,96 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
         let activeProduct = null;
-        let currentUserRole = 'retail'; // الوضع الافتراضي للزوار
-        let currentUserEmail = null;
+        let currentUserData = null; // تخزين بيانات المستخدم كاملة (ID, Name, Phone, Role)
 
-        // --- 1. نظام الدخول عبر غوغل ---
-        window.loginWithGoogle = () => {
-            signInWithPopup(auth, provider)
-                .then(async (result) => {
-                    const user = result.user;
-                    currentUserEmail = user.email;
-                    await checkUserInFirestore(user.email, user.displayName);
-                }).catch((error) => {
-                    console.error("Login Failed", error);
-                    alert("فشل تسجيل الدخول. حاول مجدداً.");
-                });
-        };
+        // --- نظام تسجيل الدخول ---
+        window.performLogin = async () => {
+            const name = document.getElementById('logName').value;
+            const phone = document.getElementById('logPhone').value;
+            
+            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
 
-        // --- 2. التحقق من المستخدم في قاعدة البيانات ---
-        async function checkUserInFirestore(email, displayName) {
-            const q = query(collection(db, "users"), where("email", "==", email));
+            const q = query(collection(db, "users"), where("phone", "==", phone));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                // المستخدم موجود - جلب صلاحياته
                 querySnapshot.forEach((doc) => {
-                    currentUserRole = doc.data().role || 'retail';
-                    alert(`أهلاً بك ${doc.data().name}. الأسعار الحالية: ${currentUserRole === 'wholesale' ? 'جملة' : 'مفرق'}`);
+                    currentUserData = { id: doc.id, ...doc.data() };
                 });
-                initStore(); // تحديث المتجر بالأسعار الجديدة
             } else {
-                // مستخدم جديد - طلب الاسم والرقم
-                document.getElementById('profName').value = displayName || "";
-                document.getElementById('profileOverlay').style.display = 'flex';
-            }
-        }
-
-        // --- 3. حفظ بيانات المستخدم الجديد ---
-        window.saveProfileData = async () => {
-            const name = document.getElementById('profName').value;
-            const phone = document.getElementById('profPhone').value;
-
-            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
-
-            try {
-                await addDoc(collection(db, "users"), {
-                    email: currentUserEmail,
+                const docRef = await addDoc(collection(db, "users"), {
                     name: name,
                     phone: phone,
-                    role: 'retail', // افتراضياً مفرق حتى يتم تعديله من الأدمن
+                    role: 'retail',
                     joined: new Date()
                 });
-                document.getElementById('profileOverlay').style.display = 'none';
-                alert("تم التسجيل بنجاح!");
-                currentUserRole = 'retail';
-                initStore();
-            } catch (e) {
-                console.error("Error adding user: ", e);
+                currentUserData = { id: docRef.id, name, phone, role: 'retail' };
+            }
+
+            localStorage.setItem('oc_user', JSON.stringify(currentUserData));
+            document.getElementById('loginOverlay').style.display = 'none';
+            setupProfileUI();
+            initStore();
+        };
+
+        // التحقق من الجلسة
+        const savedUser = localStorage.getItem('oc_user');
+        if(savedUser) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            currentUserData = JSON.parse(savedUser);
+            setupProfileUI();
+            initStore();
+        }
+
+        // إعداد واجهة المستخدم
+        function setupProfileUI() {
+            document.getElementById('profileLink').style.display = 'inline-block';
+            document.getElementById('editName').value = currentUserData.name;
+            document.getElementById('editPhone').value = currentUserData.phone;
+        }
+
+        // --- وظائف الحساب (Profile) ---
+        window.openProfileView = () => {
+            document.getElementById('vHome').classList.add('hidden');
+            document.getElementById('vProd').classList.add('hidden');
+            document.getElementById('vProfile').classList.remove('hidden');
+        };
+
+        window.saveUserData = async () => {
+            const newName = document.getElementById('editName').value;
+            const newPhone = document.getElementById('editPhone').value;
+            
+            if(currentUserData && currentUserData.id) {
+                await updateDoc(doc(db, "users", currentUserData.id), {
+                    name: newName,
+                    phone: newPhone
+                });
+                
+                // تحديث البيانات المحلية
+                currentUserData.name = newName;
+                currentUserData.phone = newPhone;
+                localStorage.setItem('oc_user', JSON.stringify(currentUserData));
+                alert("تم تحديث البيانات بنجاح!");
             }
         };
 
+        window.requestVerify = () => {
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود توثيق حسابي:\nالاسم: ${currentUserData.name}\nرقم الهاتف: ${currentUserData.phone}\nيرجى تفعيل حساب الجملة.`);
+            window.open(`https://wa.me/${STORE_PHONE}?text=${msg}`, '_blank');
+        };
+
+        window.logoutUser = () => {
+            if(confirm("هل أنت متأكد من تسجيل الخروج؟ ستعود الأسعار لوضع المفرق.")) {
+                localStorage.removeItem('oc_user');
+                location.reload(); // إعادة تحميل الصفحة لفتح شاشة الدخول من جديد
+            }
+        };
+
+        // --- الملاحة ---
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
             else { renderHomeView(); closeM(); }
@@ -378,6 +411,7 @@
 
         function renderProductsView(n) {
             document.getElementById('vHome').classList.add('hidden');
+            document.getElementById('vProfile').classList.add('hidden');
             document.getElementById('vProd').classList.remove('hidden');
             document.getElementById('viewCatTitle').innerText = n;
             fetchProducts(n);
@@ -394,8 +428,8 @@
                 const p = d.data();
                 if(p.category === catName) {
                     productMemory.push(p);
-                    // تحديد السعر بناءً على الرتبة المجلوبة
-                    const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+                    // تحديد السعر حسب الرتبة
+                    const finalPrice = currentUserData.role === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
                     
                     grid.innerHTML += `
                         <div class="oc-glass-card" onclick="openDetails(${i})">
@@ -413,8 +447,8 @@
 
         window.openDetails = (index) => {
             activeProduct = productMemory[index];
-            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
-            activeProduct.displayPrice = finalPrice; 
+            const finalPrice = currentUserData.role === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
+            activeProduct.displayPrice = finalPrice;
 
             document.getElementById('qtyInput').value = 1;
             
@@ -441,8 +475,8 @@
             const qty = document.getElementById('qtyInput').value;
             const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
             
-            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
+            const userType = currentUserData.role === 'wholesale' ? '(سعر جملة)' : '';
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}\n- حساب: ${currentUserData.name}`);
             
             const area = document.getElementById('waAction');
             area.innerHTML = activeProduct.inStock ? 
@@ -451,10 +485,14 @@
         }
 
         window.goBack = () => history.back();
-        function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
+        window.renderHomeView = () => {
+            document.getElementById('vHome').classList.remove('hidden');
+            document.getElementById('vProd').classList.add('hidden');
+            document.getElementById('vProfile').classList.add('hidden');
+        };
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
-        initStore();
     </script>
 </body>
 </html>
+
