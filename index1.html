@@ -272,7 +272,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -293,64 +293,89 @@
 
         let productMemory = [];
         let activeProduct = null;
-        let currentUserRole = 'retail'; // الوضع الافتراضي للزوار
+        let currentUserRole = 'retail'; 
         let currentUserEmail = null;
 
-        // --- 1. نظام الدخول عبر غوغل ---
+        // --- 1. تسجيل الدخول ---
         window.loginWithGoogle = () => {
             signInWithPopup(auth, provider)
-                .then(async (result) => {
+                .then((result) => {
                     const user = result.user;
                     currentUserEmail = user.email;
-                    await checkUserInFirestore(user.email, user.displayName);
+                    // تفعيل المراقبة الحية لحالة المستخدم
+                    monitorUserStatus(user.email, user.displayName);
                 }).catch((error) => {
                     console.error("Login Failed", error);
-                    alert("فشل تسجيل الدخول. حاول مجدداً.");
+                    alert("فشل تسجيل الدخول.");
                 });
         };
 
-        // --- 2. التحقق من المستخدم في قاعدة البيانات ---
-        async function checkUserInFirestore(email, displayName) {
+        // --- 2. المراقبة الحية (تحديث فوري عند تغيير الأدمن) ---
+        function monitorUserStatus(email, displayName) {
             const q = query(collection(db, "users"), where("email", "==", email));
-            const querySnapshot = await getDocs(q);
+            
+            // استخدام onSnapshot بدلاً من getDocs للتحديث اللحظي
+            onSnapshot(q, (snapshot) => {
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const oldRole = currentUserRole;
+                        currentUserRole = data.role || 'retail';
+                        
+                        // حفظ البيانات
+                        localStorage.setItem('oc_user', JSON.stringify({
+                            name: data.name, phone: data.phone, role: currentUserRole, email: email
+                        }));
 
-            if (!querySnapshot.empty) {
-                // المستخدم موجود - جلب صلاحياته
-                querySnapshot.forEach((doc) => {
-                    currentUserRole = doc.data().role || 'retail';
-                    alert(`أهلاً بك ${doc.data().name}. الأسعار الحالية: ${currentUserRole === 'wholesale' ? 'جملة' : 'مفرق'}`);
-                });
-                initStore(); // تحديث المتجر بالأسعار الجديدة
-            } else {
-                // مستخدم جديد - طلب الاسم والرقم
-                document.getElementById('profName').value = displayName || "";
-                document.getElementById('profileOverlay').style.display = 'flex';
-            }
+                        // إذا تغيرت الرتبة والصفحة مفتوحة، نعيد تحميل الأسعار
+                        if (oldRole !== currentUserRole) {
+                            // إعادة تحميل الصفحة الحالية بالأسعار الجديدة
+                            const currentCat = document.getElementById('viewCatTitle').innerText;
+                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
+                                fetchProducts(currentCat); // تحديث المنتجات بالأسعار الجديدة فوراً
+                            }
+                        }
+                    });
+                } else {
+                    // مستخدم جديد غير موجود
+                    document.getElementById('profName').value = displayName || "";
+                    document.getElementById('profileOverlay').style.display = 'flex';
+                }
+            });
         }
 
-        // --- 3. حفظ بيانات المستخدم الجديد ---
+        // --- 3. حفظ مستخدم جديد ---
         window.saveProfileData = async () => {
             const name = document.getElementById('profName').value;
             const phone = document.getElementById('profPhone').value;
 
-            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
+            if(!name || !phone) return alert("الرجاء إدخال البيانات");
 
             try {
+                // إضافة المستخدم -> هذا سيُفعّل الـ onSnapshot تلقائياً
                 await addDoc(collection(db, "users"), {
                     email: currentUserEmail,
                     name: name,
                     phone: phone,
-                    role: 'retail', // افتراضياً مفرق حتى يتم تعديله من الأدمن
+                    role: 'retail', 
                     joined: new Date()
                 });
                 document.getElementById('profileOverlay').style.display = 'none';
-                alert("تم التسجيل بنجاح!");
-                currentUserRole = 'retail';
-                initStore();
+                alert("تم التسجيل! أنت الآن تتصفح بأسعار المفرق.");
             } catch (e) {
-                console.error("Error adding user: ", e);
+                console.error("Error: ", e);
             }
         };
+
+        // التحقق عند فتح الصفحة
+        const savedUser = localStorage.getItem('oc_user');
+        if(savedUser) {
+            const userObj = JSON.parse(savedUser);
+            currentUserEmail = userObj.email;
+            currentUserRole = userObj.role;
+            // إعادة تفعيل المراقبة للتأكد من التحديثات
+            monitorUserStatus(userObj.email, userObj.name);
+        }
 
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
@@ -385,7 +410,7 @@
 
         async function fetchProducts(catName) {
             const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري سحب المخزون...</p>";
+            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري تحميل الأسعار...</p>";
             const snap = await getDocs(collection(db, "products"));
             grid.innerHTML = "";
             productMemory = [];
@@ -394,7 +419,7 @@
                 const p = d.data();
                 if(p.category === catName) {
                     productMemory.push(p);
-                    // تحديد السعر بناءً على الرتبة المجلوبة
+                    // تحديد السعر ديناميكياً بناءً على الرتبة الحالية
                     const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
                     
                     grid.innerHTML += `
