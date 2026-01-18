@@ -2,117 +2,189 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Cell | Professional Tech Store</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>O-Cell | التجربة البصرية المتطورة</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        /* --- 1. الهوية اللونية (مستوحاة من 795672.jpg) --- */
         :root {
-            --royal-navy: #0a192f;
-            --deep-blue: #020c1b;
-            --light-blue: #00d4ff; 
-            --pearl-white: #f8f9fa;
-            --slate: #64748b;
+            --oc-deep-bg: #020c1b;
+            --oc-vibrant-blue: #004c8c;
+            --oc-neon-cyan: #00d4ff; /* لون التوهج في الصورة */
+            --oc-glass-bg: rgba(255, 255, 255, 0.05);
+            --oc-glass-border: rgba(0, 212, 255, 0.2);
+            --oc-white: #ffffff;
+            --oc-text-muted: #94a3b8;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* --- 2. إعدادات الصفحة الأساسية --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
-            background-color: var(--deep-blue); 
-            color: var(--pearl-white); 
+            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
+            background-attachment: fixed;
+            color: var(--oc-white); 
             font-family: 'Inter', sans-serif; 
-            margin: 0; 
+            min-height: 100vh;
             overflow-x: hidden;
             line-height: 1.6;
         }
 
-        .contact-bar {
-            background: rgba(0, 212, 255, 0.05);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-            padding: 8px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        /* --- 3. الأنميشن الاحترافي --- */
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.5); }
         }
-        .contact-bar a { color: var(--light-blue); text-decoration: none; transition: 0.3s; }
-        .contact-bar a:hover { color: white; }
 
-        header { 
-            padding: 20px 0;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(10,25,47,1), transparent);
+        @keyframes cardFloat {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
         }
-        .logo-text { 
+
+        @keyframes underlineGrow {
+            0% { width: 0; }
+            100% { width: 120px; }
+        }
+
+        /* --- 4. الشريط العلوي (Contact Bar) --- */
+        .oc-contact-nav {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 10px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--oc-glass-border);
+            position: relative;
+            z-index: 1001;
+        }
+        .oc-contact-nav a {
+            color: var(--oc-neon-cyan);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 0 15px;
+            transition: 0.3s;
+        }
+        .oc-contact-nav a:hover { color: white; }
+
+        /* --- 5. الهيدر (تحويل الشعار لنيون مثل الصورة 795672.jpg) --- */
+        .oc-main-header {
+            padding: 30px 0;
+            text-align: center;
+        }
+        .oc-neon-logo { 
             font-family: 'Playfair Display', serif; 
-            font-size: 2.2rem; 
+            font-size: 3.5rem; 
             margin: 0; 
             color: white; 
-            font-style: italic;
-            letter-spacing: 2px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            animation: neonPulse 3s infinite ease-in-out;
         }
-        .logo-text span { color: var(--light-blue); }
+        .oc-neon-logo span { color: var(--oc-neon-cyan); }
 
-        .hero-mini {
+        /* --- 6. قسم الترحيب (تصميم البطاقة تماماً مثل 795672.jpg) --- */
+        .oc-hero-card {
+            background: var(--oc-glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--oc-glass-border);
+            border-radius: 24px;
+            padding: 60px 30px;
+            max-width: 500px;
+            margin: 20px auto 50px;
             text-align: center;
-            padding: 30px 20px;
-            animation: fadeIn 2s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: fadeIn 1.5s ease;
         }
-        .hero-mini h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 5px; color: var(--pearl-white); }
-        .hero-mini p { font-size: 12px; color: var(--slate); text-transform: uppercase; letter-spacing: 3px; }
-
-        .container { max-width: 1100px; margin: auto; padding: 0 20px 50px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-
-        .luxe-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 4px; 
-            overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
+        .oc-hero-card h2 { 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
+            letter-spacing: 2px;
             position: relative;
-            cursor: pointer;
+            display: inline-block;
         }
-        .luxe-card:hover { transform: translateY(-8px); border-color: var(--light-blue); background: rgba(0, 212, 255, 0.02); }
-        .luxe-card img { width: 100%; height: 180px; object-fit: cover; opacity: 0.9; transition: 0.5s; }
-        .luxe-card:hover img { opacity: 1; transform: scale(1.05); }
-        .card-body { padding: 15px; text-align: center; }
-        .card-body h3 { font-size: 14px; font-weight: 400; margin: 0 0 8px; color: var(--pearl-white); }
-        .card-price { color: var(--light-blue); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; }
+        /* الخط التحت الشعار كما في الصورة */
+        .oc-hero-card h2::after {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--oc-neon-cyan);
+            margin: 10px auto;
+            animation: underlineGrow 1.5s ease forwards;
+        }
+        .oc-hero-card p { color: var(--oc-text-muted); font-size: 14px; text-transform: uppercase; }
 
-        .out-badge { position: absolute; top: 10px; right: 10px; background: #8d1a1a; color: white; padding: 2px 8px; font-size: 9px; text-transform: uppercase; font-weight: bold; }
+        /* --- 7. شبكة البطاقات (Glass Grid) --- */
+        .oc-container { max-width: 1200px; margin: auto; padding: 0 20px 80px; }
+        .oc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
 
-        /* Modal Styles */
-        .modal {
+        .oc-glass-card {
+            background: var(--oc-glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--oc-glass-border);
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        .oc-glass-card:hover { 
+            transform: translateY(-10px) scale(1.02); 
+            border-color: var(--oc-neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+        }
+        .oc-glass-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.5s; }
+        .oc-glass-card:hover img { opacity: 1; }
+        
+        .oc-card-body { padding: 20px; text-align: center; }
+        .oc-card-body h3 { font-size: 16px; margin-bottom: 8px; font-weight: 400; }
+        .oc-card-body .price { color: var(--oc-neon-cyan); font-weight: 900; font-size: 20px; }
+
+        /* وسام "نافذ" */
+        .sold-badge { 
+            position: absolute; top: 15px; left: 15px; 
+            background: #8d1a1a; color: white; 
+            padding: 4px 12px; border-radius: 6px; 
+            font-size: 10px; font-weight: 900; z-index: 5;
+        }
+
+        /* --- 8. المودال (النافذة المنبثقة الشفافة) --- */
+        .oc-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(2, 12, 27, 0.98); z-index: 5000;
             justify-content: center; align-items: center; padding: 20px;
             animation: fadeIn 0.4s ease;
         }
-        .modal-content {
-            background: var(--royal-navy);
-            width: 100%; max-width: 450px;
-            border-radius: 2px;
-            border: 1px solid var(--light-blue);
-            padding: 30px;
-            text-align: center;
-            position: relative;
+        .oc-modal-content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--oc-glass-border);
+            width: 100%; max-width: 480px;
+            border-radius: 30px; padding: 40px; text-align: center;
         }
-        .modal-content img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid rgba(0, 212, 255, 0.2); }
-        .modal-content h2 { font-family: 'Playfair Display', serif; margin-bottom: 10px; color: white; }
-        .modal-content p { font-size: 13px; color: var(--slate); margin-bottom: 25px; line-height: 1.8; }
+        .oc-modal-content img { width: 100%; border-radius: 20px; height: 280px; object-fit: cover; margin-bottom: 25px; border: 1px solid var(--oc-glass-border); }
+        .oc-modal-content h2 { font-family: 'Playfair Display'; margin-bottom: 10px; color: var(--oc-neon-cyan); }
         
-        .order-btn {
-            display: block; background: var(--light-blue); color: var(--deep-blue);
-            padding: 15px; text-decoration: none; font-weight: bold; font-size: 13px;
-            letter-spacing: 2px; transition: 0.3s;
+        /* زر واتساب نيون */
+        .wa-btn {
+            display: block; background: var(--oc-neon-cyan); color: var(--oc-deep-bg);
+            padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
+            margin-top: 25px; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
         }
-        .order-btn:hover { background: white; }
-        .btn-disabled { background: #333; color: #666; pointer-events: none; }
+        .wa-btn:hover { background: white; box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+
+        /* --- 9. الملاحة والعودة --- */
+        .back-btn {
+            background: none; border: 1px solid var(--oc-neon-cyan); color: var(--oc-neon-cyan);
+            padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold;
+            transition: 0.3s; margin-bottom: 30px;
+        }
+        .back-btn:hover { background: var(--oc-neon-cyan); color: black; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hidden { display: none; }
@@ -120,159 +192,140 @@
 </head>
 <body>
 
-<div class="contact-bar">
-    <a href="tel:78961175"><i class="fas fa-phone-alt"></i> 78961175</a>
-    <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> العنوان: المشرفية، بيروت</a>
-</div>
-
-<header>
-    <h1 class="logo-text">O-<span>CELL</span></h1>
-</header>
-
-<div id="home-view">
-    <div class="hero-mini">
-        <h2>أهلاً بكم في مجموعتنا</h2>
-        <p>جودة تتخطى التوقعات | توصيل لكافة المناطق اللبنانية</p>
+    <div class="oc-contact-nav">
+        <a href="tel:78961175"><i class="fas fa-phone"></i> 78961175</a>
+        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت، لبنان</a>
     </div>
-    <div class="container">
-        <div class="grid" id="categoryGrid"></div>
+
+    <header class="oc-main-header">
+        <h1 class="oc-neon-logo">O-<span>CELL</span></h1>
+    </header>
+
+    <div id="vHome">
+        <div class="oc-hero-card">
+            <h2>Welcome To O-Cell</h2>
+            <p>التكنولوجيا التي تليق بك | جودة عالمية</p>
+        </div>
+        <div class="oc-container">
+            <h3 style="color: var(--oc-neon-cyan); margin-bottom: 30px; border-right: 4px solid var(--oc-neon-cyan); padding-right: 15px;">الأقسام</h3>
+            <div class="oc-grid" id="catGrid">
+                </div>
+        </div>
     </div>
-</div>
 
-<div id="product-view" class="hidden container">
-    <div style="padding: 20px 0;">
-        <button onclick="goBack()" style="background:none; border:none; color:var(--light-blue); cursor:pointer; font-size: 12px; letter-spacing: 2px;">← العودة للأقسام</button>
+    <div id="vProd" class="hidden oc-container">
+        <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
+        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.5rem; margin-bottom: 40px;"></h2>
+        <div class="oc-grid" id="prodGrid"></div>
     </div>
-    <h2 id="catTitle" style="font-family: 'Playfair Display', serif; color: var(--light-blue); text-align: center; margin-bottom: 30px;"></h2>
-    <div class="grid" id="productGrid"></div>
-</div>
 
-<div id="modal" class="modal" onclick="if(event.target==this) goBack()">
-    <div class="modal-content">
-        <img id="mImg" src="">
-        <h2 id="mTitle"></h2>
-        <p id="mDesc"></p>
-        <div id="mPrice" style="font-size: 24px; color: var(--light-blue); font-family: 'Playfair Display', serif; margin-bottom: 20px;"></div>
-        <div id="waArea"></div>
-        <button onclick="goBack()" style="background:none; border:none; color:var(--slate); margin-top:15px; cursor:pointer; font-size: 11px;">إغلاق</button>
+    <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
+        <div class="oc-modal-content">
+            <img id="mImg" src="">
+            <h2 id="mTitle"></h2>
+            <p id="mDesc" style="color: var(--oc-text-muted); line-height: 1.8;"></p>
+            <div id="mPrice" style="font-size:36px; color:var(--oc-neon-cyan); font-weight:900; margin: 15px 0;"></div>
+            <div id="waAction"></div>
+            <button onclick="goBack()" style="background:none; border:none; color:white; margin-top:20px; cursor:pointer; opacity:0.5;">إغلاق</button>
+        </div>
     </div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-        authDomain: "o-cell-8bd7f.firebaseapp.com",
-        projectId: "o-cell-8bd7f",
-        storageBucket: "o-cell-8bd7f.firebasestorage.app",
-        messagingSenderId: "123702658364",
-        appId: "1:123702658364:web:f51ca179843af7bab24a39"
-    };
+        // الـ Config الخاص بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+            authDomain: "o-cell-8bd7f.firebaseapp.com",
+            projectId: "o-cell-8bd7f",
+            storageBucket: "o-cell-8bd7f.firebasestorage.app",
+            messagingSenderId: "123702658364",
+            appId: "1:123702658364:web:f51ca179843af7bab24a39",
+            measurementId: "G-9G5Y056X75"
+        };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const PHONE = "96178961175";
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const STORE_PHONE = "96178961175";
 
-    let currentProducts = []; // مصفوفة لتخزين المنتجات ومنع أخطاء النصوص
+        let productMemory = [];
 
-    window.addEventListener('popstate', (event) => {
-        if (event.state && event.state.view === 'products') {
-            showProductsView(event.state.catName, false);
-            closeM();
-        } else if (event.state && event.state.view === 'modal') {
-            // المودال مفتوح
-        } else {
-            showHomeView(false);
-            closeM();
-        }
-    });
-
-    async function load() {
-        const snap = await getDocs(collection(db, "categories"));
-        const grid = document.getElementById('categoryGrid');
-        grid.innerHTML = "";
-        snap.forEach(d => {
-            const c = d.data();
-            grid.innerHTML += `
-                <div class="luxe-card" onclick="openCat('${c.name}')">
-                    <img src="${c.image}">
-                    <div class="card-body"><h3>${c.name}</h3></div>
-                </div>`;
+        // إدارة الرجوع (History API) لضمان تجربة تطبيق موبايل
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
+            else { renderHomeView(); closeM(); }
         });
-    }
 
-    window.openCat = (catName) => {
-        history.pushState({view: 'products', catName}, "");
-        showProductsView(catName);
-    };
-
-    function showProductsView(catName, push = true) {
-        document.getElementById('home-view').classList.add('hidden');
-        document.getElementById('product-view').classList.remove('hidden');
-        document.getElementById('catTitle').innerText = catName;
-        loadProducts(catName);
-    }
-
-    function showHomeView(push = true) {
-        document.getElementById('home-view').classList.remove('hidden');
-        document.getElementById('product-view').classList.add('hidden');
-    }
-
-    async function loadProducts(n) {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5;'>جاري تحميل التحف التقنية...</p>";
-        
-        const snap = await getDocs(collection(db, "products"));
-        grid.innerHTML = "";
-        currentProducts = []; // إعادة تعيين المصفوفة
-
-        let index = 0;
-        snap.forEach(d => {
-            const p = d.data();
-            if(p.category === n) {
-                currentProducts.push(p); // إضافة المنتج للمصفوفة
+        async function initStore() {
+            const snap = await getDocs(collection(db, "categories"));
+            const grid = document.getElementById('catGrid');
+            grid.innerHTML = "";
+            snap.forEach(d => {
+                const c = d.data();
                 grid.innerHTML += `
-                <div class="luxe-card" onclick="openDetails(${index})">
-                    ${!p.inStock ? '<div class="out-badge">نفذ</div>' : ''}
-                    <img src="${p.image}">
-                    <div class="card-body">
-                        <h3>${p.name}</h3>
-                        <div class="card-price">$${p.price}</div>
-                    </div>
-                </div>`;
-                index++;
-            }
-        });
-    }
+                    <div class="oc-glass-card" onclick="navToCat('${c.name}')">
+                        <img src="${c.image}">
+                        <div class="oc-card-body"><h3>${c.name}</h3></div>
+                    </div>`;
+            });
+        }
 
-    window.openDetails = (index) => {
-        const p = currentProducts[index];
-        if(!p) return;
+        window.navToCat = (n) => {
+            history.pushState({v:'p', n:n}, "");
+            renderProductsView(n);
+        };
 
-        history.pushState({view: 'modal'}, "");
-        
-        document.getElementById('mImg').src = p.image;
-        document.getElementById('mTitle').innerText = p.name;
-        document.getElementById('mDesc').innerText = p.description || "";
-        document.getElementById('mPrice').innerText = "$" + p.price;
-        
-        const link = `https://wa.me/${PHONE}?text=${encodeURIComponent('أود طلب: ' + p.name + ' بسعر $' + p.price)}`;
-        document.getElementById('waArea').innerHTML = p.inStock ? 
-            `<a href="${link}" target="_blank" class="order-btn">إتمام الطلب عبر واتساب</a>` : 
-            `<div class="order-btn btn-disabled">نفذ المخزون حالياً</div>`;
-        
-        document.getElementById('modal').style.display = "flex";
-    };
+        function renderProductsView(n) {
+            document.getElementById('vHome').classList.add('hidden');
+            document.getElementById('vProd').classList.remove('hidden');
+            document.getElementById('viewCatTitle').innerText = n;
+            fetchProducts(n);
+        }
 
-    window.goBack = () => history.back();
-    
-    window.closeM = () => {
-        document.getElementById('modal').style.display = "none";
-    };
+        async function fetchProducts(catName) {
+            const grid = document.getElementById('prodGrid');
+            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>تنسيق المجموعات النيون...</p>";
+            const snap = await getDocs(collection(db, "products"));
+            grid.innerHTML = "";
+            productMemory = [];
+            let i = 0;
+            snap.forEach(d => {
+                const p = d.data();
+                if(p.category === catName) {
+                    productMemory.push(p);
+                    grid.innerHTML += `
+                        <div class="oc-glass-card" onclick="openDetails(${i})">
+                            ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
+                            <img src="${p.image}">
+                            <div class="oc-card-body"><h3>${p.name}</h3><div class="price">$${p.price}</div></div>
+                        </div>`;
+                    i++;
+                }
+            });
+        }
 
-    load();
-</script>
+        window.openDetails = (index) => {
+            const p = productMemory[index];
+            history.pushState({v:'m'}, "");
+            document.getElementById('mImg').src = p.image;
+            document.getElementById('mTitle').innerText = p.name;
+            document.getElementById('mDesc').innerText = p.description || "";
+            document.getElementById('mPrice').innerText = "$" + p.price;
+            
+            const link = `https://wa.me/${STORE_PHONE}?text=${encodeURIComponent('أود طلب: ' + p.name + ' بسعر $' + p.price)}`;
+            document.getElementById('waAction').innerHTML = p.inStock ? 
+                `<a href="${link}" target="_blank" class="wa-btn">ORDER ON WHATSAPP</a>` : 
+                `<div class="wa-btn" style="background:#555; box-shadow:none;">OUT OF STOCK</div>`;
+            
+            document.getElementById('modal').style.display = "flex";
+        };
+
+        window.goBack = () => history.back();
+        function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
+        function closeM() { document.getElementById('modal').style.display = "none"; }
+
+        initStore();
+    </script>
 </body>
 </html>
