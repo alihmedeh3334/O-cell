@@ -111,7 +111,6 @@
         }
         .oc-modal-content img { width: 100%; border-radius: 20px; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid var(--oc-glass-border); }
 
-        /* تصميم عداد الكمية الجديد */
         .qty-container {
             display: flex;
             align-items: center;
@@ -161,10 +160,41 @@
             padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
         }
 
+        /* --- Login Overlay --- */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
+            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            flex-direction: column; padding: 20px;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px;
+            border: 1px solid var(--oc-glass-border); text-align: center; width: 100%; max-width: 400px;
+            backdrop-filter: blur(15px);
+        }
+        .login-input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none;
+            background: rgba(255,255,255,0.1); color: white; text-align: center;
+        }
+        .login-btn {
+            background: var(--oc-neon-cyan); color: var(--oc-deep-bg); border: none; padding: 15px;
+            width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
         .hidden { display: none; }
     </style>
 </head>
 <body>
+
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">تسجيل الدخول</h2>
+            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أدخل اسمك ورقم هاتفك لرؤية الأسعار المخصصة لك</p>
+            <input type="text" id="logName" class="login-input" placeholder="الاسم الكامل">
+            <input type="tel" id="logPhone" class="login-input" placeholder="رقم الهاتف">
+            <button class="login-btn" onclick="performLogin()">دخول</button>
+        </div>
+    </div>
 
     <div class="oc-contact-nav">
         <a href="tel:78961175"><i class="fas fa-phone"></i> 78961175</a>
@@ -215,9 +245,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // الـ Config الخاص بك
         const firebaseConfig = {
             apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
             authDomain: "o-cell-8bd7f.firebaseapp.com",
@@ -234,6 +263,48 @@
 
         let productMemory = [];
         let activeProduct = null;
+        let currentUserRole = 'retail'; // افتراضياً السعر مفرق
+
+        // --- نظام تسجيل الدخول والأسعار ---
+        window.performLogin = async () => {
+            const name = document.getElementById('logName').value;
+            const phone = document.getElementById('logPhone').value;
+            
+            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
+
+            // البحث عن المستخدم في قاعدة البيانات
+            const q = query(collection(db, "users"), where("phone", "==", phone));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                // المستخدم موجود، جلب صلاحيته (جملة/مفرق)
+                querySnapshot.forEach((doc) => {
+                    currentUserRole = doc.data().role || 'retail';
+                });
+            } else {
+                // مستخدم جديد، تسجيله كـ retail افتراضياً
+                await addDoc(collection(db, "users"), {
+                    name: name,
+                    phone: phone,
+                    role: 'retail',
+                    joined: new Date()
+                });
+                currentUserRole = 'retail';
+            }
+
+            // حفظ الجلسة وإخفاء النافذة
+            localStorage.setItem('oc_user', JSON.stringify({name, phone, role: currentUserRole}));
+            document.getElementById('loginOverlay').style.display = 'none';
+            initStore(); // تحميل المتجر بعد الدخول
+        };
+
+        // التحقق من الجلسة المحفوظة
+        const savedUser = localStorage.getItem('oc_user');
+        if(savedUser) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            currentUserRole = JSON.parse(savedUser).role;
+            initStore();
+        }
 
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
@@ -277,49 +348,56 @@
                 const p = d.data();
                 if(p.category === catName) {
                     productMemory.push(p);
+                    // تحديد السعر بناءً على الرتبة
+                    const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+                    
                     grid.innerHTML += `
                         <div class="oc-glass-card" onclick="openDetails(${i})">
                             ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
                             <img src="${p.image}">
-                            <div class="oc-card-body"><h3>${p.name}</h3><div class="price">$${p.price}</div></div>
+                            <div class="oc-card-body">
+                                <h3>${p.name}</h3>
+                                <div class="price">$${finalPrice}</div>
+                            </div>
                         </div>`;
                     i++;
                 }
             });
         }
 
-        // وظيفة فتح تفاصيل المنتج وإعادة تصفير العدد
         window.openDetails = (index) => {
             activeProduct = productMemory[index];
-            document.getElementById('qtyInput').value = 1; // تصفير العدد ليكون 1
+            // تحديد السعر المعروض في المودال أيضاً
+            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
+            activeProduct.displayPrice = finalPrice; // تخزين السعر النهائي للاستخدام في الواتساب
+
+            document.getElementById('qtyInput').value = 1;
             
             history.pushState({v:'m'}, "");
             document.getElementById('mImg').src = activeProduct.image;
             document.getElementById('mTitle').innerText = activeProduct.name;
             document.getElementById('mDesc').innerText = activeProduct.description || "";
-            document.getElementById('mPrice').innerText = "$" + activeProduct.price;
+            document.getElementById('mPrice').innerText = "$" + finalPrice;
             
-            updateWALink(); // إنشاء رابط الواتساب الأولي
+            updateWALink();
             document.getElementById('modal').style.display = "flex";
         };
 
-        // وظيفة تحديث العدد (زيادة أو نقصان)
         window.updateQty = (val) => {
             let current = parseInt(document.getElementById('qtyInput').value);
             let next = current + val;
-            if(next < 1) return; // منع النزول عن 1
+            if(next < 1) return;
             document.getElementById('qtyInput').value = next;
-            updateWALink(); // تحديث الرابط فوراً مع كل ضغطة
+            updateWALink();
         };
 
-        // وظيفة دمج العدد في رسالة الواتساب
         function updateWALink() {
             if(!activeProduct) return;
             const qty = document.getElementById('qtyInput').value;
-            const total = (parseFloat(activeProduct.price) * parseInt(qty)).toFixed(2);
+            const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
             
-            // الرسالة تتضمن: اسم المنتج، العدد، والسعر الإجمالي
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total}`);
+            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
             
             const area = document.getElementById('waAction');
             area.innerHTML = activeProduct.inStock ? 
@@ -331,8 +409,6 @@
         function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
-        initStore();
     </script>
 </body>
 </html>
-
