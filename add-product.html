@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #fff; }
+        .card { max-width: 700px; margin: auto; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        h1 { color: #1a1a2e; font-size: 20px; border-right: 4px solid #e94560; padding-right: 10px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select, button { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { background: #e94560; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #1a1a2e; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📦 إضافة بضاعة (سعر مزدوج)</h1>
+    <div class="row">
+        <input type="text" id="name" placeholder="اسم القطعة">
+        <input type="number" id="qty" placeholder="الكمية المتوفرة">
+    </div>
+    <div class="row">
+        <input type="number" id="retail" placeholder="سعر المفرق ($)">
+        <input type="number" id="wholesale" placeholder="سعر الجملة ($)">
+    </div>
+    <select id="cat">
+        <option value="phones">هواتف</option>
+        <option value="accessories">إكسسوارات</option>
+        <option value="tools">أدوات ربط</option>
+    </select>
+    <input type="text" id="img" placeholder="رابط صورة القطعة المباشر (URL)">
+    <button id="submit">تثبيت ونشر في المتجر</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById('submit').onclick = async () => {
+        const btn = document.getElementById('submit');
+        btn.innerText = "جاري الحفظ...";
+        btn.disabled = true;
+
+        try {
+            await addDoc(collection(db, "products"), {
+                name: document.getElementById('name').value,
+                stock: Number(document.getElementById('qty').value),
+                price_retail: Number(document.getElementById('retail').value),
+                price_wholesale: Number(document.getElementById('wholesale').value),
+                category: document.getElementById('cat').value,
+                image: document.getElementById('img').value,
+                created_at: new Date()
+            });
+            alert("تمت الإضافة بنجاح!");
+            location.reload();
+        } catch (e) {
+            alert("خطأ: " + e.message);
+            btn.disabled = false;
+        }
+    };
+</script>
+</body>
+</html>
+
