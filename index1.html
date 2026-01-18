@@ -2,408 +2,459 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Cell | نظام الإدارة المتقدم</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>O-Cell | نظام الطلب الذكي</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root {
+            --oc-deep-bg: #020c1b;
+            --oc-vibrant-blue: #004c8c;
+            --oc-neon-cyan: #00d4ff; 
+            --oc-glass-bg: rgba(255, 255, 255, 0.05);
+            --oc-glass-border: rgba(0, 212, 255, 0.2);
             --oc-white: #ffffff;
-            --oc-light-cyan: #e0f7fa;
-            --oc-vibrant-blue: #00d4ff;
-            --oc-dark-navy: #004c8c;
-            --oc-text-main: #1a1a1a;
-            --oc-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --oc-success: #1ed760;
-            --oc-danger: #d93025;
-            --oc-edit: #f2994a;
+            --oc-text-muted: #94a3b8;
         }
 
-        body {
-            background: linear-gradient(135deg, var(--oc-white) 0%, var(--oc-light-cyan) 100%);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            color: var(--oc-text-main);
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
+            background-attachment: fixed;
+            color: var(--oc-white); 
+            font-family: 'Inter', sans-serif; 
             min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        .admin-container { max-width: 1100px; margin: auto; animation: fadeIn 1s ease; }
+        /* --- Animations --- */
+        @keyframes neonPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.8); }
+        }
 
-        .admin-card {
-            background: white;
-            padding: 30px;
+        /* --- Navigation --- */
+        .oc-contact-nav {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--oc-glass-border);
+            position: sticky; top: 0; z-index: 1001;
+        }
+        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; }
+
+        /* --- Header --- */
+        .oc-main-header { padding: 25px 0; text-align: center; }
+        .oc-neon-logo { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 3.5rem; 
+            color: white; 
+            font-weight: 900;
+            letter-spacing: 5px;
+            animation: neonPulse 3s infinite;
+        }
+        .oc-neon-logo span { color: var(--oc-neon-cyan); }
+
+        /* --- Hero Card --- */
+        .oc-hero-card {
+            background: var(--oc-glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--oc-glass-border);
+            border-radius: 24px;
+            padding: 50px 30px;
+            max-width: 500px;
+            margin: 20px auto 40px;
+            text-align: center;
+        }
+        .oc-hero-card h2 { font-size: 2.2rem; margin-bottom: 10px; position: relative; }
+        .oc-hero-card h2::after { content: ''; display: block; height: 3px; background: var(--oc-neon-cyan); width: 80px; margin: 10px auto; }
+
+        /* --- Grid & Cards --- */
+        .oc-container { max-width: 1200px; margin: auto; padding: 0 20px 80px; }
+        .oc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
+
+        .oc-glass-card {
+            background: var(--oc-glass-bg);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: var(--oc-shadow);
-            margin-bottom: 30px;
-            border-top: 6px solid var(--oc-vibrant-blue);
+            border: 1px solid var(--oc-glass-border);
+            overflow: hidden;
+            transition: 0.4s;
+            cursor: pointer;
+            position: relative;
         }
+        .oc-glass-card:hover { transform: translateY(-10px); border-color: var(--oc-neon-cyan); }
+        .oc-glass-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.5s; }
+        .oc-glass-card:hover img { opacity: 1; }
+        .oc-card-body { padding: 18px; text-align: center; }
+        .oc-card-body .price { color: var(--oc-neon-cyan); font-weight: 900; font-size: 1.2rem; }
 
-        h3 {
-            font-family: 'Playfair Display', serif;
-            color: var(--oc-dark-navy);
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+        .sold-badge { position: absolute; top: 15px; left: 15px; background: #8d1a1a; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 900; }
+
+        /* --- Modal & Quantity System --- */
+        .oc-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 12, 27, 0.98); z-index: 5000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .oc-modal-content {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--oc-glass-border);
+            width: 100%; max-width: 480px;
+            border-radius: 30px; padding: 40px; text-align: center;
+        }
+        .oc-modal-content img { width: 100%; border-radius: 20px; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid var(--oc-glass-border); }
+
+        .qty-container {
             display: flex;
             align-items: center;
+            justify-content: center;
+            margin: 20px 0;
             gap: 15px;
         }
-
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 1px solid #e0e6ed;
-            border-radius: 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: #f9fbff;
-            transition: 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--oc-vibrant-blue);
-            background: white;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
-        }
-
-        .btn-submit {
-            background: var(--oc-dark-navy);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .btn-submit:hover { background: var(--oc-vibrant-blue); transform: translateY(-3px); }
-
-        /* تنسيق جداول المستخدمين والجرد */
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .data-table th, .data-table td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
-        .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .wholesale { background: #fff3e0; color: #e65100; }
-        .retail { background: #e8f5e9; color: #2e7d32; }
-
-        .category-group { margin-bottom: 30px; padding: 15px; background: rgba(255,255,255,0.6); border-radius: 15px; border: 1px solid #e0f7fa; }
-        .category-header { background: var(--oc-dark-navy); color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        
-        /* تنسيق زر حذف الحساب */
-        .btn-delete-account {
-            background-color: var(--oc-danger);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-delete-account:hover { background-color: #b71c1c; }
-
-        /* تنسيق الجرد */
-        .inv-row {
+        .qty-label { font-size: 14px; color: var(--oc-text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .qty-controls {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid var(--oc-glass-border);
+            overflow: hidden;
         }
-
-        .badge {
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 900;
-            cursor: pointer;
+        .qty-btn {
+            background: none;
             border: none;
+            color: var(--oc-neon-cyan);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
             transition: 0.3s;
         }
-
-        .badge-green { background: var(--oc-success); color: white; }
-        .badge-gray { background: #94a3b8; color: white; }
-        .badge-edit { background: var(--oc-edit); color: white; margin-right: 5px; }
-        .badge-danger { background: var(--oc-danger); color: white; margin-right: 5px; }
-
-        .search-box {
-            position: relative;
-            margin-bottom: 25px;
+        .qty-btn:hover { background: rgba(0, 212, 255, 0.1); }
+        .qty-input {
+            background: none;
+            border: none;
+            color: white;
+            width: 40px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
         }
-        .search-box i {
-            position: absolute;
+
+        .wa-btn {
+            display: block; background: var(--oc-neon-cyan); color: var(--oc-deep-bg);
+            padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
+            margin-top: 10px; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+        .wa-btn:hover { background: white; transform: scale(1.02); }
+
+        .back-btn {
+            background: none; border: 1px solid var(--oc-neon-cyan); color: var(--oc-neon-cyan);
+            padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
+        }
+
+        /* --- Login Floating Button --- */
+        .login-float {
+            position: fixed;
+            top: 20px;
             left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--oc-dark-navy);
+            background: var(--oc-white);
+            color: var(--oc-vibrant-blue);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            z-index: 2000;
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.3s;
+            border: 2px solid var(--oc-neon-cyan);
         }
-        .search-box input { padding-left: 50px; border: 2px solid var(--oc-light-cyan); }
+        .login-float:hover { transform: scale(1.1); }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* --- Profile Completion Overlay --- */
+        #profileOverlay {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
+            z-index: 9999; justify-content: center; align-items: center;
+            flex-direction: column; padding: 20px;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px;
+            border: 1px solid var(--oc-glass-border); text-align: center; width: 100%; max-width: 400px;
+            backdrop-filter: blur(15px);
+        }
+        .login-input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none;
+            background: rgba(255,255,255,0.1); color: white; text-align: center;
+        }
+        .login-btn {
+            background: var(--oc-neon-cyan); color: var(--oc-deep-bg); border: none; padding: 15px;
+            width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="admin-container">
-    
-    <div class="admin-card">
-        <h3><i class="fas fa-users-cog"></i> إدارة حسابات غوغل والأسعار</h3>
-        <div class="form-grid">
-            <input type="text" id="userName" placeholder="اسم المستخدم">
-            <input type="email" id="userEmail" placeholder="البريد الإلكتروني (Gmail)">
-            <select id="userRole">
-                <option value="retail">سعر مفرق (زبون)</option>
-                <option value="wholesale">سعر جملة (تاجر)</option>
-            </select>
-        </div>
-        <button class="btn-submit" onclick="saveNewUser()">إضافة حساب يدوياً</button>
-
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>الاسم</th>
-                    <th>حساب غوغل (Email)</th>
-                    <th>نوع السعر</th>
-                    <th>إدارة الحساب</th>
-                </tr>
-            </thead>
-            <tbody id="userList"></tbody>
-        </table>
+    <div class="login-float" onclick="loginWithGoogle()">
+        <i class="fab fa-google"></i>
     </div>
 
-    <div class="admin-card">
-        <h3><i class="fas fa-folder-plus"></i> إدارة الأقسام (Categories)</h3>
-        <div class="form-grid">
-            <input type="text" id="catName" placeholder="اسم القسم الجديد">
-            <input type="text" id="catImage" placeholder="رابط صورة القسم">
+    <div id="profileOverlay">
+        <div class="login-box">
+            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">إكمال التسجيل</h2>
+            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
+            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
+            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
+            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
         </div>
-        <button class="btn-submit" onclick="saveNewCategory()">إضافة قسم</button>
-        <div id="categoryEditList" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
     </div>
 
-    <div class="admin-card">
-        <h3><i class="fas fa-plus-circle"></i> إضافة منتج (مفرق وجملة)</h3>
-        <div class="form-grid">
-            <input type="text" id="prodName" placeholder="اسم المنتج">
-            <select id="prodCat"><option value="">-- اختر القسم --</option></select>
-            <input type="number" id="prodPriceRetail" placeholder="سعر المفرق ($)">
-            <input type="number" id="prodPriceWholesale" placeholder="سعر الجملة ($)">
-            <input type="text" id="prodImg" placeholder="رابط صورة المنتج">
-        </div>
-        <textarea id="prodDesc" placeholder="وصف المنتج..." rows="2"></textarea>
-        <button id="mainProdBtn" class="btn-submit" onclick="saveNewProduct()">نشر المنتج في المتجر</button>
+    <div class="oc-contact-nav">
+        <a href="tel:78961175"><i class="fas fa-phone"></i> 78961175</a>
+        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت، لبنان</a>
     </div>
 
-    <div class="admin-card">
-        <h3><i class="fas fa-warehouse"></i> جرد المخزون والتحكم</h3>
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="بحث باسم المنتج..." onkeyup="filterInventory()">
+    <header class="oc-main-header">
+        <h1 class="oc-neon-logo">O-<span>CELL</span></h1>
+    </header>
+
+    <div id="vHome">
+        <div class="oc-hero-card">
+            <h2>O-Cell Lebanon</h2>
+            <p>اخترنا لك الأفضل في عالم التكنولوجيا</p>
         </div>
-        <div id="invContainer"></div>
+        <div class="oc-container">
+            <h3 style="color: var(--oc-neon-cyan); margin-bottom: 30px; border-right: 4px solid var(--oc-neon-cyan); padding-right: 15px;">الفئات</h3>
+            <div class="oc-grid" id="catGrid"></div>
+        </div>
     </div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <div id="vProd" class="hidden oc-container">
+        <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
+        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
+        <div class="oc-grid" id="prodGrid"></div>
+    </div>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-        authDomain: "o-cell-8bd7f.firebaseapp.com",
-        projectId: "o-cell-8bd7f",
-        storageBucket: "o-cell-8bd7f.firebasestorage.app",
-        messagingSenderId: "123702658364",
-        appId: "1:123702658364:web:f51ca179843af7bab24a39",
-        measurementId: "G-9G5Y056X75"
-    };
+    <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
+        <div class="oc-modal-content">
+            <img id="mImg" src="">
+            <h2 id="mTitle" style="margin-bottom: 10px;"></h2>
+            <p id="mDesc" style="color: var(--oc-text-muted); font-size: 13px; margin-bottom: 15px;"></p>
+            <div id="mPrice" style="font-size:32px; color:var(--oc-neon-cyan); font-weight:900;"></div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+            <div class="qty-container">
+                <span class="qty-label">الكمية:</span>
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                    <input type="number" id="qtyInput" class="qty-input" value="1" readonly>
+                    <button class="qty-btn" onclick="updateQty(1)">+</button>
+                </div>
+            </div>
 
-    let allCategories = [];
-    let allProducts = [];
-    let editingProductId = null;
+            <div id="waAction"></div>
+            <button onclick="goBack()" style="background:none; border:none; color:white; margin-top:20px; cursor:pointer; opacity:0.5;">إغلاق</button>
+        </div>
+    </div>
 
-    // --- إدارة حسابات غوغل (المستخدمين) ---
-    window.saveNewUser = async () => {
-        const name = document.getElementById('userName').value;
-        const email = document.getElementById('userEmail').value;
-        const role = document.getElementById('userRole').value;
-        if(!name || !email) return alert("أكمل بيانات الحساب");
-        
-        await addDoc(collection(db, "users"), { name, email, role }); // حفظنا الايميل بدل الرقم
-        alert("تمت إضافة الحساب");
-        loadUsers();
-    };
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    async function loadUsers() {
-        const snap = await getDocs(collection(db, "users"));
-        const list = document.getElementById('userList');
-        list.innerHTML = "";
-        
-        if(snap.empty) {
-            list.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا يوجد حسابات مسجلة.</td></tr>`;
-            return;
-        }
-
-        snap.forEach(d => {
-            const u = d.data();
-            const roleText = u.role === 'wholesale' ? 'تاجر جملة' : 'زبون مفرق';
-            const roleClass = u.role === 'wholesale' ? 'wholesale' : 'retail';
-            
-            list.innerHTML += `
-                <tr>
-                    <td>${u.name}</td>
-                    <td style="direction:ltr;">${u.email}</td> <td><span class="role-badge ${roleClass}" onclick="toggleUserRole('${d.id}', '${u.role}')" style="background:${u.role==='wholesale'?'#ffe0b2':'#c8e6c9'}">${roleText}</span></td>
-                    <td>
-                        <button class="btn-delete-account" onclick="deleteUser('${d.id}')">
-                            <i class="fas fa-trash-alt"></i> حذف الحساب
-                        </button>
-                    </td>
-                </tr>`;
-        });
-    }
-
-    window.toggleUserRole = async (id, current) => {
-        const next = current === 'wholesale' ? 'retail' : 'wholesale';
-        await updateDoc(doc(db, "users", id), { role: next });
-        loadUsers();
-    };
-
-    window.deleteUser = async (id) => {
-        if(confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) { await deleteDoc(doc(db, "users", id)); loadUsers(); }
-    };
-
-    // --- إدارة الأقسام ---
-    window.saveNewCategory = async () => {
-        const name = document.getElementById('catName').value;
-        const img = document.getElementById('catImage').value;
-        if(!name || !img) return alert("أكمل البيانات");
-        await addDoc(collection(db, "categories"), { name, image: img });
-        location.reload();
-    };
-    
-    window.editCategory = async (id, currentName, currentImg) => {
-        const newName = prompt("تعديل اسم القسم:", currentName);
-        const newImg = prompt("تعديل رابط الصورة:", currentImg);
-        if(newName && newImg) {
-            await updateDoc(doc(db, "categories", id), { name: newName, image: newImg });
-            location.reload();
-        }
-    };
-
-    // --- إدارة المنتجات ---
-    window.saveNewProduct = async () => {
-        const data = {
-            name: document.getElementById('prodName').value,
-            category: document.getElementById('prodCat').value,
-            priceRetail: document.getElementById('prodPriceRetail').value,
-            priceWholesale: document.getElementById('prodPriceWholesale').value,
-            image: document.getElementById('prodImg').value,
-            description: document.getElementById('prodDesc').value,
-            inStock: true
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+            authDomain: "o-cell-8bd7f.firebaseapp.com",
+            projectId: "o-cell-8bd7f",
+            storageBucket: "o-cell-8bd7f.firebasestorage.app",
+            messagingSenderId: "123702658364",
+            appId: "1:123702658364:web:f51ca179843af7bab24a39",
+            measurementId: "G-9G5Y056X75"
         };
 
-        if(!data.name || !data.category || !data.priceRetail) return alert("أدخل البيانات الأساسية");
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        const STORE_PHONE = "96178961175";
 
-        if(editingProductId) {
-            await updateDoc(doc(db, "products", editingProductId), data);
-            editingProductId = null;
-        } else {
-            await addDoc(collection(db, "products"), data);
-        }
-        alert("تم الحفظ");
-        location.reload();
-    };
-    
-    window.prepareEditProduct = (id) => {
-        const p = allProducts.find(item => item.id === id);
-        document.getElementById('prodName').value = p.name;
-        document.getElementById('prodCat').value = p.category;
-        document.getElementById('prodPriceRetail').value = p.priceRetail;
-        document.getElementById('prodPriceWholesale').value = p.priceWholesale || "";
-        document.getElementById('prodImg').value = p.image;
-        document.getElementById('prodDesc').value = p.description;
-        editingProductId = id;
-        document.getElementById('mainProdBtn').innerText = "تحديث المنتج";
-        window.scrollTo(0,0);
-    };
+        let productMemory = [];
+        let activeProduct = null;
+        let currentUserRole = 'retail'; // الوضع الافتراضي للزوار
+        let currentUserEmail = null;
 
-    // --- تهيئة الجرد ---
-    async function initAdmin() {
-        const catSnap = await getDocs(collection(db, "categories"));
-        const select = document.getElementById('prodCat');
-        const catEditList = document.getElementById('categoryEditList');
-        allCategories = [];
-        
-        catSnap.forEach(d => {
-            const data = d.data();
-            allCategories.push({ id: d.id, ...data });
-            select.innerHTML += `<option value="${data.name}">${data.name}</option>`;
-            catEditList.innerHTML += `
-                <button class="badge badge-edit" onclick="editCategory('${d.id}', '${data.name}', '${data.image}')">
-                    <i class="fas fa-edit"></i> ${data.name}
-                </button>`;
-        });
-        loadUsers();
-        loadInventory();
-    }
-
-    window.loadInventory = async () => {
-        const prodSnap = await getDocs(collection(db, "products"));
-        allProducts = [];
-        prodSnap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
-        renderInventory(allProducts);
-    };
-
-    function renderInventory(products) {
-        const container = document.getElementById('invContainer');
-        container.innerHTML = "";
-        allCategories.forEach(cat => {
-            const catProds = products.filter(p => p.category === cat.name);
-            if(catProds.length > 0) {
-                let html = `<div class="category-group"><div class="category-header"><h4>${cat.name}</h4></div>`;
-                catProds.forEach(p => {
-                    html += `<div class="inv-row">
-                        <span><b>${p.name}</b> - مفرق: $${p.priceRetail} | جملة: $${p.priceWholesale || '-'}</span>
-                        <div>
-                            <button class="badge ${p.inStock ? 'badge-green' : 'badge-gray'}" onclick="toggleS('${p.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'نافذ'}</button>
-                            <button class="badge badge-edit" onclick="prepareEditProduct('${p.id}')">تعديل</button>
-                            <button class="badge badge-danger" onclick="delP('${p.id}')">حذف</button>
-                        </div>
-                    </div>`;
+        // --- 1. نظام الدخول عبر غوغل ---
+        window.loginWithGoogle = () => {
+            signInWithPopup(auth, provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    currentUserEmail = user.email;
+                    await checkUserInFirestore(user.email, user.displayName);
+                }).catch((error) => {
+                    console.error("Login Failed", error);
+                    alert("فشل تسجيل الدخول. حاول مجدداً.");
                 });
-                html += `</div>`;
-                container.innerHTML += html;
+        };
+
+        // --- 2. التحقق من المستخدم في قاعدة البيانات ---
+        async function checkUserInFirestore(email, displayName) {
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                // المستخدم موجود - جلب صلاحياته
+                querySnapshot.forEach((doc) => {
+                    currentUserRole = doc.data().role || 'retail';
+                    alert(`أهلاً بك ${doc.data().name}. الأسعار الحالية: ${currentUserRole === 'wholesale' ? 'جملة' : 'مفرق'}`);
+                });
+                initStore(); // تحديث المتجر بالأسعار الجديدة
+            } else {
+                // مستخدم جديد - طلب الاسم والرقم
+                document.getElementById('profName').value = displayName || "";
+                document.getElementById('profileOverlay').style.display = 'flex';
             }
+        }
+
+        // --- 3. حفظ بيانات المستخدم الجديد ---
+        window.saveProfileData = async () => {
+            const name = document.getElementById('profName').value;
+            const phone = document.getElementById('profPhone').value;
+
+            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
+
+            try {
+                await addDoc(collection(db, "users"), {
+                    email: currentUserEmail,
+                    name: name,
+                    phone: phone,
+                    role: 'retail', // افتراضياً مفرق حتى يتم تعديله من الأدمن
+                    joined: new Date()
+                });
+                document.getElementById('profileOverlay').style.display = 'none';
+                alert("تم التسجيل بنجاح!");
+                currentUserRole = 'retail';
+                initStore();
+            } catch (e) {
+                console.error("Error adding user: ", e);
+            }
+        };
+
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
+            else { renderHomeView(); closeM(); }
         });
-    }
-    
-    window.filterInventory = () => {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
-        renderInventory(filtered);
-    };
 
-    window.toggleS = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInventory(); };
-    window.delP = async (id) => { if(confirm("حذف المنتج؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
+        async function initStore() {
+            const snap = await getDocs(collection(db, "categories"));
+            const grid = document.getElementById('catGrid');
+            grid.innerHTML = "";
+            snap.forEach(d => {
+                const c = d.data();
+                grid.innerHTML += `
+                    <div class="oc-glass-card" onclick="navToCat('${c.name}')">
+                        <img src="${c.image}">
+                        <div class="oc-card-body"><h3>${c.name}</h3></div>
+                    </div>`;
+            });
+        }
 
-    initAdmin();
-</script>
+        window.navToCat = (n) => {
+            history.pushState({v:'p', n:n}, "");
+            renderProductsView(n);
+        };
+
+        function renderProductsView(n) {
+            document.getElementById('vHome').classList.add('hidden');
+            document.getElementById('vProd').classList.remove('hidden');
+            document.getElementById('viewCatTitle').innerText = n;
+            fetchProducts(n);
+        }
+
+        async function fetchProducts(catName) {
+            const grid = document.getElementById('prodGrid');
+            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري سحب المخزون...</p>";
+            const snap = await getDocs(collection(db, "products"));
+            grid.innerHTML = "";
+            productMemory = [];
+            let i = 0;
+            snap.forEach(d => {
+                const p = d.data();
+                if(p.category === catName) {
+                    productMemory.push(p);
+                    // تحديد السعر بناءً على الرتبة المجلوبة
+                    const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+                    
+                    grid.innerHTML += `
+                        <div class="oc-glass-card" onclick="openDetails(${i})">
+                            ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
+                            <img src="${p.image}">
+                            <div class="oc-card-body">
+                                <h3>${p.name}</h3>
+                                <div class="price">$${finalPrice}</div>
+                            </div>
+                        </div>`;
+                    i++;
+                }
+            });
+        }
+
+        window.openDetails = (index) => {
+            activeProduct = productMemory[index];
+            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
+            activeProduct.displayPrice = finalPrice; 
+
+            document.getElementById('qtyInput').value = 1;
+            
+            history.pushState({v:'m'}, "");
+            document.getElementById('mImg').src = activeProduct.image;
+            document.getElementById('mTitle').innerText = activeProduct.name;
+            document.getElementById('mDesc').innerText = activeProduct.description || "";
+            document.getElementById('mPrice').innerText = "$" + finalPrice;
+            
+            updateWALink();
+            document.getElementById('modal').style.display = "flex";
+        };
+
+        window.updateQty = (val) => {
+            let current = parseInt(document.getElementById('qtyInput').value);
+            let next = current + val;
+            if(next < 1) return;
+            document.getElementById('qtyInput').value = next;
+            updateWALink();
+        };
+
+        function updateWALink() {
+            if(!activeProduct) return;
+            const qty = document.getElementById('qtyInput').value;
+            const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
+            
+            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
+            
+            const area = document.getElementById('waAction');
+            area.innerHTML = activeProduct.inStock ? 
+                `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn">اطلب الآن عبر WHATSAPP</a>` : 
+                `<div class="wa-btn" style="background:#555; box-shadow:none;">غير متوفر حالياً</div>`;
+        }
+
+        window.goBack = () => history.back();
+        function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
+        function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
+
+        initStore();
+    </script>
 </body>
 </html>
