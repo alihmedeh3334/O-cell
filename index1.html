@@ -28,7 +28,6 @@
 
         body { 
             background-color: var(--bg-dark);
-            /* خلفية متحركة فاخرة */
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(0, 76, 140, 0.15), transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.08), transparent 25%);
@@ -39,7 +38,6 @@
             line-height: 1.6;
         }
 
-        /* --- 2. Typography & Scrollbar --- */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -47,7 +45,7 @@
 
         h1, h2, h3 { font-weight: 800; letter-spacing: -0.5px; }
         
-        /* --- 3. Header & Nav --- */
+        /* --- Header & Nav --- */
         .oc-contact-nav {
             background: rgba(18, 18, 18, 0.8);
             backdrop-filter: blur(20px);
@@ -60,20 +58,17 @@
             position: sticky; top: 0; z-index: 1000;
             box-shadow: 0 4px 30px rgba(0,0,0,0.3);
         }
-        .oc-contact-nav a { 
-            color: var(--text-main); text-decoration: none; font-size: 14px; font-weight: 600; 
-            transition: 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .oc-contact-nav a i { color: var(--primary-accent); }
-        .oc-contact-nav a:hover { color: var(--primary-accent); text-shadow: 0 0 10px var(--primary-glow); }
+        
+        .nav-icons { display: flex; align-items: center; gap: 15px; }
 
-        .profile-toggle {
-            cursor: pointer; font-size: 22px; color: var(--text-main); transition: 0.3s;
+        .icon-btn {
+            cursor: pointer; font-size: 20px; color: var(--text-main); transition: 0.3s;
             background: var(--glass-surface); width: 40px; height: 40px; 
-            display: none; align-items: center; justify-content: center; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
             border: 1px solid var(--glass-border);
         }
-        .profile-toggle:hover { background: var(--primary-accent); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
+        .icon-btn:hover { background: var(--primary-accent); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
+        .profile-toggle { display: none; } /* يظهر بعد تسجيل الدخول */
 
         .oc-main-header { padding: 40px 0 20px; text-align: center; position: relative; }
         .oc-neon-logo { 
@@ -88,7 +83,7 @@
             display: inline-block;
         }
 
-        /* --- 4. Hero Section --- */
+        /* --- Hero Section --- */
         .oc-hero-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
             backdrop-filter: blur(10px);
@@ -110,7 +105,7 @@
         .oc-hero-card h2 { font-size: 2.5rem; margin-bottom: 10px; position: relative; z-index: 1; }
         .oc-hero-card p { font-size: 1.1rem; color: var(--text-muted); position: relative; z-index: 1; }
 
-        /* --- 5. Grid System & Cards --- */
+        /* --- Grid System --- */
         .oc-container { max-width: 1280px; margin: 0 auto; padding: 0 20px 100px; }
         .oc-section-title { 
             font-size: 1.8rem; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
@@ -120,7 +115,7 @@
 
         .oc-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* موبايل: كارتين، لابتوب: أكثر */
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
             gap: 25px; 
         }
 
@@ -137,7 +132,6 @@
             animation: fadeInCard 0.6s ease-out forwards;
             opacity: 0; transform: translateY(20px);
         }
-        /* Staggered animation handled by JS loop ideally, but keeping simple here */
         .oc-glass-card:nth-child(n) { animation-delay: 0.1s; }
 
         .oc-glass-card:hover { 
@@ -171,7 +165,35 @@
             z-index: 2; box-shadow: 0 5px 15px rgba(255, 59, 59, 0.4);
         }
 
-        /* --- 6. Modal (Popup) --- */
+        /* --- Search Overlay --- */
+        #searchOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 5, 0.95); z-index: 2000;
+            backdrop-filter: blur(15px); padding: 40px 20px;
+            flex-direction: column; align-items: center;
+        }
+        .search-container { width: 100%; max-width: 600px; position: relative; }
+        .search-input {
+            width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--glass-border);
+            color: white; font-size: 1.5rem; padding: 15px; font-family: 'Cairo';
+            transition: 0.3s;
+        }
+        .search-input:focus { border-color: var(--primary-accent); }
+        .close-search { position: absolute; top: -30px; left: 0; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        
+        .search-results {
+            width: 100%; max-width: 600px; margin-top: 30px; max-height: 70vh; overflow-y: auto;
+        }
+        .search-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            border-bottom: 1px solid var(--glass-border); cursor: pointer; transition: 0.2s;
+        }
+        .search-item:hover { background: rgba(255,255,255,0.05); }
+        .search-item img { width: 60px; height: 60px; object-fit: contain; border-radius: 10px; background: rgba(255,255,255,0.02); }
+        .search-item h4 { font-size: 1rem; color: white; margin: 0; }
+        .search-item span { color: var(--primary-accent); font-weight: bold; font-family: 'Poppins'; }
+
+        /* --- Modal --- */
         .oc-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 5000;
@@ -194,21 +216,11 @@
         .oc-modal h2 { font-size: 1.8rem; margin-bottom: 10px; color: white; }
         .oc-modal p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 25px; }
 
-        /* Quantity Controls */
         .qty-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 25px 0; }
-        .qty-controls {
-            background: #252525; border-radius: 15px; display: flex; align-items: center;
-            border: 1px solid #333; padding: 5px;
-        }
-        .qty-btn {
-            width: 40px; height: 40px; background: #333; border: none; color: white;
-            border-radius: 10px; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        }
+        .qty-controls { background: #252525; border-radius: 15px; display: flex; align-items: center; border: 1px solid #333; padding: 5px; }
+        .qty-btn { width: 40px; height: 40px; background: #333; border: none; color: white; border-radius: 10px; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
         .qty-btn:hover { background: var(--primary-accent); color: black; }
-        .qty-input {
-            width: 50px; background: transparent; border: none; color: white;
-            text-align: center; font-size: 1.2rem; font-weight: bold; font-family: 'Poppins';
-        }
+        .qty-input { width: 50px; background: transparent; border: none; color: white; text-align: center; font-size: 1.2rem; font-weight: bold; font-family: 'Poppins'; }
 
         .wa-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -227,7 +239,7 @@
         }
         .back-btn:hover { background: var(--primary-accent); color: black; }
 
-        /* --- 7. Sidebar & Overlays --- */
+        /* --- Sidebar --- */
         .oc-sidebar {
             position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
             background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(20px);
@@ -264,7 +276,7 @@
 
         /* Login Floater */
         .login-float {
-            position: fixed; bottom: 30px; left: 30px; /* تم النقل لليسار */
+            position: fixed; bottom: 30px; left: 30px;
             background: var(--text-main); color: #000;
             width: 60px; height: 60px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
@@ -275,8 +287,7 @@
         }
         .login-float:hover { transform: scale(1.1) rotate(10deg); }
 
-        /* Login Box */
-        #profileOverlay, #loginOverlay {
+        #profileOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 9999; 
             justify-content: center; align-items: center; padding: 20px;
@@ -300,7 +311,6 @@
         }
         .login-btn:hover { background: white; box-shadow: 0 0 20px var(--primary-glow); }
 
-        /* --- Animations Keyframes --- */
         @keyframes fadeInCard { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes floatUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -314,6 +324,14 @@
 
     <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
         <i class="fab fa-google"></i>
+    </div>
+
+    <div id="searchOverlay">
+        <div class="search-container">
+            <span class="close-search" onclick="toggleSearch()"><i class="fas fa-times"></i> إغلاق</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." onkeyup="performSearch()">
+            <div id="searchResults" class="search-results"></div>
+        </div>
     </div>
 
     <div id="profileOverlay">
@@ -356,8 +374,13 @@
     </div>
 
     <div class="oc-contact-nav">
-        <div class="profile-toggle" id="navProfileIcon" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
+        <div class="nav-icons">
+            <div class="profile-toggle icon-btn" id="navProfileIcon" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="icon-btn" onclick="toggleSearch()">
+                <i class="fas fa-search"></i>
+            </div>
         </div>
         <div>
             <a href="tel:78961175" style="margin-left:15px;"><i class="fas fa-phone-alt"></i> 78961175</a>
@@ -431,6 +454,7 @@
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
+        let allProductsForSearch = []; // لتخزين كل المنتجات للبحث
         let activeProduct = null;
         let currentUserRole = 'retail'; 
         let currentUserEmail = null;
@@ -448,31 +472,26 @@
                 });
         };
 
-        // --- 2. المراقبة الحية وتحديث الواجهة ---
+        // --- 2. المراقبة الحية ---
         function monitorUserStatus(email, displayName) {
             const q = query(collection(db, "users"), where("email", "==", email));
             
             onSnapshot(q, (snapshot) => {
                 if (!snapshot.empty) {
-                    // المستخدم موجود
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         const oldRole = currentUserRole;
                         currentUserRole = data.role || 'retail';
                         
-                        // حفظ البيانات
                         localStorage.setItem('oc_user', JSON.stringify({
                             name: data.name, phone: data.phone, role: currentUserRole, email: email
                         }));
 
-                        // تحديث واجهة الحساب الجانبية
                         updateSidebar(data.name, data.phone, currentUserRole);
                         
-                        // إخفاء زر التسجيل وإظهار أيقونة البروفايل
                         document.getElementById('loginBtnContainer').style.display = 'none';
                         document.getElementById('navProfileIcon').style.display = 'flex';
 
-                        // تحديث الأسعار إذا تغيرت الرتبة
                         if (oldRole !== currentUserRole) {
                             const currentCat = document.getElementById('viewCatTitle').innerText;
                             if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
@@ -481,7 +500,6 @@
                         }
                     });
                 } else {
-                    // مستخدم جديد -> إظهار نافذة إكمال البيانات
                     document.getElementById('profName').value = displayName || "";
                     document.getElementById('profileOverlay').style.display = 'flex';
                 }
@@ -502,7 +520,6 @@
             }
         }
 
-        // --- 3. حفظ بيانات المستخدم الجديد ---
         window.saveProfileData = async () => {
             const name = document.getElementById('profName').value;
             const phone = document.getElementById('profPhone').value;
@@ -524,7 +541,6 @@
             }
         };
 
-        // --- 4. القائمة الجانبية وتسجيل الخروج ---
         window.toggleSidebar = () => {
             document.getElementById('accountSidebar').classList.toggle('active');
         };
@@ -533,12 +549,11 @@
             if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
                 signOut(auth).then(() => {
                     localStorage.removeItem('oc_user');
-                    location.reload(); // إعادة تحميل الصفحة لتعود لوضع الزائر
+                    location.reload(); 
                 });
             }
         };
 
-        // التحقق عند فتح الصفحة
         const savedUser = localStorage.getItem('oc_user');
         if(savedUser) {
             const userObj = JSON.parse(savedUser);
@@ -546,7 +561,6 @@
             currentUserRole = userObj.role;
             monitorUserStatus(userObj.email, userObj.name);
         } else {
-            // حالة الزائر
             document.getElementById('loginBtnContainer').style.display = 'flex';
             document.getElementById('navProfileIcon').style.display = 'none';
         }
@@ -555,6 +569,70 @@
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
             else { renderHomeView(); closeM(); }
         });
+
+        // --- البحث الذكي ---
+        window.toggleSearch = () => {
+            const overlay = document.getElementById('searchOverlay');
+            if(overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+                document.getElementById('searchInput').focus();
+            }
+        };
+
+        // تحميل كل المنتجات للبحث مرة واحدة عند البدء
+        async function loadAllProductsForSearch() {
+            const snap = await getDocs(collection(db, "products"));
+            allProductsForSearch = [];
+            snap.forEach(d => allProductsForSearch.push(d.data()));
+        }
+
+        window.performSearch = () => {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = "";
+
+            if(query.length < 2) return;
+
+            const filtered = allProductsForSearch.filter(p => p.name.toLowerCase().includes(query));
+
+            filtered.forEach(p => {
+                const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.innerHTML = `
+                    <img src="${p.image}">
+                    <div>
+                        <h4>${p.name}</h4>
+                        <span>$${finalPrice}</span>
+                    </div>
+                `;
+                div.onclick = () => {
+                    // فتح المودال مباشرة باستخدام كائن المنتج
+                    openDirectModal(p);
+                    toggleSearch(); // إغلاق البحث
+                };
+                resultsDiv.appendChild(div);
+            });
+        };
+
+        function openDirectModal(p) {
+            activeProduct = p;
+            const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+            activeProduct.displayPrice = finalPrice; 
+
+            document.getElementById('qtyInput').value = 1;
+            
+            history.pushState({v:'m'}, "");
+            document.getElementById('mImg').src = activeProduct.image;
+            document.getElementById('mTitle').innerText = activeProduct.name;
+            document.getElementById('mDesc').innerText = activeProduct.description || "";
+            document.getElementById('mPrice').innerText = "$" + finalPrice;
+            
+            updateWALink();
+            document.getElementById('modal').style.display = "flex";
+        }
 
         async function initStore() {
             const snap = await getDocs(collection(db, "categories"));
@@ -568,6 +646,7 @@
                         <div class="oc-card-body"><h3>${c.name}</h3></div>
                     </div>`;
             });
+            loadAllProductsForSearch(); // تحميل بيانات البحث
         }
 
         window.navToCat = (n) => {
