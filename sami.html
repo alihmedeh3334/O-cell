@@ -2,27 +2,38 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>O-Cell Security Gate</title>
+    <title>O-Cell Admin Gate</title>
     <style>
-        body { background: #020024; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
-        .gate-msg { text-align: center; color: #00d4ff; animation: pulse 2s infinite; }
+        body { 
+            background: radial-gradient(circle at center, #090979 0%, #020024 100%); 
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden;
+        }
+        .gate-content { 
+            text-align: center; color: #00d4ff; animation: fadeInScale 1.2s ease-out;
+            background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px; backdrop-filter: blur(15px); border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        h1 { font-size: 2.5rem; letter-spacing: 5px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.6); margin-bottom: 10px; }
+        .pulse-loader { width: 50px; height: 50px; border-radius: 50%; background: #00d4ff; margin: 20px auto; animation: pulse 2s infinite; opacity: 0.6; }
         iframe { width: 100vw; height: 100vh; border: none; display: none; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.5); opacity: 0; } 100% { transform: scale(1); opacity: 0.6; } }
     </style>
 </head>
 <body>
-    <div id="lock" class="gate-msg"><h1>جاري التحقق من الهوية...</h1></div>
+    <div id="lock" class="gate-content">
+        <h1>O-CELL CONTROL</h1>
+        <div class="pulse-loader"></div>
+        <p>جاري التحقق من الهوية الرقمية...</p>
+    </div>
     <iframe id="adminFrame" src="admin_panel.html"></iframe>
-
     <script>
-        const user = prompt("اسم المستخدم:");
-        const pass = prompt("كلمة المرور:");
-        // التحقق من بياناتك: علي وكلمة المرور ali$2006
-        if (user === "ali" && pass === "ali$2006") {
+        const u = prompt("اسم المستخدم:");
+        const p = prompt("كلمة المرور:");
+        if (u === "ali" && p === "ali$2006") {
             document.getElementById('lock').style.display = "none";
             document.getElementById('adminFrame').style.display = "block";
         } else {
-            alert("بيانات خاطئة، سيتم توجيهك للموقع العام.");
+            alert("بيانات خاطئة، سيتم توجيهك للواجهة العامة.");
             window.location.href = "index.html";
         }
     </script>
