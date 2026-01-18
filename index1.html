@@ -160,11 +160,34 @@
             padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
         }
 
-        /* --- Login Overlay --- */
-        #loginOverlay {
+        /* --- Login Floating Button --- */
+        .login-float {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--oc-white);
+            color: var(--oc-vibrant-blue);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            z-index: 2000;
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.3s;
+            border: 2px solid var(--oc-neon-cyan);
+        }
+        .login-float:hover { transform: scale(1.1); }
+
+        /* --- Profile Completion Overlay --- */
+        #profileOverlay {
+            display: none;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
-            z-index: 9999; display: flex; justify-content: center; align-items: center;
+            z-index: 9999; justify-content: center; align-items: center;
             flex-direction: column; padding: 20px;
         }
         .login-box {
@@ -186,13 +209,17 @@
 </head>
 <body>
 
-    <div id="loginOverlay">
+    <div class="login-float" onclick="loginWithGoogle()">
+        <i class="fab fa-google"></i>
+    </div>
+
+    <div id="profileOverlay">
         <div class="login-box">
-            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">تسجيل الدخول</h2>
-            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أدخل اسمك ورقم هاتفك لرؤية الأسعار المخصصة لك</p>
-            <input type="text" id="logName" class="login-input" placeholder="الاسم الكامل">
-            <input type="tel" id="logPhone" class="login-input" placeholder="رقم الهاتف">
-            <button class="login-btn" onclick="performLogin()">دخول</button>
+            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">إكمال التسجيل</h2>
+            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
+            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
+            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
+            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
         </div>
     </div>
 
@@ -245,7 +272,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -259,52 +287,70 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
         let activeProduct = null;
-        let currentUserRole = 'retail'; // افتراضياً السعر مفرق
+        let currentUserRole = 'retail'; // الوضع الافتراضي للزوار
+        let currentUserEmail = null;
 
-        // --- نظام تسجيل الدخول والأسعار ---
-        window.performLogin = async () => {
-            const name = document.getElementById('logName').value;
-            const phone = document.getElementById('logPhone').value;
-            
-            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
+        // --- 1. نظام الدخول عبر غوغل ---
+        window.loginWithGoogle = () => {
+            signInWithPopup(auth, provider)
+                .then(async (result) => {
+                    const user = result.user;
+                    currentUserEmail = user.email;
+                    await checkUserInFirestore(user.email, user.displayName);
+                }).catch((error) => {
+                    console.error("Login Failed", error);
+                    alert("فشل تسجيل الدخول. حاول مجدداً.");
+                });
+        };
 
-            // البحث عن المستخدم في قاعدة البيانات
-            const q = query(collection(db, "users"), where("phone", "==", phone));
+        // --- 2. التحقق من المستخدم في قاعدة البيانات ---
+        async function checkUserInFirestore(email, displayName) {
+            const q = query(collection(db, "users"), where("email", "==", email));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                // المستخدم موجود، جلب صلاحيته (جملة/مفرق)
+                // المستخدم موجود - جلب صلاحياته
                 querySnapshot.forEach((doc) => {
                     currentUserRole = doc.data().role || 'retail';
+                    alert(`أهلاً بك ${doc.data().name}. الأسعار الحالية: ${currentUserRole === 'wholesale' ? 'جملة' : 'مفرق'}`);
                 });
+                initStore(); // تحديث المتجر بالأسعار الجديدة
             } else {
-                // مستخدم جديد، تسجيله كـ retail افتراضياً
+                // مستخدم جديد - طلب الاسم والرقم
+                document.getElementById('profName').value = displayName || "";
+                document.getElementById('profileOverlay').style.display = 'flex';
+            }
+        }
+
+        // --- 3. حفظ بيانات المستخدم الجديد ---
+        window.saveProfileData = async () => {
+            const name = document.getElementById('profName').value;
+            const phone = document.getElementById('profPhone').value;
+
+            if(!name || !phone) return alert("الرجاء إدخال الاسم ورقم الهاتف");
+
+            try {
                 await addDoc(collection(db, "users"), {
+                    email: currentUserEmail,
                     name: name,
                     phone: phone,
-                    role: 'retail',
+                    role: 'retail', // افتراضياً مفرق حتى يتم تعديله من الأدمن
                     joined: new Date()
                 });
+                document.getElementById('profileOverlay').style.display = 'none';
+                alert("تم التسجيل بنجاح!");
                 currentUserRole = 'retail';
+                initStore();
+            } catch (e) {
+                console.error("Error adding user: ", e);
             }
-
-            // حفظ الجلسة وإخفاء النافذة
-            localStorage.setItem('oc_user', JSON.stringify({name, phone, role: currentUserRole}));
-            document.getElementById('loginOverlay').style.display = 'none';
-            initStore(); // تحميل المتجر بعد الدخول
         };
-
-        // التحقق من الجلسة المحفوظة
-        const savedUser = localStorage.getItem('oc_user');
-        if(savedUser) {
-            document.getElementById('loginOverlay').style.display = 'none';
-            currentUserRole = JSON.parse(savedUser).role;
-            initStore();
-        }
 
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
@@ -348,7 +394,7 @@
                 const p = d.data();
                 if(p.category === catName) {
                     productMemory.push(p);
-                    // تحديد السعر بناءً على الرتبة
+                    // تحديد السعر بناءً على الرتبة المجلوبة
                     const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
                     
                     grid.innerHTML += `
@@ -367,9 +413,8 @@
 
         window.openDetails = (index) => {
             activeProduct = productMemory[index];
-            // تحديد السعر المعروض في المودال أيضاً
             const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
-            activeProduct.displayPrice = finalPrice; // تخزين السعر النهائي للاستخدام في الواتساب
+            activeProduct.displayPrice = finalPrice; 
 
             document.getElementById('qtyInput').value = 1;
             
@@ -409,6 +454,7 @@
         function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
+        initStore();
     </script>
 </body>
 </html>
