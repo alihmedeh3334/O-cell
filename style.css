@@ -1,0 +1,112 @@
+/* O-CELL LUXURY STYLING FRAMEWORK 2026 */
+:root {
+    --deep-blue: #020c1b;
+    --royal-navy: #0a192f;
+    --light-blue: #00d4ff;
+    --pearl-white: #f8f9fa;
+    --slate-gray: #64748b;
+    --emerald: #10b981;
+    --crimson: #ef4444;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --transition-smooth: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body { 
+    background-color: var(--deep-blue); 
+    color: var(--pearl-white); 
+    font-family: 'Inter', sans-serif; 
+    overflow-x: hidden;
+    line-height: 1.8;
+}
+
+/* Animations Library */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* Contact Navigation Bar */
+.contact-nav {
+    background: rgba(0, 212, 255, 0.03);
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+}
+.contact-nav a { color: var(--light-blue); text-decoration: none; transition: var(--transition-smooth); }
+.contact-nav a:hover { color: white; text-shadow: 0 0 10px var(--light-blue); }
+
+/* Luxury Header */
+.main-header { padding: 25px 0; text-align: center; background: linear-gradient(to bottom, var(--royal-navy), transparent); }
+.brand-name { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: white; font-style: italic; letter-spacing: 3px; }
+.brand-name span { color: var(--light-blue); }
+
+/* Hero Branding Section */
+.hero-branding { text-align: center; padding: 40px 20px; animation: fadeIn 2.5s ease; }
+.hero-branding h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 300; margin-bottom: 10px; }
+.hero-branding p { font-size: 11px; color: var(--slate-gray); text-transform: uppercase; letter-spacing: 4px; }
+.delivery-pill { background: var(--crimson); color: white; display: inline-block; padding: 6px 20px; border-radius: 30px; font-size: 13px; font-weight: bold; margin-top: 20px; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+
+/* Grid & Layout System */
+.wrapper { max-width: 1200px; margin: auto; padding: 0 25px 60px; }
+.main-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+
+/* The Luxury Card */
+.luxe-card {
+    background: var(--glass-bg);
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 212, 255, 0.1);
+    transition: var(--transition-smooth);
+    position: relative;
+    cursor: pointer;
+}
+.luxe-card:hover { transform: translateY(-12px); border-color: var(--light-blue); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.luxe-card img { width: 100%; height: 200px; object-fit: cover; transition: 0.8s; }
+.luxe-card:hover img { transform: scale(1.1); }
+.luxe-card .info { padding: 20px; text-align: center; }
+.luxe-card .info h3 { font-size: 15px; font-weight: 400; color: var(--pearl-white); margin-bottom: 10px; }
+.luxe-card .info .price { color: var(--light-blue); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 18px; }
+
+/* Status Badges */
+.out-of-stock-label { position: absolute; top: 15px; right: 15px; background: var(--crimson); color: white; padding: 4px 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+
+/* Admin Panel Specific Styling */
+.admin-card { background: white; padding: 30px; border-radius: 12px; color: var(--royal-navy); margin-bottom: 30px; border-top: 5px solid var(--light-blue); }
+.admin-input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif; }
+.admin-btn { background: var(--royal-navy); color: var(--light-blue); border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+.admin-btn:hover { background: var(--light-blue); color: var(--royal-navy); }
+
+/* Modal (Detailed View) */
+.luxe-modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(2, 12, 27, 0.99); z-index: 9999;
+    justify-content: center; align-items: center; padding: 30px; animation: fadeIn 0.5s ease;
+}
+.modal-inner {
+    background: var(--royal-navy);
+    width: 100%; max-width: 500px;
+    border: 1px solid var(--light-blue);
+    padding: 40px; text-align: center; border-radius: 4px;
+}
+.modal-inner img { width: 100%; height: 300px; object-fit: cover; margin-bottom: 25px; border: 1px solid rgba(0, 212, 255, 0.2); }
+.modal-inner h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 15px; }
+.modal-inner p { font-size: 14px; color: var(--slate-gray); margin-bottom: 30px; line-height: 2; }
+
+.wa-btn {
+    display: block; background: var(--emerald); color: white;
+    padding: 18px; text-decoration: none; font-weight: bold; font-size: 14px;
+    letter-spacing: 2px; transition: 0.4s; text-transform: uppercase;
+}
+.wa-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+/* Utility Classes */
+.hidden { display: none; }
+
