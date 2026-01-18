@@ -8,76 +8,110 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* =========================
-           O-CELL — Refined UI Styles
-           ========================= */
+        /* ===================================================
+           O-CELL — Radical theme: Lux Aurora (Burgundy + Gold)
+           - Only CSS changed (background, colors, animations)
+           - All JS / HTML structure left intact
+           =================================================== */
 
         :root{
-            --bg-deep: #040612;
-            --bg-mid: linear-gradient(180deg,#04223a 0%, #02101a 60%);
-            --accent: #00d4ff;
-            --accent-2: #19b5ff;
-            --glass: rgba(255,255,255,0.04);
-            --glass-2: rgba(255,255,255,0.03);
-            --glass-border: rgba(0,212,255,0.12);
-            --muted: #9fb0c6;
-            --text: #eaf6ff;
-            --danger: #ff5252;
-            --card-radius: 16px;
-            --corner-radius: 22px;
-            --transition-fast: 220ms;
-            --transition-slow: 420ms;
+            /* NEW PALETTE */
+            --bg-dark-1: #0c0710;    /* deepest */
+            --bg-dark-2: #2a0b1f;    /* burgundy mid */
+            --aurora-1:  #7b1fa2;    /* purple streak */
+            --aurora-2:  #ff6b6b;    /* coral streak */
+            --gold:      #ffd166;    /* accent gold */
+            --gold-2:    #ffc857;
+            --muted:     #cfc3c8;
+            --card-glass: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,209,102,0.08);
+            --text:      #fff6f8;
+            --danger:    #ff5b5b;
+            --shadow:    rgba(11,6,12,0.7);
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --fast: 220ms;
+            --slow: 520ms;
         }
 
-        /* Reset & base */
-        *{ box-sizing: border-box; margin:0; padding:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+        /* Reset / Base */
+        *{ box-sizing: border-box; margin:0; padding:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
         html,body{ height:100%; }
         body{
             min-height:100vh;
             font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            background: var(--bg-mid);
-            color: var(--text);
-            line-height:1.58;
-            -webkit-tap-highlight-color: transparent;
+            color:var(--text);
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(255,209,102,0.03), transparent 8%),
+                        radial-gradient(1000px 500px at 90% 90%, rgba(255,107,107,0.02), transparent 10%),
+                        linear-gradient(180deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
             overflow-x:hidden;
-            padding-bottom:80px;
+            line-height:1.58;
         }
 
-        /* subtle page entrance */
-        @keyframes pageFade {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Animated aurora overlay using pseudo-element */
+        body::before{
+            content:"";
+            position:fixed; inset:0; z-index: -1;
+            background:
+                radial-gradient(600px 240px at 10% 20%, rgba(123,31,162,0.14), transparent 20%),
+                radial-gradient(520px 220px at 80% 70%, rgba(255,107,107,0.12), transparent 18%),
+                linear-gradient(120deg, rgba(255,209,102,0.02), rgba(255,209,102,0.0));
+            mix-blend-mode: screen;
+            filter: blur(30px) saturate(120%);
+            animation: auroraMove 14s linear infinite alternate;
+            pointer-events: none;
         }
-        body > * { animation: pageFade var(--transition-slow) ease both; }
 
-        /* Neon logo pulse refined */
-        @keyframes neonPulse {
-            0%,100%{ text-shadow: 0 0 10px rgba(0,212,255,0.18), 0 6px 30px rgba(0,0,0,0.6); transform: translateY(0); }
-            50%{ text-shadow: 0 0 36px rgba(0,212,255,0.28), 0 10px 42px rgba(0,0,0,0.6); transform: translateY(-2px); }
+        @keyframes auroraMove{
+            0%{ transform: translate3d(-6%, -2%, 0) scale(1.02) rotate(-2deg); opacity:0.95; }
+            50%{ transform: translate3d(6%, 3%, 0) scale(1.06) rotate(2deg); opacity:1; }
+            100%{ transform: translate3d(-4%, -1%, 0) scale(1.00) rotate(-1deg); opacity:0.96; }
         }
 
-        /* Layout header / nav */
+        /* Soft particulate / floating orbs */
+        body::after{
+            content:"";
+            position:fixed; inset:0; z-index:-1;
+            background-image:
+                radial-gradient(circle at 12% 25%, rgba(255,209,102,0.06) 0 2px, transparent 8%),
+                radial-gradient(circle at 70% 10%, rgba(255,107,107,0.04) 0 3px, transparent 10%),
+                radial-gradient(circle at 50% 80%, rgba(123,31,162,0.05) 0 2px, transparent 8%);
+            opacity:0.9;
+            animation: orbsFloat 28s linear infinite;
+            filter: blur(8px);
+            pointer-events:none;
+        }
+
+        @keyframes orbsFloat{
+            0%{ transform: translateY(0) scale(1); }
+            50%{ transform: translateY(-18px) scale(1.03); }
+            100%{ transform: translateY(0) scale(1); }
+        }
+
+        /* subtle entrance */
+        @keyframes fadeUp { from{ opacity:0; transform: translateY(8px);} to{ opacity:1; transform:none;} }
+        body > * { animation: fadeUp var(--slow) cubic-bezier(.2,.9,.2,1) both; }
+
+        /* Navigation */
         .oc-contact-nav{
-            position:sticky; top:0; z-index:1200;
-            display:flex; align-items:center; justify-content:space-between;
-            padding:14px 20px;
-            background: linear-gradient(90deg, rgba(2,6,14,0.55), rgba(2,6,14,0.32));
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            backdrop-filter: blur(8px) saturate(120%);
+            position:sticky; top:0; z-index:1200; display:flex; align-items:center; justify-content:space-between;
+            padding:12px 22px;
+            background: linear-gradient(180deg, rgba(3,2,4,0.48), rgba(3,2,4,0.22));
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            backdrop-filter: blur(6px) saturate(120%);
         }
-        .oc-contact-nav a{ color: var(--muted); text-decoration:none; font-weight:600; font-size:13px; transition: color var(--transition-fast); }
-        .oc-contact-nav a:hover{ color: var(--accent); }
+        .oc-contact-nav a{ color: var(--muted); text-decoration:none; font-weight:600; font-size:13px; transition: color var(--fast); }
+        .oc-contact-nav a:hover{ color:var(--gold); }
 
-        .profile-toggle{ display:none; font-size:20px; color:var(--text); cursor:pointer; transition: transform var(--transition-fast); }
-        .profile-toggle:active{ transform:scale(.98); }
+        .profile-toggle{ display:none; font-size:20px; color:var(--text); cursor:pointer; }
 
-        /* Sidebar (improved glass + slide) */
+        /* Sidebar */
         .oc-sidebar{
             position:fixed; top:0; right:-360px; width:340px; height:100%;
-            background: linear-gradient(180deg, rgba(6,10,18,0.86), rgba(4,8,12,0.92));
-            border-left: 1px solid rgba(0,212,255,0.06);
-            padding:32px; display:flex; flex-direction:column; gap:14px;
-            box-shadow: -30px 0 80px rgba(0,0,0,0.6);
+            background: linear-gradient(180deg, rgba(12,7,16,0.94), rgba(34,12,22,0.96));
+            border-left: 1px solid var(--glass-border);
+            padding:28px; display:flex; flex-direction:column; gap:12px;
+            box-shadow: -30px 0 80px var(--shadow);
             transition: right 360ms cubic-bezier(.2,.9,.2,1);
             border-top-left-radius: 14px; border-bottom-left-radius: 14px;
         }
@@ -85,8 +119,8 @@
 
         .sidebar-header h3{
             font-family:'Playfair Display', serif;
-            color:var(--accent); font-size:1.45rem; letter-spacing:1px;
-            margin-bottom:4px;
+            color:var(--gold); font-size:1.45rem; letter-spacing:1px; margin-bottom:4px;
+            text-shadow: 0 6px 24px rgba(255,209,102,0.06);
         }
         .sidebar-header p{ color:var(--muted); font-size:13px; }
 
@@ -95,159 +129,150 @@
 
         .status-badge{
             display:inline-block; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px;
-            backdrop-filter: blur(6px);
-            border:1px solid var(--glass-border);
+            border:1px solid rgba(255,209,102,0.06); background: linear-gradient(90deg, rgba(255,209,102,0.03), rgba(255,209,102,0.01));
+            color:var(--gold);
         }
-        .status-retail{ background: rgba(255,255,255,0.02); color:#cbd8e1; border-color: rgba(255,255,255,0.03); }
-        .status-wholesale{ background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(0,212,255,0.03)); color:var(--accent); border-color: rgba(0,212,255,0.12); }
 
         .logout-btn{
-            margin-top:auto; width:100%;
-            padding:12px; border-radius:14px; font-weight:800; cursor:pointer;
-            background:transparent; color:var(--danger); border:1px solid rgba(255,82,82,0.12);
+            margin-top:auto; width:100%; padding:12px; border-radius:14px; font-weight:800; cursor:pointer;
+            background:transparent; color:var(--danger); border:1px solid rgba(255,82,82,0.08);
             display:flex; align-items:center; justify-content:center; gap:10px;
-            transition: all var(--transition-fast);
+            transition: all var(--fast);
         }
-        .logout-btn:hover{ background:var(--danger); color:white; border-color:transparent; box-shadow: 0 8px 30px rgba(255,82,82,0.08); }
+        .logout-btn:hover{ background:var(--danger); color:white; border-color:transparent; box-shadow: 0 10px 40px rgba(255,82,82,0.06); }
 
-        .close-sidebar{ position:absolute; top:18px; left:18px; color:var(--muted); font-size:20px; cursor:pointer; }
+        .close-sidebar{ position:absolute; top:16px; left:16px; color:var(--muted); font-size:20px; cursor:pointer; }
 
-        /* Main header / logo */
-        .oc-main-header{ padding:28px 0 6px; text-align:center; }
+        /* Header */
+        .oc-main-header{ padding:30px 0 8px; text-align:center; }
         .oc-neon-logo{
             font-family:'Playfair Display', serif;
             font-size:clamp(36px,6vw,56px); color:var(--text);
-            letter-spacing:5px; font-weight:900;
-            display:inline-block; padding:6px 12px; border-radius:12px;
-            animation:neonPulse 3.6s ease-in-out infinite;
+            letter-spacing:6px; font-weight:900; display:inline-block; padding:8px 14px; border-radius:12px;
+            background: linear-gradient(90deg, rgba(255,209,102,0.03), rgba(255,255,255,0.01));
+            box-shadow: 0 8px 40px rgba(10,4,10,0.6);
+            position:relative; overflow:visible;
         }
-        .oc-neon-logo span{ color:var(--accent); }
+        .oc-neon-logo span{ color:var(--gold); text-shadow: 0 6px 26px rgba(255,209,102,0.08); }
+
+        /* Animated gold shimmer on logo */
+        .oc-neon-logo::after{
+            content:"";
+            position:absolute; top:0; left:-30%; width:60%; height:100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.24), rgba(255,255,255,0.0));
+            transform: skewX(-18deg);
+            animation: shine 3.6s linear infinite;
+            pointer-events:none;
+            mix-blend-mode: overlay; opacity:0.9;
+        }
+        @keyframes shine { 0%{ left:-60% } 100%{ left:120% } }
 
         /* Hero card */
         .oc-hero-card{
-            max-width:720px; margin:18px auto 28px; padding:36px 30px;
-            border-radius:20px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border:1px solid rgba(255,255,255,0.03); box-shadow: 0 12px 40px rgba(2,12,27,0.6);
+            max-width:760px; margin:18px auto 28px; padding:38px 34px;
+            border-radius:var(--radius-lg);
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,209,102,0.03);
+            box-shadow: 0 18px 60px rgba(6,4,8,0.6);
             text-align:center;
         }
-        .oc-hero-card h2{ font-size:1.8rem; margin-bottom:6px; color:var(--text); }
+        .oc-hero-card h2{ font-size:1.8rem; margin-bottom:6px; color:var(--text); font-weight:800; }
         .oc-hero-card p{ color:var(--muted); font-size:15px; }
 
-        /* Container & grid */
+        /* Container / Grid */
         .oc-container{ max-width:1180px; margin:20px auto 80px; padding:0 20px; }
         .oc-grid{
-            display:grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap:20px;
+            display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:20px;
         }
 
-        /* Glass cards */
+        /* Product / Cat card (recolored) */
         .oc-glass-card{
-            border-radius: var(--card-radius);
+            border-radius: var(--radius-md);
             overflow:hidden; cursor:pointer;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255,255,255,0.03);
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-            transform-origin:center;
-            display:flex; flex-direction:column;
-            min-height:300px;
-            box-shadow: 0 8px 30px rgba(1,6,12,0.6);
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+            border: 1px solid rgba(255,255,255,0.02);
+            transition: transform var(--fast), box-shadow var(--fast), border-color var(--fast);
+            transform-origin:center; display:flex; flex-direction:column; min-height:300px;
+            box-shadow: 0 8px 30px rgba(6,3,8,0.6);
         }
         .oc-glass-card:hover{
-            transform: translateY(-10px) scale(1.01);
-            border-color: rgba(0,212,255,0.16);
-            box-shadow: 0 20px 60px rgba(3,22,40,0.7);
+            transform: translateY(-12px) scale(1.01);
+            border-color: rgba(255,209,102,0.12);
+            box-shadow: 0 30px 90px rgba(5,4,8,0.7);
         }
-        .oc-glass-card img{ width:100%; height:200px; object-fit:cover; opacity:0.96; transition: transform 420ms ease, opacity 420ms ease; }
-        .oc-glass-card:hover img{ transform: scale(1.03); opacity:1; }
+        .oc-glass-card img{ width:100%; height:200px; object-fit:cover; opacity:0.98; transition: transform 420ms ease, filter 420ms ease; filter: saturate(1.05) contrast(1.02); }
+        .oc-glass-card:hover img{ transform: scale(1.04); filter: saturate(1.08) contrast(1.06) brightness(1.02); }
 
-        .oc-card-body{ padding:18px; text-align:center; display:flex; flex-direction:column; gap:6px; margin-top:auto; }
+        .oc-card-body{ padding:18px; text-align:center; display:flex; flex-direction:column; gap:8px; margin-top:auto; }
         .oc-card-body h3{ font-size:16px; font-weight:800; color:var(--text); }
-        .oc-card-body .price{ color:var(--accent); font-weight:900; font-size:1.1rem; }
+        .oc-card-body .price{ color:var(--gold); font-weight:900; font-size:1.1rem; }
 
         .sold-badge{
-            position:absolute; top:14px; left:14px; background:#7f1414; color:#ffd4d4;
+            position:absolute; top:14px; left:14px; background:#6d1017; color:#ffd6d6;
             padding:6px 10px; border-radius:8px; font-size:11px; font-weight:900; z-index:4;
             box-shadow: 0 6px 20px rgba(0,0,0,0.6);
         }
 
-        /* Modal */
+        /* Modal (recolor) */
         .oc-modal{
             display:none; position:fixed; inset:0; z-index:5000;
-            background: linear-gradient(180deg, rgba(2,6,10,0.72), rgba(2,6,10,0.9));
+            background: linear-gradient(180deg, rgba(8,6,8,0.76), rgba(8,6,10,0.92));
             justify-content:center; align-items:center; padding:22px;
-            animation: modalBg 360ms ease both;
         }
-        @keyframes modalBg{ from{ opacity:0 } to { opacity:1 } }
-
         .oc-modal-content{
-            width:100%; max-width:520px; border-radius:22px;
-            padding:28px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border:1px solid rgba(0,212,255,0.06); backdrop-filter: blur(8px);
-            box-shadow: 0 30px 90px rgba(0,0,0,0.7);
-            text-align:center;
-            transform: translateY(12px);
-            animation: modalCard 320ms cubic-bezier(.2,.9,.2,1) both;
+            width:100%; max-width:540px; border-radius:20px; padding:28px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+            border:1px solid rgba(255,209,102,0.04); backdrop-filter: blur(8px);
+            box-shadow: 0 30px 90px rgba(6,3,8,0.7); text-align:center;
         }
-        @keyframes modalCard{ from{ opacity:0; transform:translateY(18px) scale(.995) } to { opacity:1; transform:none } }
-
         .oc-modal-content img{ width:100%; height:260px; object-fit:cover; border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.03); }
 
         .qty-container{ display:flex; align-items:center; justify-content:center; gap:14px; margin:20px 0; }
         .qty-label{ color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:1px; }
-        .qty-controls{ display:flex; align-items:center; background: rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.02); overflow:hidden; }
-        .qty-btn{ padding:10px 16px; border:none; background:transparent; cursor:pointer; font-size:18px; font-weight:800; color:var(--accent-2); }
+        .qty-controls{ display:flex; align-items:center; background: rgba(255,255,255,0.01); border-radius:12px; border:1px solid rgba(255,255,255,0.02); overflow:hidden; }
+        .qty-btn{ padding:10px 16px; border:none; background:transparent; cursor:pointer; font-size:18px; font-weight:800; color:var(--gold-2); }
         .qty-input{ width:48px; text-align:center; border:none; background:transparent; color:var(--text); font-weight:900; font-size:16px; }
 
         .wa-btn{
             display:block; text-decoration:none; font-weight:900; padding:14px 18px;
-            border-radius:14px; background: linear-gradient(90deg,var(--accent), var(--accent-2));
-            color: #02101a; box-shadow: 0 16px 50px rgba(0,212,255,0.12); transition: transform var(--transition-fast);
+            border-radius:14px; background: linear-gradient(90deg, var(--gold), #ffb857);
+            color:#2b1200; box-shadow: 0 18px 60px rgba(255,209,102,0.08); transition: transform var(--fast);
         }
-        .wa-btn:hover{ transform: translateY(-4px); opacity:0.98; }
+        .wa-btn:hover{ transform: translateY(-6px); opacity:0.98; }
 
-        .back-btn{
-            display:inline-block; margin-bottom:28px; padding:10px 22px; border-radius:999px;
-            border:1px solid rgba(0,212,255,0.12); color:var(--accent); background:transparent; font-weight:800;
-        }
+        .back-btn{ display:inline-block; margin-bottom:28px; padding:10px 22px; border-radius:999px; border:1px solid rgba(255,209,102,0.06); color:var(--gold); background:transparent; font-weight:800; }
 
-        /* Floating login button */
+        /* Floating login button (recolor to match new theme) */
         .login-float{
             position:fixed; bottom:26px; right:26px; width:64px; height:64px; z-index:2000;
             border-radius:50%; display:flex; align-items:center; justify-content:center;
-            background:linear-gradient(180deg,#ffffff, #f3f9ff); color:var(--bg-deep);
-            box-shadow: 0 12px 50px rgba(3,20,30,0.6);
-            border: 3px solid rgba(0,212,255,0.12); cursor:pointer; transition: transform var(--transition-fast);
+            background: linear-gradient(180deg, #fff6e8, #fff0d6); color:#2b1200;
+            box-shadow: 0 16px 60px rgba(43,18,0,0.18);
+            border: 3px solid rgba(255,209,102,0.14); cursor:pointer; transition: transform var(--fast);
         }
         .login-float:hover{ transform: translateY(-6px) scale(1.03); }
 
-        /* Profile overlay (signup) */
+        /* Profile overlay */
         #profileOverlay{
             display:none; position:fixed; inset:0; z-index:9999;
-            background: radial-gradient(circle at center, rgba(0,36,56,0.6), rgba(0,8,12,0.9));
+            background: radial-gradient(circle at 50% 30%, rgba(123,31,162,0.12), transparent 8%), rgba(6,3,6,0.8);
             justify-content:center; align-items:center; padding:20px;
         }
         .login-box{
-            max-width:420px; width:100%; padding:34px; border-radius:20px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            border:1px solid rgba(0,212,255,0.06); text-align:center; backdrop-filter: blur(8px);
+            max-width:420px; width:100%; padding:34px; border-radius:18px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));
+            border:1px solid rgba(255,209,102,0.04); text-align:center; backdrop-filter: blur(6px);
         }
-        .login-input{
-            width:100%; padding:14px; margin:8px 0; border-radius:12px; border:none;
-            background: rgba(255,255,255,0.02); color:var(--text); text-align:center; font-weight:600;
-        }
-        .login-btn{
-            margin-top:10px; width:100%; padding:12px; border-radius:12px; border:none; cursor:pointer;
-            background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#02101a; font-weight:900;
-        }
+        .login-input{ width:100%; padding:14px; margin:8px 0; border-radius:12px; border:none; background: rgba(255,255,255,0.01); color:var(--text); text-align:center; font-weight:600; }
+        .login-btn{ margin-top:10px; width:100%; padding:12px; border-radius:12px; border:none; cursor:pointer; background: linear-gradient(90deg,var(--gold),var(--gold-2)); color:#2b1200; font-weight:900; }
 
         .hidden{ display:none !important; }
 
-        /* small screens tweaks */
+        /* Responsive tweaks */
         @media (max-width:720px){
             .oc-sidebar{ width:92%; right:-100%; }
             .oc-sidebar.active{ right:0; }
-            .oc-hero-card{ padding:24px; margin:12px 16px 22px; border-radius:18px; }
+            .oc-hero-card{ padding:22px; margin:12px 16px 22px; border-radius:16px; }
             .oc-glass-card{ min-height:260px; }
             .oc-glass-card img{ height:160px; }
             .oc-modal-content img{ height:200px; }
@@ -270,8 +295,8 @@
 
 <div id="profileOverlay">
     <div class="login-box">
-        <h2 style="margin-bottom:20px; color:var(--accent);">إكمال التسجيل</h2>
-        <p style="margin-bottom:20px; font-size:13px; opacity:0.8;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
+        <h2 style="margin-bottom:20px; color:var(--gold);">إكمال التسجيل</h2>
+        <p style="margin-bottom:20px; font-size:13px; opacity:0.85;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
         <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
         <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
         <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
@@ -326,7 +351,7 @@
         <p>اخترنا لك الأفضل في عالم التكنولوجيا</p>
     </div>
     <div class="oc-container">
-        <h3 style="color: var(--accent); margin-bottom: 30px; border-right: 4px solid var(--accent); padding-right: 15px;">الفئات</h3>
+        <h3 style="color: var(--gold); margin-bottom: 30px; border-right: 4px solid var(--gold); padding-right: 15px;">الفئات</h3>
         <div class="oc-grid" id="catGrid"></div>
     </div>
 </div>
@@ -342,7 +367,7 @@
         <img id="mImg" src="">
         <h2 id="mTitle" style="margin-bottom: 10px;"></h2>
         <p id="mDesc" style="color: var(--muted); font-size: 13px; margin-bottom: 15px;"></p>
-        <div id="mPrice" style="font-size:32px; color:var(--accent); font-weight:900;"></div>
+        <div id="mPrice" style="font-size:32px; color:var(--gold); font-weight:900;"></div>
 
         <div class="qty-container">
             <span class="qty-label">الكمية:</span>
