@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>O-Cell | التجربة البصرية المتطورة</title>
+    <title>O-Cell | نظام الطلب الذكي</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* --- 1. الهوية اللونية (مستوحاة من 795672.jpg) --- */
         :root {
             --oc-deep-bg: #020c1b;
             --oc-vibrant-blue: #004c8c;
-            --oc-neon-cyan: #00d4ff; /* لون التوهج في الصورة */
+            --oc-neon-cyan: #00d4ff; 
             --oc-glass-bg: rgba(255, 255, 255, 0.05);
             --oc-glass-border: rgba(0, 212, 255, 0.2);
             --oc-white: #ffffff;
             --oc-text-muted: #94a3b8;
         }
 
-        /* --- 2. إعدادات الصفحة الأساسية --- */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
@@ -33,94 +31,52 @@
             line-height: 1.6;
         }
 
-        /* --- 3. الأنميشن الاحترافي --- */
+        /* --- Animations --- */
         @keyframes neonPulse {
-            0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3); }
-            50% { text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.5); }
+            0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+            50% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.8); }
         }
 
-        @keyframes cardFloat {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-
-        @keyframes underlineGrow {
-            0% { width: 0; }
-            100% { width: 120px; }
-        }
-
-        /* --- 4. الشريط العلوي (Contact Bar) --- */
+        /* --- Navigation --- */
         .oc-contact-nav {
             background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            padding: 10px 0;
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
             text-align: center;
             border-bottom: 1px solid var(--oc-glass-border);
-            position: relative;
-            z-index: 1001;
+            position: sticky; top: 0; z-index: 1001;
         }
-        .oc-contact-nav a {
-            color: var(--oc-neon-cyan);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 700;
-            margin: 0 15px;
-            transition: 0.3s;
-        }
-        .oc-contact-nav a:hover { color: white; }
+        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; margin: 0 15px; }
 
-        /* --- 5. الهيدر (تحويل الشعار لنيون مثل الصورة 795672.jpg) --- */
-        .oc-main-header {
-            padding: 30px 0;
-            text-align: center;
-        }
+        /* --- Header --- */
+        .oc-main-header { padding: 25px 0; text-align: center; }
         .oc-neon-logo { 
             font-family: 'Playfair Display', serif; 
             font-size: 3.5rem; 
-            margin: 0; 
             color: white; 
             font-weight: 900;
             letter-spacing: 5px;
-            animation: neonPulse 3s infinite ease-in-out;
+            animation: neonPulse 3s infinite;
         }
         .oc-neon-logo span { color: var(--oc-neon-cyan); }
 
-        /* --- 6. قسم الترحيب (تصميم البطاقة تماماً مثل 795672.jpg) --- */
+        /* --- Hero Card --- */
         .oc-hero-card {
             background: var(--oc-glass-bg);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--oc-glass-border);
             border-radius: 24px;
-            padding: 60px 30px;
+            padding: 50px 30px;
             max-width: 500px;
-            margin: 20px auto 50px;
+            margin: 20px auto 40px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            animation: fadeIn 1.5s ease;
         }
-        .oc-hero-card h2 { 
-            font-size: 2rem; 
-            margin-bottom: 15px; 
-            letter-spacing: 2px;
-            position: relative;
-            display: inline-block;
-        }
-        /* الخط التحت الشعار كما في الصورة */
-        .oc-hero-card h2::after {
-            content: '';
-            display: block;
-            height: 3px;
-            background: var(--oc-neon-cyan);
-            margin: 10px auto;
-            animation: underlineGrow 1.5s ease forwards;
-        }
-        .oc-hero-card p { color: var(--oc-text-muted); font-size: 14px; text-transform: uppercase; }
+        .oc-hero-card h2 { font-size: 2.2rem; margin-bottom: 10px; position: relative; }
+        .oc-hero-card h2::after { content: ''; display: block; height: 3px; background: var(--oc-neon-cyan); width: 80px; margin: 10px auto; }
 
-        /* --- 7. شبكة البطاقات (Glass Grid) --- */
+        /* --- Grid & Cards --- */
         .oc-container { max-width: 1200px; margin: auto; padding: 0 20px 80px; }
-        .oc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
+        .oc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
 
         .oc-glass-card {
             background: var(--oc-glass-bg);
@@ -128,36 +84,23 @@
             border-radius: 20px;
             border: 1px solid var(--oc-glass-border);
             overflow: hidden;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.4s;
             cursor: pointer;
             position: relative;
         }
-        .oc-glass-card:hover { 
-            transform: translateY(-10px) scale(1.02); 
-            border-color: var(--oc-neon-cyan);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
-        }
+        .oc-glass-card:hover { transform: translateY(-10px); border-color: var(--oc-neon-cyan); }
         .oc-glass-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.5s; }
         .oc-glass-card:hover img { opacity: 1; }
-        
-        .oc-card-body { padding: 20px; text-align: center; }
-        .oc-card-body h3 { font-size: 16px; margin-bottom: 8px; font-weight: 400; }
-        .oc-card-body .price { color: var(--oc-neon-cyan); font-weight: 900; font-size: 20px; }
+        .oc-card-body { padding: 18px; text-align: center; }
+        .oc-card-body .price { color: var(--oc-neon-cyan); font-weight: 900; font-size: 1.2rem; }
 
-        /* وسام "نافذ" */
-        .sold-badge { 
-            position: absolute; top: 15px; left: 15px; 
-            background: #8d1a1a; color: white; 
-            padding: 4px 12px; border-radius: 6px; 
-            font-size: 10px; font-weight: 900; z-index: 5;
-        }
+        .sold-badge { position: absolute; top: 15px; left: 15px; background: #8d1a1a; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 900; }
 
-        /* --- 8. المودال (النافذة المنبثقة الشفافة) --- */
+        /* --- Modal & Quantity System --- */
         .oc-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(2, 12, 27, 0.98); z-index: 5000;
             justify-content: center; align-items: center; padding: 20px;
-            animation: fadeIn 0.4s ease;
         }
         .oc-modal-content {
             background: rgba(255, 255, 255, 0.03);
@@ -166,27 +109,58 @@
             width: 100%; max-width: 480px;
             border-radius: 30px; padding: 40px; text-align: center;
         }
-        .oc-modal-content img { width: 100%; border-radius: 20px; height: 280px; object-fit: cover; margin-bottom: 25px; border: 1px solid var(--oc-glass-border); }
-        .oc-modal-content h2 { font-family: 'Playfair Display'; margin-bottom: 10px; color: var(--oc-neon-cyan); }
-        
-        /* زر واتساب نيون */
+        .oc-modal-content img { width: 100%; border-radius: 20px; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid var(--oc-glass-border); }
+
+        /* تصميم عداد الكمية الجديد */
+        .qty-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+        .qty-label { font-size: 14px; color: var(--oc-text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid var(--oc-glass-border);
+            overflow: hidden;
+        }
+        .qty-btn {
+            background: none;
+            border: none;
+            color: var(--oc-neon-cyan);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+        .qty-btn:hover { background: rgba(0, 212, 255, 0.1); }
+        .qty-input {
+            background: none;
+            border: none;
+            color: white;
+            width: 40px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+        }
+
         .wa-btn {
             display: block; background: var(--oc-neon-cyan); color: var(--oc-deep-bg);
             padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
-            margin-top: 25px; transition: 0.3s;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+            margin-top: 10px; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
         }
-        .wa-btn:hover { background: white; box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+        .wa-btn:hover { background: white; transform: scale(1.02); }
 
-        /* --- 9. الملاحة والعودة --- */
         .back-btn {
             background: none; border: 1px solid var(--oc-neon-cyan); color: var(--oc-neon-cyan);
-            padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold;
-            transition: 0.3s; margin-bottom: 30px;
+            padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
         }
-        .back-btn:hover { background: var(--oc-neon-cyan); color: black; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hidden { display: none; }
     </style>
 </head>
@@ -203,28 +177,37 @@
 
     <div id="vHome">
         <div class="oc-hero-card">
-            <h2>Welcome To     O-Cell</h2>
-            <p>التكنولوجيا التي تليق بك | جودة عالمية</p>
+            <h2>Luxury Selection</h2>
+            <p>اخترنا لك الأفضل في عالم التكنولوجيا</p>
         </div>
         <div class="oc-container">
-            <h3 style="color: var(--oc-neon-cyan); margin-bottom: 30px; border-right: 4px solid var(--oc-neon-cyan); padding-right: 15px;">الأقسام</h3>
-            <div class="oc-grid" id="catGrid">
-                </div>
+            <h3 style="color: var(--oc-neon-cyan); margin-bottom: 30px; border-right: 4px solid var(--oc-neon-cyan); padding-right: 15px;">الفئات</h3>
+            <div class="oc-grid" id="catGrid"></div>
         </div>
     </div>
 
     <div id="vProd" class="hidden oc-container">
         <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
-        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.5rem; margin-bottom: 40px;"></h2>
+        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
         <div class="oc-grid" id="prodGrid"></div>
     </div>
 
     <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
         <div class="oc-modal-content">
             <img id="mImg" src="">
-            <h2 id="mTitle"></h2>
-            <p id="mDesc" style="color: var(--oc-text-muted); line-height: 1.8;"></p>
-            <div id="mPrice" style="font-size:36px; color:var(--oc-neon-cyan); font-weight:900; margin: 15px 0;"></div>
+            <h2 id="mTitle" style="margin-bottom: 10px;"></h2>
+            <p id="mDesc" style="color: var(--oc-text-muted); font-size: 13px; margin-bottom: 15px;"></p>
+            <div id="mPrice" style="font-size:32px; color:var(--oc-neon-cyan); font-weight:900;"></div>
+
+            <div class="qty-container">
+                <span class="qty-label">الكمية:</span>
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                    <input type="number" id="qtyInput" class="qty-input" value="1" readonly>
+                    <button class="qty-btn" onclick="updateQty(1)">+</button>
+                </div>
+            </div>
+
             <div id="waAction"></div>
             <button onclick="goBack()" style="background:none; border:none; color:white; margin-top:20px; cursor:pointer; opacity:0.5;">إغلاق</button>
         </div>
@@ -250,8 +233,8 @@
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
+        let activeProduct = null;
 
-        // إدارة الرجوع (History API) لضمان تجربة تطبيق موبايل
         window.addEventListener('popstate', (e) => {
             if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
             else { renderHomeView(); closeM(); }
@@ -285,7 +268,7 @@
 
         async function fetchProducts(catName) {
             const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>تنسيق المجموعات النيون...</p>";
+            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري سحب المخزون...</p>";
             const snap = await getDocs(collection(db, "products"));
             grid.innerHTML = "";
             productMemory = [];
@@ -305,27 +288,51 @@
             });
         }
 
+        // وظيفة فتح تفاصيل المنتج وإعادة تصفير العدد
         window.openDetails = (index) => {
-            const p = productMemory[index];
+            activeProduct = productMemory[index];
+            document.getElementById('qtyInput').value = 1; // تصفير العدد ليكون 1
+            
             history.pushState({v:'m'}, "");
-            document.getElementById('mImg').src = p.image;
-            document.getElementById('mTitle').innerText = p.name;
-            document.getElementById('mDesc').innerText = p.description || "";
-            document.getElementById('mPrice').innerText = "$" + p.price;
+            document.getElementById('mImg').src = activeProduct.image;
+            document.getElementById('mTitle').innerText = activeProduct.name;
+            document.getElementById('mDesc').innerText = activeProduct.description || "";
+            document.getElementById('mPrice').innerText = "$" + activeProduct.price;
             
-            const link = `https://wa.me/${STORE_PHONE}?text=${encodeURIComponent('أود طلب: ' + p.name + ' بسعر $' + p.price)}`;
-            document.getElementById('waAction').innerHTML = p.inStock ? 
-                `<a href="${link}" target="_blank" class="wa-btn">ORDER ON WHATSAPP</a>` : 
-                `<div class="wa-btn" style="background:#555; box-shadow:none;">OUT OF STOCK</div>`;
-            
+            updateWALink(); // إنشاء رابط الواتساب الأولي
             document.getElementById('modal').style.display = "flex";
         };
 
+        // وظيفة تحديث العدد (زيادة أو نقصان)
+        window.updateQty = (val) => {
+            let current = parseInt(document.getElementById('qtyInput').value);
+            let next = current + val;
+            if(next < 1) return; // منع النزول عن 1
+            document.getElementById('qtyInput').value = next;
+            updateWALink(); // تحديث الرابط فوراً مع كل ضغطة
+        };
+
+        // وظيفة دمج العدد في رسالة الواتساب
+        function updateWALink() {
+            if(!activeProduct) return;
+            const qty = document.getElementById('qtyInput').value;
+            const total = (parseFloat(activeProduct.price) * parseInt(qty)).toFixed(2);
+            
+            // الرسالة تتضمن: اسم المنتج، العدد، والسعر الإجمالي
+            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total}`);
+            
+            const area = document.getElementById('waAction');
+            area.innerHTML = activeProduct.inStock ? 
+                `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn">اطلب الآن عبر WHATSAPP</a>` : 
+                `<div class="wa-btn" style="background:#555; box-shadow:none;">غير متوفر حالياً</div>`;
+        }
+
         window.goBack = () => history.back();
         function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
-        function closeM() { document.getElementById('modal').style.display = "none"; }
+        function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
         initStore();
     </script>
 </body>
 </html>
+
