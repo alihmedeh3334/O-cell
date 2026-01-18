@@ -2,55 +2,29 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>لوحة تحكم O-Cell الرئيسية</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>O-Cell Security Gate</title>
     <style>
-        :root { --primary: #1a1a2e; --accent: #e94560; --sidebar-width: 260px; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background: #f4f7f6; overflow: hidden; }
-        .sidebar { width: var(--sidebar-width); background: var(--primary); color: white; height: 100vh; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
-        .sidebar h2 { text-align: center; color: var(--accent); font-size: 22px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .nav-item { padding: 15px; margin-bottom: 8px; cursor: pointer; border-radius: 10px; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #adb5bd; }
-        .nav-item:hover, .nav-item.active { background: var(--accent); color: white; }
-        .main-view { flex-grow: 1; height: 100vh; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .logout-section { margin-top: auto; padding-top: 20px; }
+        body { background: #020024; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; overflow: hidden; }
+        .gate-msg { text-align: center; color: #00d4ff; animation: pulse 2s infinite; }
+        iframe { width: 100vw; height: 100vh; border: none; display: none; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
+    <div id="lock" class="gate-msg"><h1>جاري التحقق من الهوية...</h1></div>
+    <iframe id="adminFrame" src="admin_panel.html"></iframe>
 
-<div class="sidebar">
-    <h2>O-Cell Store</h2>
-    <div class="nav-item active" onclick="changePage(this, 'add-product.html')"><i class="fas fa-plus-square"></i> إضافة بضاعة</div>
-    <div class="nav-item" onclick="changePage(this, 'users-list.html')"><i class="fas fa-users-cog"></i> إدارة الزبائن</div>
-    <div class="nav-item" onclick="changePage(this, 'orders.html')"><i class="fas fa-shopping-cart"></i> الطلبات المعلقة</div>
-    <div class="nav-item" onclick="changePage(this, 'returns.html')"><i class="fas fa-history"></i> المرتجعات</div>
-    <div class="logout-section">
-        <button onclick="location.reload()" style="width:100%; padding:10px; background:#e74c3c; color:white; border:none; border-radius:8px; cursor:pointer;">تسجيل خروج</button>
-    </div>
-</div>
-
-<div class="main-view">
-    <iframe id="content-frame" src="add-product.html"></iframe>
-</div>
-
-<script>
-    // نظام الحماية الذي طلبته
-    function authenticate() {
-        const u = prompt("اسم المستخدم:");
-        const p = prompt("كلمة المرور:");
-        if (u !== "ali" || p !== "ali$2006") {
-            alert("غير مصرح!");
-            window.location.href = "https://google.com";
+    <script>
+        const user = prompt("اسم المستخدم:");
+        const pass = prompt("كلمة المرور:");
+        // التحقق من بياناتك: علي وكلمة المرور ali$2006
+        if (user === "ali" && pass === "ali$2006") {
+            document.getElementById('lock').style.display = "none";
+            document.getElementById('adminFrame').style.display = "block";
+        } else {
+            alert("بيانات خاطئة، سيتم توجيهك للموقع العام.");
+            window.location.href = "index.html";
         }
-    }
-    authenticate();
-
-    function changePage(element, page) {
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        element.classList.add('active');
-        document.getElementById('content-frame').src = page;
-    }
-</script>
+    </script>
 </body>
 </html>
-
