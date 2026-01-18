@@ -3,162 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Cell Store | الفخامة التقنية</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <title>O-Cell | Luxury Tech Store</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         :root {
-            --primary-dark: #0a192f;  /* كحلي ملكي */
-            --accent-gold: #d4af37;   /* ذهبي مطفي فاخر */
-            --text-light: #e6f1ff;
-            --bg-dark: #020c1b;
+            --royal-navy: #0a192f;
+            --deep-blue: #020c1b;
+            --antique-gold: #c5a059;
+            --pearl-white: #f8f9fa;
+            --slate: #64748b;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body { 
-            font-family: 'Montserrat', sans-serif; 
-            background: var(--bg-dark); 
-            color: var(--text-light); 
+            background-color: var(--deep-blue); 
+            color: var(--pearl-white); 
+            font-family: 'Inter', sans-serif; 
             margin: 0; 
-            overflow-x: hidden; 
+            overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* الشريط العلوي الثابت */
-        .luxury-nav { 
-            background: rgba(10, 25, 47, 0.95); 
-            backdrop-filter: blur(10px);
-            padding: 15px; text-align: center; 
-            position: sticky; top: 0; z-index: 1000;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2); /* خط ذهبي خفيف */
+        /* الشريط العلوي الرفيع والأنيق */
+        .contact-bar {
+            background: rgba(197, 160, 89, 0.05);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
-        .luxury-nav a { color: var(--accent-gold); text-decoration: none; margin: 0 15px; font-size: 0.9rem; transition: 0.3s; letter-spacing: 1px; }
-        .luxury-nav a:hover { color: white; }
+        .contact-bar a { color: var(--antique-gold); text-decoration: none; transition: 0.3s; }
+        .contact-bar a:hover { color: white; }
 
-        /* قسم الترحيب الفخم */
-        .hero-section { 
-            height: 65vh; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            background: linear-gradient(to bottom, var(--primary-dark), var(--bg-dark));
-            position: relative; overflow: hidden;
+        /* الشعار العلوي الصغير والمرتب */
+        header { 
+            padding: 20px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(10,25,47,1), transparent);
         }
-        /* تأثيرات خلفية متحركة */
-        .hero-section::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 100%;
-            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 60%);
-            animation: shimmer 15s infinite linear;
-        }
-        .hero-title { 
+        .logo-text { 
             font-family: 'Playfair Display', serif; 
-            font-size: 5rem; 
-            color: var(--text-light); 
+            font-size: 2.2rem; 
             margin: 0; 
-            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-            animation: fadeUp 1.5s ease-out;
+            color: white; 
+            font-style: italic;
+            letter-spacing: 2px;
         }
-        .hero-subtitle { font-size: 1.2rem; color: var(--accent-gold); letter-spacing: 4px; margin-top: 20px; animation: fadeUp 1.5s ease-out 0.3s backwards; }
+        .logo-text span { color: var(--antique-gold); }
 
-        /* تخطيط الشبكة */
-        .container { max-width: 1200px; margin: auto; padding: 50px 20px; }
-        .section-title { 
-            font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--accent-gold); 
-            text-align: center; margin-bottom: 40px; position: relative;
+        /* العبارة الترحيبية الراقية */
+        .hero-mini {
+            text-align: center;
+            padding: 30px 20px;
+            animation: fadeIn 2s ease;
         }
-        .section-title::after { content: ''; display: block; width: 60px; height: 3px; background: var(--accent-gold); margin: 20px auto 0; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; }
-        
-        /* البطاقات الفاخرة */
-        .luxury-card { 
-            background: #fff; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            box-shadow: 0 10px 30px -15px rgba(0,0,0,0.3); 
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer; position: relative;
-            animation: fadeUp 1s ease-out;
-        }
-        .luxury-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px -20px rgba(212, 175, 55, 0.5); }
-        .card-img-wrapper { overflow: hidden; height: 220px; }
-        .luxury-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
-        .luxury-card:hover img { transform: scale(1.1); }
-        
-        .card-details { padding: 25px; text-align: center; background: white; color: var(--primary-dark); }
-        .card-details h3 { font-family: 'Playfair Display', serif; margin: 0 0 10px; font-size: 1.2rem; }
-        .price { color: var(--accent-gold); font-weight: 700; font-size: 1.3rem; }
-        .sold-out-overlay { position: absolute; top: 15px; right: 15px; background: #c0392b; color: white; padding: 5px 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .hero-mini h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 5px; color: var(--pearl-white); }
+        .hero-mini p { font-size: 12px; color: var(--slate); text-transform: uppercase; letter-spacing: 3px; }
 
-        /* المودال (النافذة المنبثقة) */
-        .modal-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(10, 25, 47, 0.97); z-index: 2000; 
-            justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);
-        }
-        .modal-content { 
-            background: white; color: var(--primary-dark); 
-            width: 100%; max-width: 500px; 
-            border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
-            animation: zoomIn 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .modal-body { padding: 40px; text-align: center; }
-        .modal-body h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 20px; }
-        .modal-body p { color: #64748b; line-height: 1.8; margin-bottom: 30px; }
-        .modal-price { font-size: 3rem; color: var(--accent-gold); font-family: 'Playfair Display', serif; font-weight: 900; display: block; margin-bottom: 30px; }
-        
-        .btn-whatsapp { 
-            display: inline-block; background: #25d366; color: white; 
-            padding: 15px 40px; border-radius: 50px; 
-            text-decoration: none; font-weight: bold; font-size: 1.1rem; 
-            box-shadow: 0 10px 20px -10px rgba(37, 211, 102, 0.5);
-            transition: 0.3s;
-        }
-        .btn-whatsapp:hover { transform: translateY(-3px); box-shadow: 0 15px 30px -10px rgba(37, 211, 102, 0.7); }
-        .btn-disabled { background: #95a5a6; pointer-events: none; box-shadow: none; }
+        /* الحاويات والشبكات */
+        .container { max-width: 1100px; margin: auto; padding: 0 20px 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
 
-        /* Animations */
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes shimmer { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+        /* البطاقة الفاخرة */
+        .luxe-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px; /* زوايا حادة قليلاً لتعطي طابع رسمي */
+            overflow: hidden;
+            border: 1px solid rgba(197, 160, 89, 0.1);
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+        }
+        .luxe-card:hover { transform: translateY(-8px); border-color: var(--antique-gold); background: rgba(197, 160, 89, 0.02); }
+        .luxe-card img { width: 100%; height: 180px; object-fit: cover; opacity: 0.9; transition: 0.5s; }
+        .luxe-card:hover img { opacity: 1; transform: scale(1.05); }
+        .card-body { padding: 15px; text-align: center; }
+        .card-body h3 { font-size: 14px; font-weight: 400; margin: 0 0 8px; color: var(--pearl-white); }
+        .card-price { color: var(--antique-gold); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; }
+
+        .out-badge { position: absolute; top: 10px; right: 10px; background: #8d1a1a; color: white; padding: 2px 8px; font-size: 9px; text-transform: uppercase; font-weight: bold; }
+
+        /* مودال التفاصيل (Glassmorphism) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 12, 27, 0.98); z-index: 5000;
+            justify-content: center; align-items: center; padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .modal-content {
+            background: var(--royal-navy);
+            width: 100%; max-width: 450px;
+            border-radius: 2px;
+            border: 1px solid var(--antique-gold);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid rgba(197, 160, 89, 0.2); }
+        .modal-content h2 { font-family: 'Playfair Display', serif; margin-bottom: 10px; }
+        .modal-content p { font-size: 13px; color: var(--slate); margin-bottom: 25px; line-height: 1.8; }
         
-        /* Responsive */
-        @media (max-width: 768px) { .hero-title { font-size: 3rem; } }
+        .order-btn {
+            display: block; background: var(--antique-gold); color: var(--deep-blue);
+            padding: 15px; text-decoration: none; font-weight: bold; font-size: 13px;
+            letter-spacing: 2px; transition: 0.3s;
+        }
+        .order-btn:hover { background: white; }
+        .btn-disabled { background: #333; color: #666; pointer-events: none; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* إخفاء الأقسام عند اختيار واحدة */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="luxury-nav">
+<div class="contact-bar">
     <a href="tel:78961175"><i class="fas fa-phone-alt"></i> 78961175</a>
-    <span style="color: var(--accent-gold); opacity: 0.5;">|</span>
-    <a href="https://goo.gl/maps/YOUR_MAP_LINK" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت - المشرفية</a>
+    <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت - المشرفية</a>
 </div>
 
+<header>
+    <h1 class="logo-text">O-<span>CELL</span></h1>
+</header>
+
 <div id="home-view">
-    <div class="hero-section">
-        <h1 class="hero-title">O-CELL</h1>
-        <p class="hero-subtitle">EST. INNOVATION & QUALITY</p>
+    <div class="hero-mini">
+        <h2>أهلاً بكم في مجموعتنا</h2>
+        <p>جودة تتخطى التوقعات | توصيل لكافة المناطق اللبنانية</p>
     </div>
     <div class="container">
-        <h2 class="section-title">تصفح مجموعاتنا الحصرية</h2>
         <div class="grid" id="categoryGrid"></div>
     </div>
 </div>
 
-<div id="product-view" style="display:none;">
-    <div class="container">
-        <button onclick="showHome()" style="background:none; border:none; color:var(--accent-gold); font-size:1.1rem; cursor:pointer; margin-bottom:30px;"><i class="fas fa-arrow-right"></i> العودة للقائمة الرئيسية</button>
-        <h2 class="section-title" id="selectedCatTitle"></h2>
-        <div class="grid" id="productGrid"></div>
+<div id="product-view" class="hidden container">
+    <div style="padding: 20px 0;">
+        <button onclick="goBack()" style="background:none; border:none; color:var(--antique-gold); cursor:pointer; font-size: 12px; letter-spacing: 2px;">← العودة للأقسام</button>
     </div>
+    <h2 id="catTitle" style="font-family: 'Playfair Display', serif; color: var(--antique-gold); text-align: center; margin-bottom: 30px;"></h2>
+    <div class="grid" id="productGrid"></div>
 </div>
 
-<div id="modal" class="modal-overlay" onclick="if(event.target==this) closeModal()">
+<div id="modal" class="modal" onclick="if(event.target==this) goBack()">
     <div class="modal-content">
-        <img id="mImg" src="" style="width:100%; height:300px; object-fit:cover;">
-        <div class="modal-body">
-            <h2 id="mTitle"></h2>
-            <p id="mDesc"></p>
-            <span id="mPrice" class="modal-price"></span>
-            <div id="orderAction"></div>
-            <button onclick="closeModal()" style="background:none; border:none; color:#95a5a6; margin-top:20px; cursor:pointer;">إغلاق</button>
-        </div>
+        <img id="mImg" src="">
+        <h2 id="mTitle"></h2>
+        <p id="mDesc"></p>
+        <div id="mPrice" style="font-size: 24px; color: var(--antique-gold); font-family: 'Playfair Display', serif; margin-bottom: 20px;"></div>
+        <div id="waArea"></div>
+        <button onclick="goBack()" style="background:none; border:none; color:var(--slate); margin-top:15px; cursor:pointer; font-size: 11px;">إغلاق</button>
     </div>
 </div>
 
@@ -166,78 +169,99 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- ضع كود FIREBASE CONFIG الخاص بك هنا بدقة ---
-    const firebaseConfig = { 
-        apiKey: "YOUR_API_KEY", 
-        authDomain: "YOUR_PROJECT.firebaseapp.com", 
-        projectId: "YOUR_PROJECT_ID", 
-        storageBucket: "YOUR_PROJECT.firebasestorage.app", 
-        messagingSenderId: "YOUR_SENDER_ID", 
-        appId: "YOUR_APP_ID" 
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const PHONE = "96178961175";
 
-    async function loadCategories() {
+    // --- إدارة التاريخ والملاحة (Back Button) ---
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.view === 'products') {
+            showProductsView(event.state.catName, false);
+        } else if (event.state && event.state.view === 'modal') {
+            // بقاء المودال مفتوح
+        } else {
+            showHomeView(false);
+            closeM(false);
+        }
+    });
+
+    async function load() {
         const snap = await getDocs(collection(db, "categories"));
         const grid = document.getElementById('categoryGrid');
         snap.forEach(d => {
             const c = d.data();
             grid.innerHTML += `
-                <div class="luxury-card" onclick="showProducts('${c.name}')">
-                    <div class="card-img-wrapper"><img src="${c.image}"></div>
-                    <div class="card-details"><h3>${c.name}</h3></div>
+                <div class="luxe-card" onclick="openCat('${c.name}')">
+                    <img src="${c.image}">
+                    <div class="card-body"><h3>${c.name}</h3></div>
                 </div>`;
         });
     }
 
-    window.showProducts = async (catName) => {
-        document.getElementById('home-view').style.display = "none";
-        document.getElementById('product-view').style.display = "block";
-        document.getElementById('selectedCatTitle').innerText = catName;
+    window.openCat = (catName) => {
+        history.pushState({view: 'products', catName}, "");
+        showProductsView(catName);
+    };
+
+    function showProductsView(catName, push = true) {
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('product-view').classList.remove('hidden');
+        document.getElementById('catTitle').innerText = catName;
+        loadProducts(catName);
+    }
+
+    function showHomeView(push = true) {
+        document.getElementById('home-view').classList.remove('hidden');
+        document.getElementById('product-view').classList.add('hidden');
+    }
+
+    async function loadProducts(n) {
         const grid = document.getElementById('productGrid');
-        grid.innerHTML = "<p style='color:white; text-align:center;'>جاري تحميل المجموعة...</p>";
-        
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5;'>جاري تحميل التحف التقنية...</p>";
         const snap = await getDocs(collection(db, "products"));
         grid.innerHTML = "";
         snap.forEach(d => {
             const p = d.data();
-            if(p.category === catName) {
+            if(p.category === n) {
                 grid.innerHTML += `
-                    <div class="luxury-card" onclick="openModal('${p.name}','${p.image}','${p.description}','${p.price}', ${p.inStock})">
-                        ${!p.inStock ? '<div class="sold-out-overlay">نفذت الكمية</div>' : ''}
-                        <div class="card-img-wrapper"><img src="${p.image}"></div>
-                        <div class="card-details">
-                            <h3>${p.name}</h3>
-                            <div class="price">$${p.price}</div>
-                        </div>
-                    </div>`;
+                <div class="luxe-card" onclick="openDetails('${p.name}','${p.image}','${p.description}','${p.price}', ${p.inStock})">
+                    ${!p.inStock ? '<div class="out-badge">نفذ</div>' : ''}
+                    <img src="${p.image}">
+                    <div class="card-body">
+                        <h3>${p.name}</h3>
+                        <div class="card-price">$${p.price}</div>
+                    </div>
+                </div>`;
             }
         });
-    };
+    }
 
-    window.openModal = (n, i, d, p, s) => {
+    window.openDetails = (n, i, d, p, s) => {
+        history.pushState({view: 'modal'}, "");
         document.getElementById('mImg').src = i;
         document.getElementById('mTitle').innerText = n;
         document.getElementById('mDesc').innerText = d;
         document.getElementById('mPrice').innerText = "$" + p;
-        
-        const link = `https://wa.me/${PHONE}?text=${encodeURIComponent('مرحباً، أود طلب المنتج الفاخر: '+n+' بسعر $'+p)}`;
-        const btn = s ? `<a href="${link}" target="_blank" class="btn-whatsapp">ORDER NOW <i class="fab fa-whatsapp"></i></a>` : `<div class="btn-whatsapp btn-disabled">عذراً، نفذت الكمية</div>`;
-        document.getElementById('orderAction').innerHTML = btn;
-        
+        const link = `https://wa.me/${PHONE}?text=${encodeURIComponent('أود طلب: '+n+' بسعر $'+p)}`;
+        document.getElementById('waArea').innerHTML = s ? 
+            `<a href="${link}" class="order-btn">إتمام الطلب عبر واتساب</a>` : 
+            `<div class="order-btn btn-disabled">نفذ المخزون حالياً</div>`;
         document.getElementById('modal').style.display = "flex";
     };
 
-    window.closeModal = () => document.getElementById('modal').style.display = "none";
-    window.showHome = () => {
-        document.getElementById('product-view').style.display = "none";
-        document.getElementById('home-view').style.display = "block";
-    };
+    window.goBack = () => history.back();
+    window.closeM = (push = true) => document.getElementById('modal').style.display = "none";
 
-    loadCategories();
+    load();
 </script>
 </body>
 </html>
