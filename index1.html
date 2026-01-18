@@ -2,240 +2,268 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#004c8c">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O-Cell | Professional Tech Store</title>
     
-    <title>O-Cell Store | التميز في التكنولوجيا</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --royal-navy: #0a192f;
+            --deep-blue: #020c1b;
+            --light-blue: #00d4ff; /* تم استبدال الذهبي بالأزرق الفاتح */
+            --pearl-white: #f8f9fa;
+            --slate: #64748b;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background-color: var(--deep-blue); 
+            color: var(--pearl-white); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* الشريط العلوي الرفيع والأنيق */
+        .contact-bar {
+            background: rgba(0, 212, 255, 0.05); /* تدرج أزرق خفيف */
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .contact-bar a { color: var(--light-blue); text-decoration: none; transition: 0.3s; }
+        .contact-bar a:hover { color: white; }
+
+        /* الشعار العلوي الصغير والمرتب */
+        header { 
+            padding: 20px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(10,25,47,1), transparent);
+        }
+        .logo-text { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 2.2rem; 
+            margin: 0; 
+            color: white; 
+            font-style: italic;
+            letter-spacing: 2px;
+        }
+        .logo-text span { color: var(--light-blue); }
+
+        /* العبارة الترحيبية الراقية */
+        .hero-mini {
+            text-align: center;
+            padding: 30px 20px;
+            animation: fadeIn 2s ease;
+        }
+        .hero-mini h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 5px; color: var(--pearl-white); }
+        .hero-mini p { font-size: 12px; color: var(--slate); text-transform: uppercase; letter-spacing: 3px; }
+
+        /* الحاويات والشبكات */
+        .container { max-width: 1100px; margin: auto; padding: 0 20px 50px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+
+        /* البطاقة الفاخرة */
+        .luxe-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px; 
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
+            position: relative;
+            cursor: pointer;
+        }
+        .luxe-card:hover { transform: translateY(-8px); border-color: var(--light-blue); background: rgba(0, 212, 255, 0.02); }
+        .luxe-card img { width: 100%; height: 180px; object-fit: cover; opacity: 0.9; transition: 0.5s; }
+        .luxe-card:hover img { opacity: 1; transform: scale(1.05); }
+        .card-body { padding: 15px; text-align: center; }
+        .card-body h3 { font-size: 14px; font-weight: 400; margin: 0 0 8px; color: var(--pearl-white); }
+        .card-price { color: var(--light-blue); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; }
+
+        .out-badge { position: absolute; top: 10px; right: 10px; background: #8d1a1a; color: white; padding: 2px 8px; font-size: 9px; text-transform: uppercase; font-weight: bold; }
+
+        /* مودال التفاصيل (Glassmorphism) */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 12, 27, 0.98); z-index: 5000;
+            justify-content: center; align-items: center; padding: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        .modal-content {
+            background: var(--royal-navy);
+            width: 100%; max-width: 450px;
+            border-radius: 2px;
+            border: 1px solid var(--light-blue);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid rgba(0, 212, 255, 0.2); }
+        .modal-content h2 { font-family: 'Playfair Display', serif; margin-bottom: 10px; }
+        .modal-content p { font-size: 13px; color: var(--slate); margin-bottom: 25px; line-height: 1.8; }
+        
+        .order-btn {
+            display: block; background: var(--light-blue); color: var(--deep-blue);
+            padding: 15px; text-decoration: none; font-weight: bold; font-size: 13px;
+            letter-spacing: 2px; transition: 0.3s;
+        }
+        .order-btn:hover { background: white; }
+        .btn-disabled { background: #333; color: #666; pointer-events: none; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* إخفاء الأقسام عند اختيار واحدة */
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
 
-    <div class="oc-top-bar">
-        <div class="oc-container inner-nav" style="padding: 0 10px;">
-            <a href="tel:+96178961175">
-                <i class="fas fa-phone-alt"></i> اتصل بنا الآن: 78961175
-            </a>
-            <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank">
-                <i class="fas fa-map-marker-alt"></i> بيروت، لبنان - المشرفية
-            </a>
-        </div>
+<div class="contact-bar">
+    <a href="tel:78961175"><i class="fas fa-phone-alt"></i> 78961175</a>
+    <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> العنوان: المشرفية، بيروت</a>
+</div>
+
+<header>
+    <h1 class="logo-text">O-<span>CELL</span></h1>
+</header>
+
+<div id="home-view">
+    <div class="hero-mini">
+        <h2>أهلاً بكم في مجموعتنا</h2>
+        <p>جودة تتخطى التوقعات | توصيل لكافة المناطق اللبنانية</p>
     </div>
-
-    <header class="oc-header">
-        <div class="oc-container logo-container" style="padding: 0;">
-            <h1 class="brand-font">O-<span>CELL</span></h1>
-        </div>
-    </header>
-
-    <main>
-        
-        <section id="viewHome">
-            <div class="oc-hero">
-                <h2>نحن نصنع التميز <span>التقني</span></h2>
-                <p>مرحباً بكم في متجر O-Cell الرسمي. تصفحوا مجموعتنا المختارة من الشواحن، الوصلات، وأرقى الإكسسوارات التقنية بجودة عالمية.</p>
-                <div class="oc-delivery-pill">
-                    توصيل سريع لجميع المناطق اللبنانية <i class="fas fa-truck-fast"></i>
-                </div>
-            </div>
-
-            <div class="oc-container">
-                <h3 class="oc-section-title">تصفح مجموعاتنا</h3>
-                <div class="oc-grid" id="categoryContainer">
-                    </div>
-            </div>
-        </section>
-
-        <section id="viewProducts" class="hidden">
-            <div class="oc-container">
-                <div style="padding: 20px 0;">
-                    <button class="oc-btn-back" onclick="executeBackAction()">
-                        <i class="fas fa-arrow-right"></i> العودة للأقسام
-                    </button>
-                </div>
-                
-                <h2 id="currentCategoryTitle" class="oc-section-title" style="text-align: center;">جاري التحميل...</h2>
-                
-                <div class="oc-grid" id="productContainer">
-                    </div>
-            </div>
-        </section>
-
-    </main>
-
-    <footer style="background: white; padding: 40px 20px; text-align: center; border-top: 1px solid #eee;">
-        <h4 class="brand-font" style="color: #004c8c; font-size: 1.5rem;">O-CELL</h4>
-        <p style="color: #94a3b8; font-size: 13px; margin-top: 10px;">&copy; 2026 جميع الحقوق محفوظة لمتجر O-Cell. التميز والاحترافية.</p>
-    </footer>
-
-    <div id="productModal" class="oc-modal" onclick="if(event.target==this) executeBackAction()">
-        <div class="oc-modal-box">
-            <img id="mImg" src="" alt="Product Detail Image">
-            <h2 id="mTitle" class="brand-font">اسم المنتج الفاخر</h2>
-            <p id="mDesc">وصف المنتج سيظهر هنا بالتفصيل ليشرح مميزات القطعة التقنية المختارة.</p>
-            <span id="mPrice" class="oc-price-large">$0.00</span>
-            
-            <div id="waActionWrapper">
-                </div>
-            
-            <button onclick="executeBackAction()" style="background:none; border:none; color:#94a3b8; margin-top:25px; cursor:pointer; font-weight:700; font-size:12px;">
-                إغلاق النافذة
-            </button>
-        </div>
+    <div class="container">
+        <div class="grid" id="categoryGrid"></div>
     </div>
+</div>
 
-    <script type="module">
-        /* --- 6.1 FIREBASE INITIALIZATION --- */
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<div id="product-view" class="hidden container">
+    <div style="padding: 20px 0;">
+        <button onclick="goBack()" style="background:none; border:none; color:var(--light-blue); cursor:pointer; font-size: 12px; letter-spacing: 2px;">← العودة للأقسام</button>
+    </div>
+    <h2 id="catTitle" style="font-family: 'Playfair Display', serif; color: var(--light-blue); text-align: center; margin-bottom: 30px;"></h2>
+    <div class="grid" id="productGrid"></div>
+</div>
 
-        // Your Firebase configuration precisely integrated
-        const firebaseConfig = {
-            apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-            authDomain: "o-cell-8bd7f.firebaseapp.com",
-            projectId: "o-cell-8bd7f",
-            storageBucket: "o-cell-8bd7f.firebasestorage.app",
-            messagingSenderId: "123702658364",
-            appId: "1:123702658364:web:f51ca179843af7bab24a39"
-        };
+<div id="modal" class="modal" onclick="if(event.target==this) goBack()">
+    <div class="modal-content">
+        <img id="mImg" src="">
+        <h2 id="mTitle"></h2>
+        <p id="mDesc"></p>
+        <div id="mPrice" style="font-size: 24px; color: var(--light-blue); font-family: 'Playfair Display', serif; margin-bottom: 20px;"></div>
+        <div id="waArea"></div>
+        <button onclick="goBack()" style="background:none; border:none; color:var(--slate); margin-top:15px; cursor:pointer; font-size: 11px;">إغلاق</button>
+    </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const STORE_PHONE = "96178961175";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        /* --- 6.2 HISTORY API & STATE MANAGEMENT --- */
-        // Listen for browser back/forward buttons
-        window.addEventListener('popstate', (event) => {
-            if (event.state && event.state.view === 'products') {
-                renderProductsView(event.state.name, false);
-            } else if (event.state && event.state.view === 'modal') {
-                // Keep modal handled separately
-            } else {
-                renderHomeView(false);
-                hideModal();
+    // كود Firebase الخاص بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const PHONE = "96178961175";
+
+    // --- إدارة التاريخ والملاحة (Back Button) ---
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.view === 'products') {
+            showProductsView(event.state.catName, false);
+        } else if (event.state && event.state.view === 'modal') {
+            // بقاء المودال مفتوح
+        } else {
+            showHomeView(false);
+            closeM(false);
+        }
+    });
+
+    async function load() {
+        const snap = await getDocs(collection(db, "categories"));
+        const grid = document.getElementById('categoryGrid');
+        snap.forEach(d => {
+            const c = d.data();
+            grid.innerHTML += `
+                <div class="luxe-card" onclick="openCat('${c.name}')">
+                    <img src="${c.image}">
+                    <div class="card-body"><h3>${c.name}</h3></div>
+                </div>`;
+        });
+    }
+
+    window.openCat = (catName) => {
+        history.pushState({view: 'products', catName}, "");
+        showProductsView(catName);
+    };
+
+    function showProductsView(catName, push = true) {
+        document.getElementById('home-view').classList.add('hidden');
+        document.getElementById('product-view').classList.remove('hidden');
+        document.getElementById('catTitle').innerText = catName;
+        loadProducts(catName);
+    }
+
+    function showHomeView(push = true) {
+        document.getElementById('home-view').classList.remove('hidden');
+        document.getElementById('product-view').classList.add('hidden');
+    }
+
+    async function loadProducts(n) {
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5;'>جاري تحميل التحف التقنية...</p>";
+        const snap = await getDocs(collection(db, "products"));
+        grid.innerHTML = "";
+        snap.forEach(d => {
+            const p = d.data();
+            if(p.category === n) {
+                grid.innerHTML += `
+                <div class="luxe-card" onclick="openDetails('${p.name}','${p.image}','${p.description}','${p.price}', ${p.inStock})">
+                    ${!p.inStock ? '<div class="out-badge">نفذ</div>' : ''}
+                    <img src="${p.image}">
+                    <div class="card-body">
+                        <h3>${p.name}</h3>
+                        <div class="card-price">$${p.price}</div>
+                    </div>
+                </div>`;
             }
         });
+    }
 
-        /* --- 6.3 CORE RENDER FUNCTIONS --- */
+    window.openDetails = (n, i, d, p, s) => {
+        history.pushState({view: 'modal'}, "");
+        document.getElementById('mImg').src = i;
+        document.getElementById('mTitle').innerText = n;
+        document.getElementById('mDesc').innerText = d;
+        document.getElementById('mPrice').innerText = "$" + p;
+        const link = `https://wa.me/${PHONE}?text=${encodeURIComponent('أود طلب: '+n+' بسعر $'+p)}`;
+        document.getElementById('waArea').innerHTML = s ? 
+            `<a href="${link}" class="order-btn">إتمام الطلب عبر واتساب</a>` : 
+            `<div class="order-btn btn-disabled">نفذ المخزون حالياً</div>`;
+        document.getElementById('modal').style.display = "flex";
+    };
 
-        // Step 1: Load Initial Categories
-        async function fetchAllCategories() {
-            const catContainer = document.getElementById('categoryGrid'); // Fixed from catGrid to categoryContainer
-            const grid = document.getElementById('categoryContainer');
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "categories"));
-                grid.innerHTML = ""; // Clear loader
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const cardHtml = `
-                        <div class="oc-card" onclick="initiateCategoryTransition('${data.name}')">
-                            <div class="img-wrapper">
-                                <img src="${data.image}" alt="${data.name}">
-                            </div>
-                            <div class="card-content">
-                                <h3>${data.name}</h3>
-                            </div>
-                        </div>
-                    `;
-                    grid.innerHTML += cardHtml;
-                });
-            } catch (error) {
-                console.error("Firebase Category Loading Error: ", error);
-            }
-        }
+    window.goBack = () => history.back();
+    window.closeM = (push = true) => document.getElementById('modal').style.display = "none";
 
-        // Step 2: Navigate to Category
-        window.initiateCategoryTransition = (categoryName) => {
-            history.pushState({view: 'products', name: categoryName}, "");
-            renderProductsView(categoryName);
-        };
-
-        // Step 3: Render Products View
-        function renderProductsView(categoryName) {
-            document.getElementById('viewHome').classList.add('hidden');
-            document.getElementById('viewProducts').classList.remove('hidden');
-            document.getElementById('currentCategoryTitle').innerText = categoryName;
-            fetchCategoryProducts(categoryName);
-        }
-
-        // Step 4: Fetch Products from DB
-        async function fetchCategoryProducts(categoryName) {
-            const productGrid = document.getElementById('productContainer');
-            productGrid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري سحب المخزون الفعلي من O-Cell...</p>";
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "products"));
-                productGrid.innerHTML = "";
-                
-                querySnapshot.forEach((doc) => {
-                    const p = doc.data();
-                    if (p.category === categoryName) {
-                        const productCard = `
-                            <div class="oc-card" onclick="triggerProductDetails('${p.name}', '${p.image}', '${p.description}', '${p.price}', ${p.inStock})">
-                                ${!p.inStock ? '<div class="stock-badge">نفذ المخزون</div>' : ''}
-                                <div class="img-wrapper">
-                                    <img src="${p.image}" alt="${p.name}">
-                                </div>
-                                <div class="card-content">
-                                    <h3>${p.name}</h3>
-                                    <span class="price-display">$${p.price}</span>
-                                </div>
-                            </div>
-                        `;
-                        productGrid.innerHTML += productCard;
-                    }
-                });
-            } catch (error) {
-                console.error("Firebase Product Loading Error: ", error);
-            }
-        }
-
-        // Step 5: Product Details Modal
-        window.triggerProductDetails = (name, img, desc, price, inStock) => {
-            history.pushState({view: 'modal'}, "");
-            document.getElementById('mImg').src = img;
-            document.getElementById('mTitle').innerText = name;
-            document.getElementById('mDesc').innerText = desc;
-            document.getElementById('mPrice').innerText = "$" + price;
-            
-            const waLink = `https://wa.me/${STORE_PHONE}?text=${encodeURIComponent('مرحباً O-Cell، أود طلب هذه القطعة: ' + name + ' - السعر: $' + price)}`;
-            const actionContainer = document.getElementById('waActionWrapper');
-            
-            if (inStock) {
-                actionContainer.innerHTML = `<a href="${waLink}" class="oc-btn-whatsapp">اطلب الآن عبر واتساب <i class="fab fa-whatsapp"></i></a>`;
-            } else {
-                actionContainer.innerHTML = `<div class="oc-btn-whatsapp oc-btn-out">عذراً، هذا المنتج غير متوفر حالياً</div>`;
-            }
-            
-            document.getElementById('productModal').classList.add('visible');
-        };
-
-        // Step 6: Navigation Helper
-        function renderHomeView() {
-            document.getElementById('viewHome').classList.remove('hidden');
-            document.getElementById('viewProducts').classList.add('hidden');
-        }
-
-        window.executeBackAction = () => {
-            history.back();
-        };
-
-        function hideModal() {
-            document.getElementById('productModal').classList.remove('visible');
-        }
-
-        // Initialize Engine
-        fetchAllCategories();
-
-    </script>
+    load();
+</script>
 </body>
 </html>
+
