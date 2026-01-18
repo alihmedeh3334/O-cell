@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Cell | لوحة التحكم الاحترافية</title>
+    <title>O-Cell | نظام الإدارة المتقدم</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* CSS INTERNAL - VIBRANT CORPORATE STYLE */
         :root {
             --oc-white: #ffffff;
             --oc-light-cyan: #e0f7fa;
@@ -19,6 +18,7 @@
             --oc-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             --oc-success: #1ed760;
             --oc-danger: #d93025;
+            --oc-edit: #f2994a; /* لون التعديل البرتقالي */
         }
 
         body {
@@ -27,9 +27,10 @@
             margin: 0;
             padding: 40px 20px;
             color: var(--oc-text-main);
+            min-height: 100vh;
         }
 
-        .admin-container { max-width: 900px; margin: auto; animation: fadeIn 1s ease; }
+        .admin-container { max-width: 1000px; margin: auto; animation: fadeIn 1s ease; }
 
         .admin-card {
             background: white;
@@ -91,8 +92,28 @@
             box-shadow: 0 10px 20px rgba(0, 212, 255, 0.2);
         }
 
-        /* تنسيق المخزون */
-        .inventory-list { margin-top: 20px; }
+        /* تنسيق الأقسام في الجرد */
+        .category-group {
+            margin-bottom: 40px;
+            border: 1px solid #e0f7fa;
+            border-radius: 15px;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--oc-dark-navy);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .category-header h4 { margin: 0; font-family: 'Playfair Display'; font-size: 1.4rem; }
+
         .inv-row {
             display: flex;
             justify-content: space-between;
@@ -102,6 +123,7 @@
             background: white;
             border-radius: 10px;
             margin-bottom: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .badge {
@@ -111,11 +133,27 @@
             font-weight: 900;
             cursor: pointer;
             border: none;
+            transition: 0.3s;
         }
 
         .badge-green { background: var(--oc-success); color: white; }
         .badge-gray { background: #94a3b8; color: white; }
-        .btn-delete { background: var(--oc-danger); color: white; margin-right: 5px; }
+        .badge-edit { background: var(--oc-edit); color: white; margin-right: 5px; }
+        .badge-danger { background: var(--oc-danger); color: white; margin-right: 5px; }
+
+        /* أداة البحث */
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--oc-dark-navy);
+        }
+        .search-box input { padding-left: 50px; border: 2px solid var(--oc-light-cyan); }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -123,13 +161,17 @@
 <body>
 
 <div class="admin-container">
+    
     <div class="admin-card">
-        <h3><i class="fas fa-folder-plus"></i> إنشاء قسم جديد (Category)</h3>
+        <h3><i class="fas fa-folder-plus"></i> إدارة الأقسام (Categories)</h3>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" id="catName" placeholder="اسم القسم (مثلاً: شواحن)">
+            <input type="text" id="catName" placeholder="اسم القسم الجديد">
             <input type="text" id="catImage" placeholder="رابط صورة القسم">
-            <button class="btn-submit" onclick="saveNewCategory()" style="width: auto; padding: 0 40px;">حفظ</button>
+            <button class="btn-submit" onclick="saveNewCategory()" style="width: auto; padding: 0 40px;">إضافة قسم</button>
         </div>
+        
+        <div id="categoryEditList" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;">
+            </div>
     </div>
 
     <div class="admin-card">
@@ -141,20 +183,27 @@
             <input type="text" id="prodImg" placeholder="رابط صورة المنتج">
         </div>
         <textarea id="prodDesc" placeholder="وصف المنتج..." rows="3"></textarea>
-        <button class="btn-submit" onclick="saveNewProduct()">نشر المنتج في المتجر</button>
+        <button id="mainProdBtn" class="btn-submit" onclick="saveNewProduct()">نشر المنتج في المتجر</button>
     </div>
 
     <div class="admin-card">
         <h3><i class="fas fa-warehouse"></i> جرد المخزون والتحكم</h3>
-        <div id="invContainer"></div>
+        
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="بحث عن منتج بالاسم..." onkeyup="filterInventory()">
+        </div>
+
+        <div id="invContainer">
+            <p style="text-align:center; opacity:0.5;">جاري تحميل المخزون المنظم...</p>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- CONFIG FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
         authDomain: "o-cell-8bd7f.firebaseapp.com",
@@ -168,28 +217,33 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // وظيفة حفظ القسم
+    let allCategories = [];
+    let allProducts = [];
+    let editingProductId = null;
+
+    // --- وظائف الأقسام ---
+
     window.saveNewCategory = async () => {
         const name = document.getElementById('catName').value;
         const img = document.getElementById('catImage').value;
-        if(!name || !img) return alert("املأ البيانات!");
-
+        if(!name || !img) return alert("الرجاء ملء بيانات القسم!");
         await addDoc(collection(db, "categories"), { name: name, image: img });
-        alert("تم الحفظ!");
-        location.reload(); // إعادة التحميل لتغذية الـ Dropdown
+        alert("تم حفظ القسم الجديد!");
+        location.reload();
     };
 
-    // تحميل البيانات الأولية
-    async function initAdmin() {
-        const snap = await getDocs(collection(db, "categories"));
-        const select = document.getElementById('prodCat');
-        snap.forEach(d => {
-            select.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`;
-        });
-        loadInventory();
-    }
+    window.editCategory = async (id, currentName, currentImg) => {
+        const newName = prompt("تعديل اسم القسم:", currentName);
+        const newImg = prompt("تعديل رابط الصورة:", currentImg);
+        if(newName && newImg) {
+            await updateDoc(doc(db, "categories", id), { name: newName, image: newImg });
+            alert("تم تحديث القسم!");
+            location.reload();
+        }
+    };
 
-    // وظيفة حفظ المنتج
+    // --- وظائف المنتجات ---
+
     window.saveNewProduct = async () => {
         const data = {
             name: document.getElementById('prodName').value,
@@ -199,34 +253,128 @@
             description: document.getElementById('prodDesc').value,
             inStock: true
         };
-        await addDoc(collection(db, "products"), data);
-        alert("تم النشر!");
+        
+        if(!data.name || !data.category || !data.price) return alert("أكمل البيانات الأساسية!");
+
+        if(editingProductId) {
+            // حالة التعديل
+            await updateDoc(doc(db, "products", editingProductId), data);
+            alert("تم تحديث المنتج!");
+            editingProductId = null;
+            document.getElementById('mainProdBtn').innerText = "نشر المنتج في المتجر";
+        } else {
+            // حالة إضافة جديد
+            await addDoc(collection(db, "products"), data);
+            alert("تم النشر!");
+        }
+        
+        clearForm();
         loadInventory();
     };
 
-    // تحميل الجرد
+    window.prepareEditProduct = (id) => {
+        const p = allProducts.find(item => item.id === id);
+        if(!p) return;
+        
+        document.getElementById('prodName').value = p.name;
+        document.getElementById('prodCat').value = p.category;
+        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodImg').value = p.image;
+        document.getElementById('prodDesc').value = p.description;
+        
+        editingProductId = id;
+        document.getElementById('mainProdBtn').innerText = "حفظ التغييرات الآن";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    function clearForm() {
+        document.getElementById('prodName').value = "";
+        document.getElementById('prodPrice').value = "";
+        document.getElementById('prodImg').value = "";
+        document.getElementById('prodDesc').value = "";
+    }
+
+    // --- وظائف الجرد والبحث ---
+
+    async function initAdmin() {
+        // جلب الأقسام
+        const catSnap = await getDocs(collection(db, "categories"));
+        const select = document.getElementById('prodCat');
+        const catEditList = document.getElementById('categoryEditList');
+        
+        allCategories = [];
+        catSnap.forEach(d => {
+            const data = d.data();
+            allCategories.push({ id: d.id, ...data });
+            select.innerHTML += `<option value="${data.name}">${data.name}</option>`;
+            catEditList.innerHTML += `
+                <button class="badge badge-edit" onclick="editCategory('${d.id}', '${data.name}', '${data.image}')">
+                    <i class="fas fa-edit"></i> ${data.name}
+                </button>`;
+        });
+        
+        loadInventory();
+    }
+
     window.loadInventory = async () => {
-        const snap = await getDocs(collection(db, "products"));
+        const prodSnap = await getDocs(collection(db, "products"));
+        allProducts = [];
+        prodSnap.forEach(d => allProducts.push({ id: d.id, ...d.data() }));
+        renderInventory(allProducts);
+    };
+
+    function renderInventory(products) {
         const container = document.getElementById('invContainer');
         container.innerHTML = "";
-        snap.forEach(d => {
-            const p = d.data();
-            container.innerHTML += `
-                <div class="inv-row">
-                    <span>${p.name} ($${p.price})</span>
-                    <div>
-                        <button class="badge ${p.inStock ? 'badge-green' : 'badge-gray'}" onclick="toggleS('${d.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'نافذ'}</button>
-                        <button class="badge btn-delete" onclick="delP('${d.id}')">حذف</button>
-                    </div>
-                </div>`;
+
+        if(products.length === 0) {
+            container.innerHTML = "<p style='text-align:center;'>لا يوجد نتائج مطابقة للبحث.</p>";
+            return;
+        }
+
+        // تنظيم المنتجات حسب الأقسام
+        allCategories.forEach(cat => {
+            const catProds = products.filter(p => p.category === cat.name);
+            
+            if(catProds.length > 0) {
+                let catHtml = `
+                    <div class="category-group">
+                        <div class="category-header">
+                            <h4>${cat.name}</h4>
+                            <span>${catProds.length} قطع</span>
+                        </div>
+                `;
+
+                catProds.forEach(p => {
+                    catHtml += `
+                        <div class="inv-row">
+                            <span><b>${p.name}</b> - <span style="color:var(--oc-dark-navy)">$${p.price}</span></span>
+                            <div>
+                                <button class="badge ${p.inStock ? 'badge-green' : 'badge-gray'}" onclick="toggleS('${p.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'نافذ'}</button>
+                                <button class="badge badge-edit" onclick="prepareEditProduct('${p.id}')"><i class="fas fa-pen"></i></button>
+                                <button class="badge badge-danger" onclick="delP('${p.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                catHtml += `</div>`;
+                container.innerHTML += catHtml;
+            }
         });
+    }
+
+    // محرك البحث
+    window.filterInventory = () => {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+        renderInventory(filtered);
     };
 
     window.toggleS = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInventory(); };
-    window.delP = async (id) => { if(confirm("حذف؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
+    window.delP = async (id) => { if(confirm("حذف المنتج نهائياً؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
 
     initAdmin();
 </script>
 </body>
 </html>
-
