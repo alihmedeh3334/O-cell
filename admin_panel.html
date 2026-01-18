@@ -2,92 +2,197 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>O-Cell Admin Dashboard</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
+        /* O-CELL CSS ARCHITECTURE
+           THEME: ROYAL NAVY AND ANTIQUE GOLD
+        */
         :root {
-            --primary-dark: #0a192f;  /* كحلي عميق */
-            --accent-gold: #d4af37;   /* ذهبي فاخر */
+            --primary-dark: #0a192f;  /* الكحلي العميق للشركات العريقة */
+            --accent-gold: #d4af37;   /* الذهبي الملكي للقطع الفاخرة */
             --text-dark: #1e293b;
-            --bg-light: #f4f7f6;
+            --text-muted: #64748b;
+            --bg-light: #f4f7f6;      /* خلفية فاتحة ومريحة للعمل الطويل */
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            --transition-speed: 0.4s;
         }
+
         body { 
             font-family: 'Montserrat', sans-serif; 
             background: var(--bg-light); 
             margin: 0; 
-            padding: 30px; 
+            padding: 40px 20px; 
             color: var(--text-dark);
+            line-height: 1.6;
         }
-        h3 { font-family: 'Playfair Display', serif; color: var(--primary-dark); margin-bottom: 20px; font-size: 1.5rem; }
-        
-        .container { max-width: 1000px; margin: auto; }
-        
+
+        /* حاوية التصميم الرئيسية */
+        .container { 
+            max-width: 1000px; 
+            margin: auto; 
+            animation: fadeIn 1s ease-in;
+        }
+
+        h3 { 
+            font-family: 'Playfair Display', serif; 
+            color: var(--primary-dark); 
+            margin-bottom: 25px; 
+            font-size: 1.8rem;
+            border-right: 5px solid var(--accent-gold);
+            padding-right: 15px;
+        }
+
+        /* تنسيق البطاقات (Cards) */
         .card { 
             background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05); 
-            margin-bottom: 25px; 
-            border-top: 4px solid var(--accent-gold);
-            animation: slideUp 0.6s ease-out;
+            padding: 35px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            margin-bottom: 30px; 
+            border-top: 5px solid var(--accent-gold);
+            animation: slideUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
         }
-        
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        
-        input, select, textarea, button { 
+
+        /* شبكة النماذج الهيدروليكية */
+        .form-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+        }
+
+        /* تخصيص مدخلات البيانات */
+        input, select, textarea { 
             width: 100%; 
-            padding: 15px; 
-            margin: 10px 0; 
+            padding: 16px; 
+            margin: 12px 0; 
             border: 1px solid #e2e8f0; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             font-family: 'Montserrat', sans-serif;
             box-sizing: border-box;
-            transition: 0.3s;
+            transition: var(--transition-speed);
+            background: #fafafa;
         }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-gold); }
-        
+
+        input:focus, select:focus, textarea:focus { 
+            outline: none; 
+            border-color: var(--accent-gold); 
+            background: white;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+        }
+
+        /* تخصيص الأزرار التفاعلية */
         button.action-btn { 
             background: var(--primary-dark); 
             color: var(--accent-gold); 
             border: none; 
+            padding: 18px;
+            border-radius: 10px;
             font-weight: 700; 
             cursor: pointer; 
             text-transform: uppercase; 
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            transition: var(--transition-speed);
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
-        button.action-btn:hover { background: #132c4e; }
-        
-        /* تنسيق قائمة الجرد */
+
+        button.action-btn:hover { 
+            background: #132c4e; 
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(10, 25, 47, 0.2);
+        }
+
+        /* تنسيق قائمة الجرد المباشر */
+        .inventory-wrapper {
+            margin-top: 20px;
+        }
+
         .inv-item { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 20px; 
-            border-bottom: 1px solid #eee; 
+            padding: 22px; 
+            border-bottom: 1px solid #f1f5f9; 
             background: #fff;
             transition: 0.3s;
+            border-radius: 8px;
+            margin-bottom: 5px;
         }
-        .inv-item:hover { background: #fcfcfc; }
-        .inv-info { font-weight: 600; }
-        .inv-cat { font-size: 0.9em; color: #64748b; margin-right: 10px; }
-        
+
+        .inv-item:hover { 
+            background: #f8fafc; 
+            transform: scale(1.01);
+        }
+
+        .inv-info { 
+            font-weight: 700; 
+            color: var(--primary-dark);
+        }
+
+        .inv-cat { 
+            font-size: 0.85em; 
+            color: var(--text-muted); 
+            margin-right: 12px;
+            background: #e2e8f0;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        /* الأوسمة (Badges) */
         .badge-stock { 
-            padding: 8px 20px; 
+            padding: 10px 22px; 
             border-radius: 30px; 
-            font-size: 12px; 
-            font-weight: bold; 
+            font-size: 11px; 
+            font-weight: 800; 
             border: none; 
             cursor: pointer; 
             width: auto; 
             margin: 0 5px;
             transition: 0.3s;
+            text-transform: uppercase;
         }
-        .stock-in { background: #10b981; color: white; } /* أخضر */
-        .stock-out { background: #ef4444; color: white; } /* أحمر */
-        .btn-del { background: var(--primary-dark); color: white; width: auto; padding: 8px 20px; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stock-in { background: var(--success-green); color: white; }
+        .stock-out { background: var(--danger-red); color: white; }
+        
+        .btn-del { 
+            background: var(--primary-dark); 
+            color: white; 
+            width: auto; 
+            padding: 10px 22px; 
+        }
+
+        .btn-del:hover { background: #000; }
+
+        /* الأنيميشن */
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(40px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        /* تعديلات للموبايل */
+        @media (max-width: 768px) {
+            body { padding: 20px 10px; }
+            .inv-item { flex-direction: column; gap: 15px; text-align: center; }
+            .badge-stock { width: 100%; margin: 5px 0; }
+        }
     </style>
 </head>
 <body>
@@ -95,10 +200,13 @@
 <div class="container">
     <div class="card">
         <h3><i class="fas fa-layer-group"></i> إدارة الأقسام (Categories)</h3>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="catN" placeholder="اسم القسم الجديد">
-            <input type="text" id="catI" placeholder="رابط صورة القسم (ImgBB)">
-            <button class="action-btn" onclick="saveCat()" style="width: auto; padding: 0 30px;">حفظ</button>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">قم بإضافة أقسام المتجر الرئيسية مع صور تعبيرية لكل قسم.</p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="catN" placeholder="اسم القسم الجديد (مثلاً: شواحن)">
+            <input type="text" id="catI" placeholder="رابط صورة القسم (رابط مباشر)">
+            <button class="action-btn" onclick="saveCat()" style="width: auto; padding: 0 40px;">
+                <i class="fas fa-save"></i> حفظ القسم
+            </button>
         </div>
     </div>
 
@@ -106,106 +214,203 @@
         <h3><i class="fas fa-box-open"></i> إضافة منتج جديد للمخزون</h3>
         <div class="form-grid">
             <input type="text" id="pN" placeholder="اسم المنتج الفاخر">
-            <select id="pC"><option value="">اختر القسم...</option></select>
-            <input type="number" id="pP" placeholder="السعر ($)">
-            <input type="text" id="pI" placeholder="رابط الصورة المباشر">
+            <select id="pC">
+                <option value="">-- اختر القسم المناسب --</option>
+                </select>
+            <input type="number" id="pP" placeholder="السعر بالدولار ($)">
+            <input type="text" id="pI" placeholder="رابط صورة المنتج المباشر">
         </div>
-        <textarea id="pD" placeholder="وصف دقيق ومميز للمنتج..." rows="3"></textarea>
-        <button class="action-btn" onclick="saveProd()">نشر المنتج في المتجر</button>
+        <textarea id="pD" placeholder="وصف دقيق ومميز للمنتج ليظهر للزبائن في المتجر..." rows="4"></textarea>
+        <button class="action-btn" onclick="saveProd()">
+            <i class="fas fa-paper-plane"></i> نشر المنتج في المتجر
+        </button>
     </div>
 
     <div class="card">
         <h3><i class="fas fa-clipboard-list"></i> مراقبة المخزون والتحكم به</h3>
-        <div id="invList"></div>
+        <div id="invList" class="inventory-wrapper">
+            <p style="text-align:center; padding: 20px; opacity:0.5;">جاري تحميل بيانات المخزون...</p>
+        </div>
     </div>
 </div>
 
 <script type="module">
+    // استيراد حزم Firebase الحديثة لضمان أقصى أداء وأمان
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --- ضع كود FIREBASE CONFIG الخاص بك هنا بدقة ---
+    // إعدادات Firebase الخاصة بمتجر O-Cell
     const firebaseConfig = { 
-        apiKey: "YOUR_API_KEY", 
-        authDomain: "YOUR_PROJECT.firebaseapp.com", 
-        projectId: "YOUR_PROJECT_ID", 
-        storageBucket: "YOUR_PROJECT.firebasestorage.app", 
-        messagingSenderId: "YOUR_SENDER_ID", 
-        appId: "YOUR_APP_ID" 
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39",
+        measurementId: "G-9G5Y056X75"
     };
     
+    // بدء تشغيل التطبيق وربط قاعدة البيانات
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // حفظ القسم
+    /**
+     * وظيفة حفظ قسم جديد
+     * تقوم بالتحقق من البيانات ثم رفعها لمجموعة categories
+     */
     window.saveCat = async () => {
         const name = document.getElementById('catN').value;
         const img = document.getElementById('catI').value;
-        if(!name || !img) { alert("الرجاء تعبئة البيانات"); return; }
-        await addDoc(collection(db, "categories"), { name: name, image: img });
-        alert("تم إضافة القسم بنجاح."); location.reload();
+        
+        if(!name || !img) { 
+            alert("يرجى ملء جميع خانات القسم (الاسم والرابط) لضمان العرض الصحيح."); 
+            return; 
+        }
+        
+        try {
+            await addDoc(collection(db, "categories"), { 
+                name: name, 
+                image: img,
+                createdAt: new Date()
+            });
+            alert("تمت إضافة القسم الجديد " + name + " بنجاح."); 
+            location.reload(); 
+        } catch (e) {
+            console.error("خطأ في حفظ القسم: ", e);
+        }
     };
 
-    // التهيئة الأولية
+    /**
+     * التهيئة الأولية (Initialization)
+     * تحميل الأقسام في القائمة المنسدلة وتحميل المخزون
+     */
     async function init() {
-        const snap = await getDocs(collection(db, "categories"));
-        const select = document.getElementById('pC');
-        snap.forEach(d => select.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-        loadInventory();
+        try {
+            const snap = await getDocs(collection(db, "categories"));
+            const select = document.getElementById('pC');
+            
+            snap.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d.data().name;
+                opt.textContent = d.data().name;
+                select.appendChild(opt);
+            });
+            
+            loadInventory();
+        } catch (e) {
+            console.error("خطأ في تحميل البيانات الأولية: ", e);
+        }
     }
 
-    // حفظ المنتج
+    /**
+     * وظيفة حفظ منتج جديد
+     * تقوم برفع بيانات المنتج مع حالة inStock الافتراضية
+     */
     window.saveProd = async () => {
-        const data = {
+        const productData = {
             name: document.getElementById('pN').value,
             category: document.getElementById('pC').value,
             price: document.getElementById('pP').value,
             image: document.getElementById('pI').value,
             description: document.getElementById('pD').value,
-            inStock: true, // افتراضياً متوفر عند الإضافة
+            inStock: true, // افتراضياً القطعة متوفرة عند إضافتها أول مرة
             createdAt: new Date()
         };
-        await addDoc(collection(db, "products"), data);
-        alert("تم نشر المنتج في المتجر."); loadInventory();
+
+        if(!productData.name || !productData.price || !productData.category) {
+            alert("يرجى التأكد من كتابة الاسم والسعر واختيار القسم.");
+            return;
+        }
+
+        try {
+            await addDoc(collection(db, "products"), productData);
+            alert("تم نشر المنتج: " + productData.name + " بنجاح في المتجر."); 
+            // تصفير الخانات بعد النجاح
+            document.getElementById('pN').value = "";
+            document.getElementById('pP').value = "";
+            document.getElementById('pI').value = "";
+            document.getElementById('pD').value = "";
+            loadInventory(); 
+        } catch (e) {
+            console.error("خطأ في نشر المنتج: ", e);
+        }
     };
 
-    // تحميل وإدارة المخزون (تم التأكد منها 100%)
+    /**
+     * تحميل قائمة الجرد (Inventory)
+     * عرض جميع المنتجات المضافة مع أزرار التحكم
+     */
     window.loadInventory = async () => {
-        const snap = await getDocs(collection(db, "products"));
-        const list = document.getElementById('invList'); list.innerHTML = "";
-        snap.forEach(d => {
-            const p = d.data();
-            list.innerHTML += `
-                <div class="inv-item">
+        const list = document.getElementById('invList');
+        list.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.5;'>جاري تحديث القائمة...</p>";
+        
+        try {
+            const snap = await getDocs(collection(db, "products"));
+            list.innerHTML = ""; 
+            
+            if (snap.empty) {
+                list.innerHTML = "<p style='text-align:center; padding:20px;'>لا يوجد منتجات حالياً. ابدأ بإضافة بضاعة جديدة.</p>";
+                return;
+            }
+
+            snap.forEach(d => {
+                const p = d.data();
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'inv-item';
+                itemDiv.innerHTML = `
                     <div class="inv-info">
-                        ${p.name} <span class="inv-cat">(${p.category})</span> - $${p.price}
+                        ${p.name} <span class="inv-cat">${p.category}</span> - <span style="color:var(--accent-gold)">$${p.price}</span>
                     </div>
                     <div>
                         <button class="badge-stock ${p.inStock ? 'stock-in' : 'stock-out'}" 
                                 onclick="toggleStock('${d.id}', ${p.inStock})">
                             ${p.inStock ? 'متوفر ✅' : 'نافذ ❌'}
                         </button>
-                        <button class="badge-stock btn-del" onclick="deleteP('${d.id}')">حذف</button>
+                        <button class="badge-stock btn-del" onclick="deleteP('${d.id}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
                     </div>
-                </div>`;
-        });
+                `;
+                list.appendChild(itemDiv);
+            });
+        } catch (e) {
+            console.error("خطأ في تحميل المخزون: ", e);
+        }
     };
 
-    // تبديل حالة المخزون
+    /**
+     * تبديل حالة التوفر (Toggle Stock)
+     * تقوم بتحديث قيمة inStock في Firestore
+     */
     window.toggleStock = async (id, currentStatus) => {
-        await updateDoc(doc(db, "products", id), { inStock: !currentStatus });
-        loadInventory(); // إعادة تحميل القائمة لإظهار التغيير
+        try {
+            const productRef = doc(db, "products", id);
+            await updateDoc(productRef, { 
+                inStock: !currentStatus 
+            });
+            loadInventory(); // تحديث فوري للقائمة
+        } catch (e) {
+            console.error("خطأ في تحديث حالة المخزون: ", e);
+        }
     };
 
-    // حذف المنتج
+    /**
+     * حذف المنتج نهائياً
+     */
     window.deleteP = async (id) => { 
-        if(confirm("هل أنت متأكد من حذف هذا المنتج نهائياً؟")) { 
-            await deleteDoc(doc(db, "products", id)); 
-            loadInventory(); 
+        if(confirm("هل أنت متأكد من حذف هذا المنتج نهائياً من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.")) { 
+            try {
+                await deleteDoc(doc(db, "products", id)); 
+                loadInventory(); 
+            } catch (e) {
+                console.error("خطأ في الحذف: ", e);
+            }
         } 
     };
 
+    // تشغيل النظام عند تحميل الصفحة
     init();
+
 </script>
 </body>
 </html>
