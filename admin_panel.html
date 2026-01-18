@@ -18,7 +18,7 @@
             --oc-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             --oc-success: #1ed760;
             --oc-danger: #d93025;
-            --oc-edit: #f2994a; 
+            --oc-edit: #f2994a;
         }
 
         body {
@@ -51,6 +51,8 @@
             gap: 15px;
         }
 
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+
         input, select, textarea {
             width: 100%;
             padding: 15px;
@@ -58,7 +60,7 @@
             border: 1px solid #e0e6ed;
             border-radius: 12px;
             font-family: 'Inter', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             box-sizing: border-box;
             background: #f9fbff;
             transition: 0.3s;
@@ -80,51 +82,37 @@
             font-weight: 900;
             cursor: pointer;
             width: 100%;
-            font-size: 16px;
-            letter-spacing: 1px;
-            transition: 0.3s;
             margin-top: 10px;
+            transition: 0.3s;
         }
 
-        .btn-submit:hover {
-            background: var(--oc-vibrant-blue);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 212, 255, 0.2);
-        }
+        .btn-submit:hover { background: var(--oc-vibrant-blue); transform: translateY(-3px); }
 
-        /* جداول المستخدمين */
-        .user-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background: #f8fafc;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-right: 4px solid var(--oc-dark-navy);
-        }
+        /* تنسيق جداول المستخدمين والجرد */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th, .data-table td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
+        .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .wholesale { background: #fff3e0; color: #e65100; }
+        .retail { background: #e8f5e9; color: #2e7d32; }
 
-        .category-group {
-            margin-bottom: 40px;
-            border: 1px solid #e0f7fa;
-            border-radius: 15px;
-            padding: 20px;
-            background: rgba(255,255,255,0.5);
-        }
-
-        .category-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--oc-dark-navy);
+        .category-group { margin-bottom: 30px; padding: 15px; background: rgba(255,255,255,0.6); border-radius: 15px; border: 1px solid #e0f7fa; }
+        .category-header { background: var(--oc-dark-navy); color: white; padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        
+        /* تنسيق زر حذف الحساب */
+        .btn-delete-account {
+            background-color: var(--oc-danger);
             color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .btn-delete-account:hover { background-color: #b71c1c; }
 
-        .category-header h4 { margin: 0; font-family: 'Playfair Display'; font-size: 1.4rem; }
-
+        /* تنسيق الجرد */
         .inv-row {
             display: flex;
             justify-content: space-between;
@@ -151,7 +139,6 @@
         .badge-gray { background: #94a3b8; color: white; }
         .badge-edit { background: var(--oc-edit); color: white; margin-right: 5px; }
         .badge-danger { background: var(--oc-danger); color: white; margin-right: 5px; }
-        .badge-role { background: var(--oc-dark-navy); color: white; margin-left: 5px; }
 
         .search-box {
             position: relative;
@@ -174,33 +161,50 @@
 <div class="admin-container">
     
     <div class="admin-card">
-        <h3><i class="fas fa-users-cog"></i> إدارة المستخدمين وصلاحيات السعر</h3>
-        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">حدد السعر المناسب لكل مستخدم مسجل (جملة أو مفرق).</p>
-        <div id="userListContainer">
-            <p style="text-align:center; opacity:0.5;">جاري تحميل قائمة المستخدمين...</p>
+        <h3><i class="fas fa-users-cog"></i> إدارة حسابات غوغل والأسعار</h3>
+        <div class="form-grid">
+            <input type="text" id="userName" placeholder="اسم المستخدم">
+            <input type="email" id="userEmail" placeholder="البريد الإلكتروني (Gmail)">
+            <select id="userRole">
+                <option value="retail">سعر مفرق (زبون)</option>
+                <option value="wholesale">سعر جملة (تاجر)</option>
+            </select>
         </div>
+        <button class="btn-submit" onclick="saveNewUser()">إضافة حساب يدوياً</button>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>الاسم</th>
+                    <th>حساب غوغل (Email)</th>
+                    <th>نوع السعر</th>
+                    <th>إدارة الحساب</th>
+                </tr>
+            </thead>
+            <tbody id="userList"></tbody>
+        </table>
     </div>
 
     <div class="admin-card">
         <h3><i class="fas fa-folder-plus"></i> إدارة الأقسام (Categories)</h3>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="form-grid">
             <input type="text" id="catName" placeholder="اسم القسم الجديد">
             <input type="text" id="catImage" placeholder="رابط صورة القسم">
-            <button class="btn-submit" onclick="saveNewCategory()" style="width: auto; padding: 0 40px;">إضافة قسم</button>
         </div>
-        <div id="categoryEditList" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+        <button class="btn-submit" onclick="saveNewCategory()">إضافة قسم</button>
+        <div id="categoryEditList" style="margin-top: 15px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
     </div>
 
     <div class="admin-card">
-        <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+        <h3><i class="fas fa-plus-circle"></i> إضافة منتج (مفرق وجملة)</h3>
+        <div class="form-grid">
             <input type="text" id="prodName" placeholder="اسم المنتج">
             <select id="prodCat"><option value="">-- اختر القسم --</option></select>
-            <input type="number" id="prodPrice" placeholder="سعر المفرق ($)">
+            <input type="number" id="prodPriceRetail" placeholder="سعر المفرق ($)">
             <input type="number" id="prodPriceWholesale" placeholder="سعر الجملة ($)">
             <input type="text" id="prodImg" placeholder="رابط صورة المنتج">
         </div>
-        <textarea id="prodDesc" placeholder="وصف المنتج..." rows="3"></textarea>
+        <textarea id="prodDesc" placeholder="وصف المنتج..." rows="2"></textarea>
         <button id="mainProdBtn" class="btn-submit" onclick="saveNewProduct()">نشر المنتج في المتجر</button>
     </div>
 
@@ -208,17 +212,15 @@
         <h3><i class="fas fa-warehouse"></i> جرد المخزون والتحكم</h3>
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="بحث عن منتج بالاسم..." onkeyup="filterInventory()">
+            <input type="text" id="searchInput" placeholder="بحث باسم المنتج..." onkeyup="filterInventory()">
         </div>
-        <div id="invContainer">
-            <p style="text-align:center; opacity:0.5;">جاري تحميل المخزون المنظم...</p>
-        </div>
+        <div id="invContainer"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -235,133 +237,120 @@
 
     let allCategories = [];
     let allProducts = [];
-    let allUsers = [];
     let editingProductId = null;
 
-    // --- إدارة المستخدمين وتسعيرهم ---
+    // --- إدارة حسابات غوغل (المستخدمين) ---
+    window.saveNewUser = async () => {
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const role = document.getElementById('userRole').value;
+        if(!name || !email) return alert("أكمل بيانات الحساب");
+        
+        await addDoc(collection(db, "users"), { name, email, role }); // حفظنا الايميل بدل الرقم
+        alert("تمت إضافة الحساب");
+        loadUsers();
+    };
 
     async function loadUsers() {
         const snap = await getDocs(collection(db, "users"));
-        const container = document.getElementById('userListContainer');
-        container.innerHTML = "";
-        allUsers = [];
+        const list = document.getElementById('userList');
+        list.innerHTML = "";
         
         if(snap.empty) {
-            container.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا يوجد مستخدمين مسجلين حالياً.</p>";
+            list.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">لا يوجد حسابات مسجلة.</td></tr>`;
             return;
         }
 
         snap.forEach(d => {
             const u = d.data();
-            allUsers.push({id: d.id, ...u});
-            const roleText = u.role === 'wholesale' ? 'جملة' : 'مفرق';
-            const roleColor = u.role === 'wholesale' ? 'var(--oc-edit)' : 'var(--oc-success)';
+            const roleText = u.role === 'wholesale' ? 'تاجر جملة' : 'زبون مفرق';
+            const roleClass = u.role === 'wholesale' ? 'wholesale' : 'retail';
             
-            container.innerHTML += `
-                <div class="user-row">
-                    <span><b>${u.name}</b> (${u.phone})</span>
-                    <div>
-                        <button class="badge" onclick="toggleUserRole('${d.id}', '${u.role}')" style="background:${roleColor}">
-                            السعر الحالي: ${roleText}
+            list.innerHTML += `
+                <tr>
+                    <td>${u.name}</td>
+                    <td style="direction:ltr;">${u.email}</td> <td><span class="role-badge ${roleClass}" onclick="toggleUserRole('${d.id}', '${u.role}')" style="background:${u.role==='wholesale'?'#ffe0b2':'#c8e6c9'}">${roleText}</span></td>
+                    <td>
+                        <button class="btn-delete-account" onclick="deleteUser('${d.id}')">
+                            <i class="fas fa-trash-alt"></i> حذف الحساب
                         </button>
-                        <button class="badge badge-danger" onclick="deleteUser('${d.id}')">حذف</button>
-                    </div>
-                </div>`;
+                    </td>
+                </tr>`;
         });
     }
 
-    window.toggleUserRole = async (id, currentRole) => {
-        const newRole = currentRole === 'wholesale' ? 'retail' : 'wholesale';
-        await updateDoc(doc(db, "users", id), { role: newRole });
+    window.toggleUserRole = async (id, current) => {
+        const next = current === 'wholesale' ? 'retail' : 'wholesale';
+        await updateDoc(doc(db, "users", id), { role: next });
         loadUsers();
     };
 
     window.deleteUser = async (id) => {
-        if(confirm("حذف المستخدم نهائياً؟")) { await deleteDoc(doc(db, "users", id)); loadUsers(); }
+        if(confirm("هل أنت متأكد من حذف هذا الحساب نهائياً؟")) { await deleteDoc(doc(db, "users", id)); loadUsers(); }
     };
 
-    // --- وظائف الأقسام ---
-
+    // --- إدارة الأقسام ---
     window.saveNewCategory = async () => {
         const name = document.getElementById('catName').value;
         const img = document.getElementById('catImage').value;
-        if(!name || !img) return alert("الرجاء ملء بيانات القسم!");
-        await addDoc(collection(db, "categories"), { name: name, image: img });
-        alert("تم حفظ القسم الجديد!");
+        if(!name || !img) return alert("أكمل البيانات");
+        await addDoc(collection(db, "categories"), { name, image: img });
         location.reload();
     };
-
+    
     window.editCategory = async (id, currentName, currentImg) => {
         const newName = prompt("تعديل اسم القسم:", currentName);
         const newImg = prompt("تعديل رابط الصورة:", currentImg);
         if(newName && newImg) {
             await updateDoc(doc(db, "categories", id), { name: newName, image: newImg });
-            alert("تم تحديث القسم!");
             location.reload();
         }
     };
 
-    // --- وظائف المنتجات (مع دعم السعرين) ---
-
+    // --- إدارة المنتجات ---
     window.saveNewProduct = async () => {
         const data = {
             name: document.getElementById('prodName').value,
             category: document.getElementById('prodCat').value,
-            price: document.getElementById('prodPrice').value, // مفرق
-            priceWholesale: document.getElementById('prodPriceWholesale').value, // جملة
+            priceRetail: document.getElementById('prodPriceRetail').value,
+            priceWholesale: document.getElementById('prodPriceWholesale').value,
             image: document.getElementById('prodImg').value,
             description: document.getElementById('prodDesc').value,
             inStock: true
         };
-        
-        if(!data.name || !data.category || !data.price || !data.priceWholesale) return alert("أكمل بيانات المنتج والأسعار!");
+
+        if(!data.name || !data.category || !data.priceRetail) return alert("أدخل البيانات الأساسية");
 
         if(editingProductId) {
             await updateDoc(doc(db, "products", editingProductId), data);
-            alert("تم تحديث المنتج!");
             editingProductId = null;
-            document.getElementById('mainProdBtn').innerText = "نشر المنتج في المتجر";
         } else {
             await addDoc(collection(db, "products"), data);
-            alert("تم النشر!");
         }
-        
-        clearForm();
-        loadInventory();
+        alert("تم الحفظ");
+        location.reload();
     };
-
+    
     window.prepareEditProduct = (id) => {
         const p = allProducts.find(item => item.id === id);
-        if(!p) return;
-        
         document.getElementById('prodName').value = p.name;
         document.getElementById('prodCat').value = p.category;
-        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodPriceRetail').value = p.priceRetail;
         document.getElementById('prodPriceWholesale').value = p.priceWholesale || "";
         document.getElementById('prodImg').value = p.image;
         document.getElementById('prodDesc').value = p.description;
-        
         editingProductId = id;
-        document.getElementById('mainProdBtn').innerText = "حفظ التغييرات الآن";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('mainProdBtn').innerText = "تحديث المنتج";
+        window.scrollTo(0,0);
     };
 
-    function clearForm() {
-        document.getElementById('prodName').value = "";
-        document.getElementById('prodPrice').value = "";
-        document.getElementById('prodPriceWholesale').value = "";
-        document.getElementById('prodImg').value = "";
-        document.getElementById('prodDesc').value = "";
-    }
-
-    // --- وظائف الجرد والبحث ---
-
+    // --- تهيئة الجرد ---
     async function initAdmin() {
         const catSnap = await getDocs(collection(db, "categories"));
         const select = document.getElementById('prodCat');
         const catEditList = document.getElementById('categoryEditList');
-        
         allCategories = [];
+        
         catSnap.forEach(d => {
             const data = d.data();
             allCategories.push({ id: d.id, ...data });
@@ -371,7 +360,6 @@
                     <i class="fas fa-edit"></i> ${data.name}
                 </button>`;
         });
-        
         loadUsers();
         loadInventory();
     }
@@ -386,41 +374,34 @@
     function renderInventory(products) {
         const container = document.getElementById('invContainer');
         container.innerHTML = "";
-
-        if(products.length === 0) {
-            container.innerHTML = "<p style='text-align:center;'>لا يوجد نتائج مطابقة للبحث.</p>";
-            return;
-        }
-
         allCategories.forEach(cat => {
             const catProds = products.filter(p => p.category === cat.name);
             if(catProds.length > 0) {
-                let catHtml = `<div class="category-group"><div class="category-header"><h4>${cat.name}</h4><span>${catProds.length} قطع</span></div>`;
+                let html = `<div class="category-group"><div class="category-header"><h4>${cat.name}</h4></div>`;
                 catProds.forEach(p => {
-                    catHtml += `
-                        <div class="inv-row">
-                            <span><b>${p.name}</b> (مفرق: $${p.price} | جملة: $${p.priceWholesale || '??'})</span>
-                            <div>
-                                <button class="badge ${p.inStock ? 'badge-green' : 'badge-gray'}" onclick="toggleS('${p.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'نافذ'}</button>
-                                <button class="badge badge-edit" onclick="prepareEditProduct('${p.id}')"><i class="fas fa-pen"></i></button>
-                                <button class="badge badge-danger" onclick="delP('${p.id}')"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>`;
+                    html += `<div class="inv-row">
+                        <span><b>${p.name}</b> - مفرق: $${p.priceRetail} | جملة: $${p.priceWholesale || '-'}</span>
+                        <div>
+                            <button class="badge ${p.inStock ? 'badge-green' : 'badge-gray'}" onclick="toggleS('${p.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'نافذ'}</button>
+                            <button class="badge badge-edit" onclick="prepareEditProduct('${p.id}')">تعديل</button>
+                            <button class="badge badge-danger" onclick="delP('${p.id}')">حذف</button>
+                        </div>
+                    </div>`;
                 });
-                catHtml += `</div>`;
-                container.innerHTML += catHtml;
+                html += `</div>`;
+                container.innerHTML += html;
             }
         });
     }
-
+    
     window.filterInventory = () => {
-        const queryText = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(queryText));
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
         renderInventory(filtered);
     };
 
     window.toggleS = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInventory(); };
-    window.delP = async (id) => { if(confirm("حذف المنتج نهائياً؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
+    window.delP = async (id) => { if(confirm("حذف المنتج؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
 
     initAdmin();
 </script>
