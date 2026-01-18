@@ -3,165 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O-Cell | Professional Tech Store</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+    <title>O-Cell | Luxury Technology</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <style>
-        :root {
-            --royal-navy: #0a192f;
-            --deep-blue: #020c1b;
-            --light-blue: #00d4ff; /* تم استبدال الذهبي بالأزرق الفاتح */
-            --pearl-white: #f8f9fa;
-            --slate: #64748b;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            background-color: var(--deep-blue); 
-            color: var(--pearl-white); 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* الشريط العلوي الرفيع والأنيق */
-        .contact-bar {
-            background: rgba(0, 212, 255, 0.05); /* تدرج أزرق خفيف */
-            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-            padding: 8px 20px;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .contact-bar a { color: var(--light-blue); text-decoration: none; transition: 0.3s; }
-        .contact-bar a:hover { color: white; }
-
-        /* الشعار العلوي الصغير والمرتب */
-        header { 
-            padding: 20px 0;
-            text-align: center;
-            background: linear-gradient(to bottom, rgba(10,25,47,1), transparent);
-        }
-        .logo-text { 
-            font-family: 'Playfair Display', serif; 
-            font-size: 2.2rem; 
-            margin: 0; 
-            color: white; 
-            font-style: italic;
-            letter-spacing: 2px;
-        }
-        .logo-text span { color: var(--light-blue); }
-
-        /* العبارة الترحيبية الراقية */
-        .hero-mini {
-            text-align: center;
-            padding: 30px 20px;
-            animation: fadeIn 2s ease;
-        }
-        .hero-mini h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 300; margin-bottom: 5px; color: var(--pearl-white); }
-        .hero-mini p { font-size: 12px; color: var(--slate); text-transform: uppercase; letter-spacing: 3px; }
-
-        /* الحاويات والشبكات */
-        .container { max-width: 1100px; margin: auto; padding: 0 20px 50px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-
-        /* البطاقة الفاخرة */
-        .luxe-card {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 4px; 
-            overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.2, 1, 0.2, 1);
-            position: relative;
-            cursor: pointer;
-        }
-        .luxe-card:hover { transform: translateY(-8px); border-color: var(--light-blue); background: rgba(0, 212, 255, 0.02); }
-        .luxe-card img { width: 100%; height: 180px; object-fit: cover; opacity: 0.9; transition: 0.5s; }
-        .luxe-card:hover img { opacity: 1; transform: scale(1.05); }
-        .card-body { padding: 15px; text-align: center; }
-        .card-body h3 { font-size: 14px; font-weight: 400; margin: 0 0 8px; color: var(--pearl-white); }
-        .card-price { color: var(--light-blue); font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; }
-
-        .out-badge { position: absolute; top: 10px; right: 10px; background: #8d1a1a; color: white; padding: 2px 8px; font-size: 9px; text-transform: uppercase; font-weight: bold; }
-
-        /* مودال التفاصيل (Glassmorphism) */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 12, 27, 0.98); z-index: 5000;
-            justify-content: center; align-items: center; padding: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-        .modal-content {
-            background: var(--royal-navy);
-            width: 100%; max-width: 450px;
-            border-radius: 2px;
-            border: 1px solid var(--light-blue);
-            padding: 30px;
-            text-align: center;
-            position: relative;
-        }
-        .modal-content img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid rgba(0, 212, 255, 0.2); }
-        .modal-content h2 { font-family: 'Playfair Display', serif; margin-bottom: 10px; }
-        .modal-content p { font-size: 13px; color: var(--slate); margin-bottom: 25px; line-height: 1.8; }
-        
-        .order-btn {
-            display: block; background: var(--light-blue); color: var(--deep-blue);
-            padding: 15px; text-decoration: none; font-weight: bold; font-size: 13px;
-            letter-spacing: 2px; transition: 0.3s;
-        }
-        .order-btn:hover { background: white; }
-        .btn-disabled { background: #333; color: #666; pointer-events: none; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* إخفاء الأقسام عند اختيار واحدة */
-        .hidden { display: none; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="contact-bar">
-    <a href="tel:78961175"><i class="fas fa-phone-alt"></i> 78961175</a>
-    <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> العنوان: المشرفية، بيروت</a>
+<div class="contact-nav">
+    <a href="tel:78961175"><i class="fas fa-phone-alt"></i> اتصل بنا: 78961175</a>
+    <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> موقعنا في بيروت</a>
 </div>
 
-<header>
-    <h1 class="logo-text">O-<span>CELL</span></h1>
+<header class="main-header">
+    <h1 class="brand-name">O-<span>CELL</span></h1>
 </header>
 
-<div id="home-view">
-    <div class="hero-mini">
-        <h2>أهلاً بكم في مجموعتنا</h2>
-        <p>جودة تتخطى التوقعات | توصيل لكافة المناطق اللبنانية</p>
-    </div>
-    <div class="container">
-        <div class="grid" id="categoryGrid"></div>
+<div id="homeView">
+    <section class="hero-branding">
+        <h2>اكتشف فن التكنولوجيا</h2>
+        <p>جودة، أناقة، واحترافية مطلقة</p>
+        <div class="delivery-pill">يوجد ديليفيري لجميع المناطق اللبنانية 🇱🇧🚚</div>
+    </section>
+    <div class="wrapper">
+        <h3 style="font-family:'Playfair Display'; margin-bottom:25px; color:var(--light-blue); border-right:3px solid var(--light-blue); padding-right:15px;">الأقسام المختارة</h3>
+        <div class="main-grid" id="catGrid"></div>
     </div>
 </div>
 
-<div id="product-view" class="hidden container">
-    <div style="padding: 20px 0;">
-        <button onclick="goBack()" style="background:none; border:none; color:var(--light-blue); cursor:pointer; font-size: 12px; letter-spacing: 2px;">← العودة للأقسام</button>
+<div id="productView" class="hidden wrapper">
+    <div style="padding: 30px 0;">
+        <button onclick="goBack()" style="background:none; border:none; color:var(--light-blue); cursor:pointer; font-size:12px; letter-spacing:2px; font-weight:bold;">← عودة للأقسام</button>
     </div>
-    <h2 id="catTitle" style="font-family: 'Playfair Display', serif; color: var(--light-blue); text-align: center; margin-bottom: 30px;"></h2>
-    <div class="grid" id="productGrid"></div>
+    <h2 id="viewTitle" style="font-family:'Playfair Display'; text-align:center; color:var(--light-blue); margin-bottom:40px; font-size:2.5rem;"></h2>
+    <div class="main-grid" id="prodGrid"></div>
 </div>
 
-<div id="modal" class="modal" onclick="if(event.target==this) goBack()">
-    <div class="modal-content">
-        <img id="mImg" src="">
-        <h2 id="mTitle"></h2>
-        <p id="mDesc"></p>
-        <div id="mPrice" style="font-size: 24px; color: var(--light-blue); font-family: 'Playfair Display', serif; margin-bottom: 20px;"></div>
-        <div id="waArea"></div>
-        <button onclick="goBack()" style="background:none; border:none; color:var(--slate); margin-top:15px; cursor:pointer; font-size: 11px;">إغلاق</button>
+<div id="detailModal" class="luxe-modal" onclick="if(event.target==this) goBack()">
+    <div class="modal-inner">
+        <img id="modalImg" src="">
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+        <div id="modalPrice" style="font-size:32px; color:var(--light-blue); font-family:'Playfair Display'; margin-bottom:30px; font-weight:900;"></div>
+        <div id="orderBtnContainer"></div>
+        <button onclick="goBack()" style="background:none; border:none; color:var(--slate-gray); margin-top:25px; cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:2px;">إغلاق التفاصيل</button>
     </div>
 </div>
 
@@ -169,7 +54,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // كود Firebase الخاص بك
     const firebaseConfig = {
         apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
         authDomain: "o-cell-8bd7f.firebaseapp.com",
@@ -181,53 +65,48 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const PHONE = "96178961175";
+    const WA_PHONE = "96178961175";
 
-    // --- إدارة التاريخ والملاحة (Back Button) ---
-    window.addEventListener('popstate', (event) => {
-        if (event.state && event.state.view === 'products') {
-            showProductsView(event.state.catName, false);
-        } else if (event.state && event.state.view === 'modal') {
-            // بقاء المودال مفتوح
+    // Navigation History Management
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.view === 'products') {
+            displayProducts(e.state.name, false);
         } else {
-            showHomeView(false);
-            closeM(false);
+            displayHome(false);
+            closeModal();
         }
     });
 
-    async function load() {
+    async function loadResources() {
         const snap = await getDocs(collection(db, "categories"));
-        const grid = document.getElementById('categoryGrid');
+        const grid = document.getElementById('catGrid');
         snap.forEach(d => {
             const c = d.data();
             grid.innerHTML += `
-                <div class="luxe-card" onclick="openCat('${c.name}')">
+                <div class="luxe-card" onclick="navigateToCat('${c.name}')">
                     <img src="${c.image}">
-                    <div class="card-body"><h3>${c.name}</h3></div>
+                    <div class="info"><h3>${c.name}</h3></div>
                 </div>`;
         });
     }
 
-    window.openCat = (catName) => {
-        history.pushState({view: 'products', catName}, "");
-        showProductsView(catName);
-    };
+    window.navigateToCat = (n) => { history.pushState({view: 'products', name: n}, ""); displayProducts(n); };
 
-    function showProductsView(catName, push = true) {
-        document.getElementById('home-view').classList.add('hidden');
-        document.getElementById('product-view').classList.remove('hidden');
-        document.getElementById('catTitle').innerText = catName;
-        loadProducts(catName);
+    function displayProducts(n) {
+        document.getElementById('homeView').classList.add('hidden');
+        document.getElementById('productView').classList.remove('hidden');
+        document.getElementById('viewTitle').innerText = n;
+        fetchItems(n);
     }
 
-    function showHomeView(push = true) {
-        document.getElementById('home-view').classList.remove('hidden');
-        document.getElementById('product-view').classList.add('hidden');
+    function displayHome() {
+        document.getElementById('homeView').classList.remove('hidden');
+        document.getElementById('productView').classList.add('hidden');
     }
 
-    async function loadProducts(n) {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5;'>جاري تحميل التحف التقنية...</p>";
+    async function fetchItems(n) {
+        const grid = document.getElementById('prodGrid');
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; opacity:0.5;'>تنسيق المجموعات الفاخرة...</p>";
         const snap = await getDocs(collection(db, "products"));
         grid.innerHTML = "";
         snap.forEach(d => {
@@ -235,12 +114,9 @@
             if(p.category === n) {
                 grid.innerHTML += `
                 <div class="luxe-card" onclick="openDetails('${p.name}','${p.image}','${p.description}','${p.price}', ${p.inStock})">
-                    ${!p.inStock ? '<div class="out-badge">نفذ</div>' : ''}
+                    ${!p.inStock ? '<div class="out-of-stock-label">نافذ حالياً</div>' : ''}
                     <img src="${p.image}">
-                    <div class="card-body">
-                        <h3>${p.name}</h3>
-                        <div class="card-price">$${p.price}</div>
-                    </div>
+                    <div class="info"><h3>${p.name}</h3><div class="price">$${p.price}</div></div>
                 </div>`;
             }
         });
@@ -248,22 +124,21 @@
 
     window.openDetails = (n, i, d, p, s) => {
         history.pushState({view: 'modal'}, "");
-        document.getElementById('mImg').src = i;
-        document.getElementById('mTitle').innerText = n;
-        document.getElementById('mDesc').innerText = d;
-        document.getElementById('mPrice').innerText = "$" + p;
-        const link = `https://wa.me/${PHONE}?text=${encodeURIComponent('أود طلب: '+n+' بسعر $'+p)}`;
-        document.getElementById('waArea').innerHTML = s ? 
-            `<a href="${link}" class="order-btn">إتمام الطلب عبر واتساب</a>` : 
-            `<div class="order-btn btn-disabled">نفذ المخزون حالياً</div>`;
-        document.getElementById('modal').style.display = "flex";
+        document.getElementById('modalImg').src = i;
+        document.getElementById('modalTitle').innerText = n;
+        document.getElementById('modalDesc').innerText = d;
+        document.getElementById('modalPrice').innerText = "$" + p;
+        const link = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent('أود طلب القطعة الفاخرة: '+n+' بسعر $'+p)}`;
+        document.getElementById('orderBtnContainer').innerHTML = s ? 
+            `<a href="${link}" class="wa-btn">إتمام الطلب عبر WhatsApp</a>` : 
+            `<div class="wa-btn" style="background:#444; pointer-events:none;">عذراً، نفذت الكمية</div>`;
+        document.getElementById('detailModal').style.display = "flex";
     };
 
     window.goBack = () => history.back();
-    window.closeM = (push = true) => document.getElementById('modal').style.display = "none";
+    window.closeModal = () => document.getElementById('detailModal').style.display = "none";
 
-    load();
+    loadResources();
 </script>
 </body>
 </html>
-
