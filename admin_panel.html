@@ -4,103 +4,71 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --blue: #090979; --cyan: #00d4ff; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; border-top: 5px solid var(--blue); }
-        input, textarea, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { background: var(--blue); color: white; cursor: pointer; border: none; font-weight: bold; }
-        .product-item { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 10px; }
+        :root { --primary: #090979; --accent: #00d4ff; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; padding: 20px; margin: 0; color: #1e293b; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; border-right: 6px solid var(--primary); animation: slideIn 0.8s ease; }
+        input, select, textarea, button { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 15px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 700; transition: 0.3s; }
+        button:hover { background: var(--accent); color: var(--primary); }
+        .inv-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+        .badge-stock { padding: 5px 15px; border-radius: 20px; font-size: 12px; border: none; width: auto; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
-<div style="max-width: 800px; margin: auto;">
+<div style="max-width: 850px; margin: auto;">
     <div class="card">
-        <h3><i class="fas fa-folder-plus"></i> إضافة قسم جديد (مع صورة)</h3>
-        <input type="text" id="catName" placeholder="اسم القسم (مثلاً: شواحن)">
-        <input type="text" id="catImg" placeholder="رابط صورة القسم">
-        <button onclick="saveCat()">حفظ القسم</button>
+        <h3><i class="fas fa-folder-plus"></i> إضافة قسم (Category)</h3>
+        <input type="text" id="cn" placeholder="اسم القسم الجديد">
+        <input type="text" id="ci" placeholder="رابط صورة القسم (من ImgBB)">
+        <button onclick="sc()">حفظ القسم</button>
     </div>
-
     <div class="card">
         <h3><i class="fas fa-plus-circle"></i> إضافة منتج جديد</h3>
-        <input type="text" id="pName" placeholder="اسم المنتج">
-        <select id="pCatList"><option value="">اختر القسم...</option></select>
-        <input type="number" id="pPrice" placeholder="السعر ($)">
-        <input type="text" id="pImg" placeholder="رابط صورة المنتج">
-        <textarea id="pDesc" placeholder="وصف المنتج التفصيلي..." rows="3"></textarea>
-        <button onclick="saveProduct()">نشر المنتج</button>
+        <input type="text" id="pn" placeholder="اسم المنتج">
+        <select id="pc"><option value="">اختر القسم...</option></select>
+        <input type="number" id="pp" placeholder="السعر بالدولار ($)">
+        <input type="text" id="pi" placeholder="رابط صورة المنتج">
+        <textarea id="pd" placeholder="وصف المنتج التفصيلي..." rows="3"></textarea>
+        <button onclick="sp()">نشر المنتج في المتجر</button>
     </div>
-
     <div class="card">
-        <h3>المخزن الحالي</h3>
-        <div id="inventory"></div>
+        <h3><i class="fas fa-boxes"></i> إدارة المخزون الحالي</h3>
+        <div id="inv"></div>
     </div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const firebaseConfig = { apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w", authDomain: "o-cell-8bd7f.firebaseapp.com", projectId: "o-cell-8bd7f", storageBucket: "o-cell-8bd7f.firebasestorage.app", messagingSenderId: "123702658364", appId: "1:123702658364:web:f51ca179843af7bab24a39", measurementId: "G-9G5Y056X75" };
+    const db = getFirestore(initializeApp(firebaseConfig));
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-        authDomain: "o-cell-8bd7f.firebaseapp.com",
-        projectId: "o-cell-8bd7f",
-        storageBucket: "o-cell-8bd7f.firebasestorage.app",
-        messagingSenderId: "123702658364",
-        appId: "1:123702658364:web:f51ca179843af7bab24a39"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.saveCat = async () => {
-        await addDoc(collection(db, "categories"), { 
-            name: document.getElementById('catName').value, 
-            image: document.getElementById('catImg').value 
-        });
+    window.sc = async () => {
+        await addDoc(collection(db, "categories"), { name: document.getElementById('cn').value, image: document.getElementById('ci').value });
         alert("تم حفظ القسم!"); location.reload();
     };
-
     async function init() {
-        const cSnap = await getDocs(collection(db, "categories"));
-        const sel = document.getElementById('pCatList');
-        cSnap.forEach(d => sel.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
-        loadInv();
+        const snap = await getDocs(collection(db, "categories"));
+        snap.forEach(d => document.getElementById('pc').innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+        li();
     }
-
-    window.saveProduct = async () => {
-        await addDoc(collection(db, "products"), {
-            name: document.getElementById('pName').value,
-            category: document.getElementById('pCatList').value,
-            price: document.getElementById('pPrice').value,
-            image: document.getElementById('pImg').value,
-            description: document.getElementById('pDesc').value,
-            inStock: true
-        });
-        alert("تم النشر!"); loadInv();
+    window.sp = async () => {
+        await addDoc(collection(db, "products"), { name: document.getElementById('pn').value, category: document.getElementById('pc').value, price: document.getElementById('pp').value, image: document.getElementById('pi').value, description: document.getElementById('pd').value, inStock: true });
+        alert("تم النشر!"); li();
     };
-
-    window.loadInv = async () => {
-        const pSnap = await getDocs(collection(db, "products"));
-        const inv = document.getElementById('inventory');
-        inv.innerHTML = "";
-        pSnap.forEach(d => {
+    window.li = async () => {
+        const snap = await getDocs(collection(db, "products"));
+        const box = document.getElementById('inv'); box.innerHTML = "";
+        snap.forEach(d => {
             const p = d.data();
-            inv.innerHTML += `<div class="product-item"><span>${p.name} ($${p.price})</span> 
-            <button onclick="delProd('${d.id}')" style="width:70px; background:red;">حذف</button></div>`;
+            box.innerHTML += `<div class="inv-item"><span>${p.name} ($${p.price})</span>
+                <div><button class="badge-stock" onclick="ts('${d.id}', ${p.inStock})" style="background:${p.inStock?'#10b981':'#64748b'}">${p.inStock?'متوفر':'نافذ'}</button>
+                <button onclick="dp('${d.id}')" style="background:#ef4444; width:auto; padding:5px 15px;">حذف</button></div></div>`;
         });
     };
-
-    window.delProd = async (id) => { if(confirm("حذف؟")) { await deleteDoc(doc(db, "products", id)); loadInv(); } };
+    window.ts = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); li(); };
+    window.dp = async (id) => { if(confirm("حذف؟")) { await deleteDoc(doc(db, "products", id)); li(); } };
     init();
 </script>
 </body>
 </html>
-    window.delProd = async (id) => { if(confirm("حذف القطعة؟")) { await deleteDoc(doc(db, "products", id)); loadInv(); } };
-    window.changeStock = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInv(); };
-
-    init();
-</script>
-</body>
-</html>
-
