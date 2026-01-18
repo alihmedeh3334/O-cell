@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #fff; }
+        .order-card { background: white; border-right: 5px solid #f39c12; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .order-info { flex-grow: 1; }
+        .order-status { font-weight: bold; color: #f39c12; }
+        .btn-done { background: #27ae60; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        .btn-return { background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <h1>⏳ الطلبات المعلقة (تحت التنفيذ)</h1>
+    <div id="orders-list"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadOrders() {
+        const snap = await getDocs(collection(db, "orders"));
+        const list = document.getElementById('orders-list');
+        list.innerHTML = "";
+        
+        if (snap.empty) { list.innerHTML = "<p>لا يوجد طلبات حالياً.</p>"; return; }
+
+        snap.forEach(d => {
+            const o = d.data();
+            list.innerHTML += `
+                <div class="order-card">
+                    <div class="order-info">
+                        <strong>الزبون: ${o.userName}</strong> (هاتف: ${o.userPhone})<br>
+                        الطلب: ${o.productName} - السعر: $${o.priceUsed}<br>
+                        <small>التاريخ: ${o.date.toDate().toLocaleString('ar-LB')}</small>
+                    </div>
+                    <div>
+                        <button class="btn-done" onclick="window.completeOrder('${d.id}')">تم التوصيل ✅</button>
+                        <button class="btn-return" onclick="window.moveToReturns('${d.id}')">مرتجع 🔄</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // وظيفة إكمال الطلب (حذفه من المعلقات)
+    window.completeOrder = async (id) => {
+        if(confirm("هل تم تسليم الطلب بنجاح؟")) {
+            await deleteDoc(doc(db, "orders", id));
+            alert("تم تحديث الحالة.");
+            loadOrders();
+        }
+    };
+
+    // وظيفة تحويل الطلب لمرتجع
+    window.moveToReturns = async (id) => {
+        const orderSnap = await getDocs(collection(db, "orders"));
+        const orderData = orderSnap.docs.find(d => d.id === id).data();
+        
+        await addDoc(collection(db, "returns"), { ...orderData, returnDate: new Date() });
+        await deleteDoc(doc(db, "orders", id));
+        alert("تم تحويل الطلب لقائمة المرتجعات.");
+        loadOrders();
+    };
+
+    loadOrders();
+</script>
+</body>
+</html>
+
