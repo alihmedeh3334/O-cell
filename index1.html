@@ -4,596 +4,605 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>O-Cell | نظام الطلب الذكي</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root {
-            --oc-deep-bg: #020c1b;
-            --oc-vibrant-blue: #004c8c;
-            --oc-neon-cyan: #00d4ff; 
-            --oc-glass-bg: rgba(255, 255, 255, 0.05);
-            --oc-glass-border: rgba(0, 212, 255, 0.2);
-            --oc-white: #ffffff;
-            --oc-text-muted: #94a3b8;
+        /* =========================
+           O-CELL — Refined UI Styles
+           ========================= */
+
+        :root{
+            --bg-deep: #040612;
+            --bg-mid: linear-gradient(180deg,#04223a 0%, #02101a 60%);
+            --accent: #00d4ff;
+            --accent-2: #19b5ff;
+            --glass: rgba(255,255,255,0.04);
+            --glass-2: rgba(255,255,255,0.03);
+            --glass-border: rgba(0,212,255,0.12);
+            --muted: #9fb0c6;
+            --text: #eaf6ff;
+            --danger: #ff5252;
+            --card-radius: 16px;
+            --corner-radius: 22px;
+            --transition-fast: 220ms;
+            --transition-slow: 420ms;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
-            background-attachment: fixed;
-            color: var(--oc-white); 
-            font-family: 'Inter', sans-serif; 
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
+        /* Reset & base */
+        *{ box-sizing: border-box; margin:0; padding:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+        html,body{ height:100%; }
+        body{
+            min-height:100vh;
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: var(--bg-mid);
+            color: var(--text);
+            line-height:1.58;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x:hidden;
+            padding-bottom:80px;
         }
 
+        /* subtle page entrance */
+        @keyframes pageFade {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        body > * { animation: pageFade var(--transition-slow) ease both; }
+
+        /* Neon logo pulse refined */
         @keyframes neonPulse {
-            0%, 100% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
-            50% { text-shadow: 0 0 25px rgba(0, 212, 255, 0.8); }
+            0%,100%{ text-shadow: 0 0 10px rgba(0,212,255,0.18), 0 6px 30px rgba(0,0,0,0.6); transform: translateY(0); }
+            50%{ text-shadow: 0 0 36px rgba(0,212,255,0.28), 0 10px 42px rgba(0,0,0,0.6); transform: translateY(-2px); }
         }
 
-        /* --- Navigation & Sidebar Toggle --- */
-        .oc-contact-nav {
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between; /* تعديل للمسافة */
-            align-items: center;
-            border-bottom: 1px solid var(--oc-glass-border);
-            position: sticky; top: 0; z-index: 1001;
+        /* Layout header / nav */
+        .oc-contact-nav{
+            position:sticky; top:0; z-index:1200;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:14px 20px;
+            background: linear-gradient(90deg, rgba(2,6,14,0.55), rgba(2,6,14,0.32));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            backdrop-filter: blur(8px) saturate(120%);
         }
-        .oc-contact-nav a { color: var(--oc-neon-cyan); text-decoration: none; font-size: 13px; font-weight: 700; }
-        
-        .profile-toggle {
-            cursor: pointer;
-            font-size: 24px;
-            color: var(--oc-white);
-            transition: 0.3s;
-            display: none; /* مخفي حتى يسجل الدخول */
-        }
-        .profile-toggle:hover { color: var(--oc-neon-cyan); }
+        .oc-contact-nav a{ color: var(--muted); text-decoration:none; font-weight:600; font-size:13px; transition: color var(--transition-fast); }
+        .oc-contact-nav a:hover{ color: var(--accent); }
 
-        /* --- Profile Sidebar --- */
-        .oc-sidebar {
-            position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
-            background: rgba(2, 12, 27, 0.95); backdrop-filter: blur(15px);
-            border-left: 1px solid var(--oc-glass-border);
-            z-index: 2000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px; display: flex; flex-direction: column;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-        }
-        .oc-sidebar.active { right: 0; }
-        
-        .sidebar-header { margin-bottom: 40px; border-bottom: 1px solid var(--oc-glass-border); padding-bottom: 20px; }
-        .sidebar-header h3 { font-size: 1.5rem; color: var(--oc-neon-cyan); margin-bottom: 5px; }
-        .sidebar-header p { font-size: 0.9rem; color: var(--oc-text-muted); }
+        .profile-toggle{ display:none; font-size:20px; color:var(--text); cursor:pointer; transition: transform var(--transition-fast); }
+        .profile-toggle:active{ transform:scale(.98); }
 
-        .profile-info-item { margin-bottom: 25px; }
-        .profile-label { font-size: 12px; color: var(--oc-text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; }
-        .profile-value { font-size: 16px; font-weight: 700; color: white; }
-        .status-badge { 
-            display: inline-block; padding: 5px 12px; border-radius: 20px; 
-            font-size: 12px; font-weight: bold; margin-top: 5px;
+        /* Sidebar (improved glass + slide) */
+        .oc-sidebar{
+            position:fixed; top:0; right:-360px; width:340px; height:100%;
+            background: linear-gradient(180deg, rgba(6,10,18,0.86), rgba(4,8,12,0.92));
+            border-left: 1px solid rgba(0,212,255,0.06);
+            padding:32px; display:flex; flex-direction:column; gap:14px;
+            box-shadow: -30px 0 80px rgba(0,0,0,0.6);
+            transition: right 360ms cubic-bezier(.2,.9,.2,1);
+            border-top-left-radius: 14px; border-bottom-left-radius: 14px;
         }
-        .status-retail { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid #555; }
-        .status-wholesale { background: rgba(0, 212, 255, 0.15); color: var(--oc-neon-cyan); border: 1px solid var(--oc-neon-cyan); }
+        .oc-sidebar.active{ right:0; }
 
-        .logout-btn {
-            margin-top: auto; background: rgba(217, 48, 37, 0.1); color: #ff4d4d;
-            border: 1px solid #ff4d4d; padding: 12px; border-radius: 10px;
-            cursor: pointer; font-weight: bold; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+        .sidebar-header h3{
+            font-family:'Playfair Display', serif;
+            color:var(--accent); font-size:1.45rem; letter-spacing:1px;
+            margin-bottom:4px;
         }
-        .logout-btn:hover { background: #ff4d4d; color: white; }
+        .sidebar-header p{ color:var(--muted); font-size:13px; }
 
-        .close-sidebar {
-            position: absolute; top: 20px; left: 20px; font-size: 24px; cursor: pointer; color: var(--oc-text-muted);
-        }
+        .profile-label{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:6px; }
+        .profile-value{ font-size:16px; color:var(--text); font-weight:700; }
 
-        /* --- Header --- */
-        .oc-main-header { padding: 25px 0; text-align: center; }
-        .oc-neon-logo { 
-            font-family: 'Playfair Display', serif; 
-            font-size: 3.5rem; 
-            color: white; 
-            font-weight: 900;
-            letter-spacing: 5px;
-            animation: neonPulse 3s infinite;
+        .status-badge{
+            display:inline-block; padding:6px 14px; border-radius:999px; font-weight:800; font-size:12px;
+            backdrop-filter: blur(6px);
+            border:1px solid var(--glass-border);
         }
-        .oc-neon-logo span { color: var(--oc-neon-cyan); }
+        .status-retail{ background: rgba(255,255,255,0.02); color:#cbd8e1; border-color: rgba(255,255,255,0.03); }
+        .status-wholesale{ background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(0,212,255,0.03)); color:var(--accent); border-color: rgba(0,212,255,0.12); }
 
-        /* --- Hero Card --- */
-        .oc-hero-card {
-            background: var(--oc-glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--oc-glass-border);
-            border-radius: 24px;
-            padding: 50px 30px;
-            max-width: 500px;
-            margin: 20px auto 40px;
-            text-align: center;
+        .logout-btn{
+            margin-top:auto; width:100%;
+            padding:12px; border-radius:14px; font-weight:800; cursor:pointer;
+            background:transparent; color:var(--danger); border:1px solid rgba(255,82,82,0.12);
+            display:flex; align-items:center; justify-content:center; gap:10px;
+            transition: all var(--transition-fast);
         }
-        .oc-hero-card h2 { font-size: 2.2rem; margin-bottom: 10px; position: relative; }
-        .oc-hero-card h2::after { content: ''; display: block; height: 3px; background: var(--oc-neon-cyan); width: 80px; margin: 10px auto; }
+        .logout-btn:hover{ background:var(--danger); color:white; border-color:transparent; box-shadow: 0 8px 30px rgba(255,82,82,0.08); }
 
-        /* --- Grid & Cards --- */
-        .oc-container { max-width: 1200px; margin: auto; padding: 0 20px 80px; }
-        .oc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
+        .close-sidebar{ position:absolute; top:18px; left:18px; color:var(--muted); font-size:20px; cursor:pointer; }
 
-        .oc-glass-card {
-            background: var(--oc-glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--oc-glass-border);
-            overflow: hidden;
-            transition: 0.4s;
-            cursor: pointer;
-            position: relative;
+        /* Main header / logo */
+        .oc-main-header{ padding:28px 0 6px; text-align:center; }
+        .oc-neon-logo{
+            font-family:'Playfair Display', serif;
+            font-size:clamp(36px,6vw,56px); color:var(--text);
+            letter-spacing:5px; font-weight:900;
+            display:inline-block; padding:6px 12px; border-radius:12px;
+            animation:neonPulse 3.6s ease-in-out infinite;
         }
-        .oc-glass-card:hover { transform: translateY(-10px); border-color: var(--oc-neon-cyan); }
-        .oc-glass-card img { width: 100%; height: 200px; object-fit: cover; opacity: 0.8; transition: 0.5s; }
-        .oc-glass-card:hover img { opacity: 1; }
-        .oc-card-body { padding: 18px; text-align: center; }
-        .oc-card-body .price { color: var(--oc-neon-cyan); font-weight: 900; font-size: 1.2rem; }
+        .oc-neon-logo span{ color:var(--accent); }
 
-        .sold-badge { position: absolute; top: 15px; left: 15px; background: #8d1a1a; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 900; }
+        /* Hero card */
+        .oc-hero-card{
+            max-width:720px; margin:18px auto 28px; padding:36px 30px;
+            border-radius:20px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.03); box-shadow: 0 12px 40px rgba(2,12,27,0.6);
+            text-align:center;
+        }
+        .oc-hero-card h2{ font-size:1.8rem; margin-bottom:6px; color:var(--text); }
+        .oc-hero-card p{ color:var(--muted); font-size:15px; }
 
-        /* --- Modal & Quantity System --- */
-        .oc-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 12, 27, 0.98); z-index: 5000;
-            justify-content: center; align-items: center; padding: 20px;
-        }
-        .oc-modal-content {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--oc-glass-border);
-            width: 100%; max-width: 480px;
-            border-radius: 30px; padding: 40px; text-align: center;
-        }
-        .oc-modal-content img { width: 100%; border-radius: 20px; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid var(--oc-glass-border); }
-
-        .qty-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            gap: 15px;
-        }
-        .qty-label { font-size: 14px; color: var(--oc-text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            border: 1px solid var(--oc-glass-border);
-            overflow: hidden;
-        }
-        .qty-btn {
-            background: none;
-            border: none;
-            color: var(--oc-neon-cyan);
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: 0.3s;
-        }
-        .qty-btn:hover { background: rgba(0, 212, 255, 0.1); }
-        .qty-input {
-            background: none;
-            border: none;
-            color: white;
-            width: 40px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 16px;
+        /* Container & grid */
+        .oc-container{ max-width:1180px; margin:20px auto 80px; padding:0 20px; }
+        .oc-grid{
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap:20px;
         }
 
-        .wa-btn {
-            display: block; background: var(--oc-neon-cyan); color: var(--oc-deep-bg);
-            padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
-            margin-top: 10px; transition: 0.3s;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        /* Glass cards */
+        .oc-glass-card{
+            border-radius: var(--card-radius);
+            overflow:hidden; cursor:pointer;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+            transform-origin:center;
+            display:flex; flex-direction:column;
+            min-height:300px;
+            box-shadow: 0 8px 30px rgba(1,6,12,0.6);
         }
-        .wa-btn:hover { background: white; transform: scale(1.02); }
+        .oc-glass-card:hover{
+            transform: translateY(-10px) scale(1.01);
+            border-color: rgba(0,212,255,0.16);
+            box-shadow: 0 20px 60px rgba(3,22,40,0.7);
+        }
+        .oc-glass-card img{ width:100%; height:200px; object-fit:cover; opacity:0.96; transition: transform 420ms ease, opacity 420ms ease; }
+        .oc-glass-card:hover img{ transform: scale(1.03); opacity:1; }
 
-        .back-btn {
-            background: none; border: 1px solid var(--oc-neon-cyan); color: var(--oc-neon-cyan);
-            padding: 10px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; margin-bottom: 30px;
-        }
+        .oc-card-body{ padding:18px; text-align:center; display:flex; flex-direction:column; gap:6px; margin-top:auto; }
+        .oc-card-body h3{ font-size:16px; font-weight:800; color:var(--text); }
+        .oc-card-body .price{ color:var(--accent); font-weight:900; font-size:1.1rem; }
 
-        /* --- Login Floating Button --- */
-        .login-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--oc-white);
-            color: var(--oc-vibrant-blue);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
-            z-index: 2000;
-            cursor: pointer;
-            font-size: 24px;
-            transition: 0.3s;
-            border: 3px solid var(--oc-neon-cyan);
-        }
-        .login-float:hover { transform: scale(1.1); }
-
-        /* --- Profile Completion Overlay --- */
-        #profileOverlay {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, var(--oc-vibrant-blue) 0%, var(--oc-deep-bg) 100%);
-            z-index: 9999; justify-content: center; align-items: center;
-            flex-direction: column; padding: 20px;
-        }
-        .login-box {
-            background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px;
-            border: 1px solid var(--oc-glass-border); text-align: center; width: 100%; max-width: 400px;
-            backdrop-filter: blur(15px);
-        }
-        .login-input {
-            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none;
-            background: rgba(255,255,255,0.1); color: white; text-align: center;
-        }
-        .login-btn {
-            background: var(--oc-neon-cyan); color: var(--oc-deep-bg); border: none; padding: 15px;
-            width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        .sold-badge{
+            position:absolute; top:14px; left:14px; background:#7f1414; color:#ffd4d4;
+            padding:6px 10px; border-radius:8px; font-size:11px; font-weight:900; z-index:4;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
         }
 
-        .hidden { display: none; }
+        /* Modal */
+        .oc-modal{
+            display:none; position:fixed; inset:0; z-index:5000;
+            background: linear-gradient(180deg, rgba(2,6,10,0.72), rgba(2,6,10,0.9));
+            justify-content:center; align-items:center; padding:22px;
+            animation: modalBg 360ms ease both;
+        }
+        @keyframes modalBg{ from{ opacity:0 } to { opacity:1 } }
+
+        .oc-modal-content{
+            width:100%; max-width:520px; border-radius:22px;
+            padding:28px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(0,212,255,0.06); backdrop-filter: blur(8px);
+            box-shadow: 0 30px 90px rgba(0,0,0,0.7);
+            text-align:center;
+            transform: translateY(12px);
+            animation: modalCard 320ms cubic-bezier(.2,.9,.2,1) both;
+        }
+        @keyframes modalCard{ from{ opacity:0; transform:translateY(18px) scale(.995) } to { opacity:1; transform:none } }
+
+        .oc-modal-content img{ width:100%; height:260px; object-fit:cover; border-radius:14px; margin-bottom:16px; border:1px solid rgba(255,255,255,0.03); }
+
+        .qty-container{ display:flex; align-items:center; justify-content:center; gap:14px; margin:20px 0; }
+        .qty-label{ color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:1px; }
+        .qty-controls{ display:flex; align-items:center; background: rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.02); overflow:hidden; }
+        .qty-btn{ padding:10px 16px; border:none; background:transparent; cursor:pointer; font-size:18px; font-weight:800; color:var(--accent-2); }
+        .qty-input{ width:48px; text-align:center; border:none; background:transparent; color:var(--text); font-weight:900; font-size:16px; }
+
+        .wa-btn{
+            display:block; text-decoration:none; font-weight:900; padding:14px 18px;
+            border-radius:14px; background: linear-gradient(90deg,var(--accent), var(--accent-2));
+            color: #02101a; box-shadow: 0 16px 50px rgba(0,212,255,0.12); transition: transform var(--transition-fast);
+        }
+        .wa-btn:hover{ transform: translateY(-4px); opacity:0.98; }
+
+        .back-btn{
+            display:inline-block; margin-bottom:28px; padding:10px 22px; border-radius:999px;
+            border:1px solid rgba(0,212,255,0.12); color:var(--accent); background:transparent; font-weight:800;
+        }
+
+        /* Floating login button */
+        .login-float{
+            position:fixed; bottom:26px; right:26px; width:64px; height:64px; z-index:2000;
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            background:linear-gradient(180deg,#ffffff, #f3f9ff); color:var(--bg-deep);
+            box-shadow: 0 12px 50px rgba(3,20,30,0.6);
+            border: 3px solid rgba(0,212,255,0.12); cursor:pointer; transition: transform var(--transition-fast);
+        }
+        .login-float:hover{ transform: translateY(-6px) scale(1.03); }
+
+        /* Profile overlay (signup) */
+        #profileOverlay{
+            display:none; position:fixed; inset:0; z-index:9999;
+            background: radial-gradient(circle at center, rgba(0,36,56,0.6), rgba(0,8,12,0.9));
+            justify-content:center; align-items:center; padding:20px;
+        }
+        .login-box{
+            max-width:420px; width:100%; padding:34px; border-radius:20px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(0,212,255,0.06); text-align:center; backdrop-filter: blur(8px);
+        }
+        .login-input{
+            width:100%; padding:14px; margin:8px 0; border-radius:12px; border:none;
+            background: rgba(255,255,255,0.02); color:var(--text); text-align:center; font-weight:600;
+        }
+        .login-btn{
+            margin-top:10px; width:100%; padding:12px; border-radius:12px; border:none; cursor:pointer;
+            background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#02101a; font-weight:900;
+        }
+
+        .hidden{ display:none !important; }
+
+        /* small screens tweaks */
+        @media (max-width:720px){
+            .oc-sidebar{ width:92%; right:-100%; }
+            .oc-sidebar.active{ right:0; }
+            .oc-hero-card{ padding:24px; margin:12px 16px 22px; border-radius:18px; }
+            .oc-glass-card{ min-height:260px; }
+            .oc-glass-card img{ height:160px; }
+            .oc-modal-content img{ height:200px; }
+            .profile-toggle{ display:block; }
+            .oc-contact-nav a{ font-size:12px; }
+            .oc-container{ padding:0 14px; }
+        }
+
+        /* reduced motion */
+        @media (prefers-reduced-motion: reduce){
+            *{ animation:none !important; transition:none !important; }
+        }
+
     </style>
+
 </head>
-<body>
+<body>  <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
+    <i class="fab fa-google"></i>
+</div>
 
-    <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
-        <i class="fab fa-google"></i>
+<div id="profileOverlay">
+    <div class="login-box">
+        <h2 style="margin-bottom:20px; color:var(--accent);">إكمال التسجيل</h2>
+        <p style="margin-bottom:20px; font-size:13px; opacity:0.8;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
+        <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
+        <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
+        <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
+    </div>
+</div>
+
+<div id="accountSidebar" class="oc-sidebar">
+    <div class="close-sidebar" onclick="toggleSidebar()">&times;</div>
+
+    <div class="sidebar-header">
+        <h3>حسابي</h3>
+        <p>بياناتك الشخصية</p>
     </div>
 
-    <div id="profileOverlay">
-        <div class="login-box">
-            <h2 style="margin-bottom:20px; color:var(--oc-neon-cyan);">إكمال التسجيل</h2>
-            <p style="margin-bottom:20px; font-size:13px; opacity:0.7;">أهلاً بك! يرجى إدخال اسمك ورقم هاتفك لمرة واحدة فقط</p>
-            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
-            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
-            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
-        </div>
+    <div class="profile-info-item">
+        <span class="profile-label">الاسم</span>
+        <span class="profile-value" id="sideName">---</span>
     </div>
 
-    <div id="accountSidebar" class="oc-sidebar">
-        <div class="close-sidebar" onclick="toggleSidebar()">&times;</div>
-        
-        <div class="sidebar-header">
-            <h3>حسابي</h3>
-            <p>بياناتك الشخصية</p>
-        </div>
-
-        <div class="profile-info-item">
-            <span class="profile-label">الاسم</span>
-            <span class="profile-value" id="sideName">---</span>
-        </div>
-
-        <div class="profile-info-item">
-            <span class="profile-label">رقم الهاتف</span>
-            <span class="profile-value" id="sidePhone">---</span>
-        </div>
-
-        <div class="profile-info-item">
-            <span class="profile-label">حالة الحساب</span>
-            <span id="sideStatus" class="status-badge status-retail">زبون مفرق</span>
-        </div>
-
-        <button class="logout-btn" onclick="logoutUser()">
-            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-        </button>
+    <div class="profile-info-item">
+        <span class="profile-label">رقم الهاتف</span>
+        <span class="profile-value" id="sidePhone">---</span>
     </div>
 
-    <div class="oc-contact-nav">
-        <div class="profile-toggle" id="navProfileIcon" onclick="toggleSidebar()">
-            <i class="fas fa-user-circle"></i>
-        </div>
-        <div>
-            <a href="tel:78961175" style="margin-left:15px;"><i class="fas fa-phone"></i> 78961175</a>
-            <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank"><i class="fas fa-map-marker-alt"></i> بيروت خط المشرفية الشياح- شارع كنج وعيتاني بجانب قهوة ابو حسن</a>
-        </div>
+    <div class="profile-info-item">
+        <span class="profile-label">حالة الحساب</span>
+        <span id="sideStatus" class="status-badge status-retail">زبون مفرق</span>
     </div>
 
-    <header class="oc-main-header">
-        <h1 class="oc-neon-logo">O-<span>CELL</span></h1>
-    </header>
+    <button class="logout-btn" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+    </button>
+</div>
 
-    <div id="vHome">
-        <div class="oc-hero-card">
-            <h2>O-Cell Lebanon</h2>
-            <p>اخترنا لك الأفضل في عالم التكنولوجيا</p>
-        </div>
-        <div class="oc-container">
-            <h3 style="color: var(--oc-neon-cyan); margin-bottom: 30px; border-right: 4px solid var(--oc-neon-cyan); padding-right: 15px;">الفئات</h3>
-            <div class="oc-grid" id="catGrid"></div>
-        </div>
+<div class="oc-contact-nav">
+    <div class="profile-toggle" id="navProfileIcon" onclick="toggleSidebar()">
+        <i class="fas fa-user-circle"></i>
     </div>
-
-    <div id="vProd" class="hidden oc-container">
-        <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
-        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
-        <div class="oc-grid" id="prodGrid"></div>
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+        <a href="tel:78961175" style="margin-left:15px;"><i class="fas fa-phone"></i> 78961175</a>
+        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank" style="display:inline-flex; align-items:center;"><i class="fas fa-map-marker-alt" style="margin-left:6px;"></i> بيروت خط المشرفية الشياح- شارع كنج وعيتاني بجانب قهوة ابو حسن</a>
     </div>
+</div>
 
-    <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
-        <div class="oc-modal-content">
-            <img id="mImg" src="">
-            <h2 id="mTitle" style="margin-bottom: 10px;"></h2>
-            <p id="mDesc" style="color: var(--oc-text-muted); font-size: 13px; margin-bottom: 15px;"></p>
-            <div id="mPrice" style="font-size:32px; color:var(--oc-neon-cyan); font-weight:900;"></div>
+<header class="oc-main-header">
+    <h1 class="oc-neon-logo">O-<span>CELL</span></h1>
+</header>
 
-            <div class="qty-container">
-                <span class="qty-label">الكمية:</span>
-                <div class="qty-controls">
-                    <button class="qty-btn" onclick="updateQty(-1)">-</button>
-                    <input type="number" id="qtyInput" class="qty-input" value="1" readonly>
-                    <button class="qty-btn" onclick="updateQty(1)">+</button>
-                </div>
+<div id="vHome">
+    <div class="oc-hero-card">
+        <h2>O-Cell Lebanon</h2>
+        <p>اخترنا لك الأفضل في عالم التكنولوجيا</p>
+    </div>
+    <div class="oc-container">
+        <h3 style="color: var(--accent); margin-bottom: 30px; border-right: 4px solid var(--accent); padding-right: 15px;">الفئات</h3>
+        <div class="oc-grid" id="catGrid"></div>
+    </div>
+</div>
+
+<div id="vProd" class="hidden oc-container">
+    <button class="back-btn" onclick="goBack()">← العودة للأقسام</button>
+    <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.2rem; margin-bottom: 35px;"></h2>
+    <div class="oc-grid" id="prodGrid"></div>
+</div>
+
+<div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
+    <div class="oc-modal-content">
+        <img id="mImg" src="">
+        <h2 id="mTitle" style="margin-bottom: 10px;"></h2>
+        <p id="mDesc" style="color: var(--muted); font-size: 13px; margin-bottom: 15px;"></p>
+        <div id="mPrice" style="font-size:32px; color:var(--accent); font-weight:900;"></div>
+
+        <div class="qty-container">
+            <span class="qty-label">الكمية:</span>
+            <div class="qty-controls">
+                <button class="qty-btn" onclick="updateQty(-1)">-</button>
+                <input type="number" id="qtyInput" class="qty-input" value="1" readonly>
+                <button class="qty-btn" onclick="updateQty(1)">+</button>
             </div>
-
-            <div id="waAction"></div>
-            <button onclick="goBack()" style="background:none; border:none; color:white; margin-top:20px; cursor:pointer; opacity:0.5;">إغلاق</button>
         </div>
+
+        <div id="waAction"></div>
+        <button onclick="goBack()" style="background:none; border:none; color:white; margin-top:20px; cursor:pointer; opacity:0.6;">إغلاق</button>
     </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-            authDomain: "o-cell-8bd7f.firebaseapp.com",
-            projectId: "o-cell-8bd7f",
-            storageBucket: "o-cell-8bd7f.firebasestorage.app",
-            messagingSenderId: "123702658364",
-            appId: "1:123702658364:web:f51ca179843af7bab24a39",
-            measurementId: "G-9G5Y056X75"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39",
+        measurementId: "G-9G5Y056X75"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        const STORE_PHONE = "96178961175";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const STORE_PHONE = "96178961175";
 
-        let productMemory = [];
-        let activeProduct = null;
-        let currentUserRole = 'retail'; 
-        let currentUserEmail = null;
+    let productMemory = [];
+    let activeProduct = null;
+    let currentUserRole = 'retail';
+    let currentUserEmail = null;
 
-        // --- 1. تسجيل الدخول ---
-        window.loginWithGoogle = () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUserEmail = user.email;
-                    monitorUserStatus(user.email, user.displayName);
-                }).catch((error) => {
-                    console.error("Login Failed", error);
-                    alert("فشل تسجيل الدخول.");
-                });
-        };
+    // --- 1. تسجيل الدخول ---
+    window.loginWithGoogle = () => {
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const user = result.user;
+                currentUserEmail = user.email;
+                monitorUserStatus(user.email, user.displayName);
+            }).catch((error) => {
+                console.error("Login Failed", error);
+                alert("فشل تسجيل الدخول.");
+            });
+    };
 
-        // --- 2. المراقبة الحية وتحديث الواجهة ---
-        function monitorUserStatus(email, displayName) {
-            const q = query(collection(db, "users"), where("email", "==", email));
-            
-            onSnapshot(q, (snapshot) => {
-                if (!snapshot.empty) {
-                    // المستخدم موجود
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const oldRole = currentUserRole;
-                        currentUserRole = data.role || 'retail';
-                        
-                        // حفظ البيانات
-                        localStorage.setItem('oc_user', JSON.stringify({
-                            name: data.name, phone: data.phone, role: currentUserRole, email: email
-                        }));
+    // --- 2. المراقبة الحية وتحديث الواجهة ---
+    function monitorUserStatus(email, displayName) {
+        const q = query(collection(db, "users"), where("email", "==", email));
 
-                        // تحديث واجهة الحساب الجانبية
-                        updateSidebar(data.name, data.phone, currentUserRole);
-                        
-                        // إخفاء زر التسجيل وإظهار أيقونة البروفايل
-                        document.getElementById('loginBtnContainer').style.display = 'none';
-                        document.getElementById('navProfileIcon').style.display = 'block';
+        onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                // المستخدم موجود
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const oldRole = currentUserRole;
+                    currentUserRole = data.role || 'retail';
 
-                        // تحديث الأسعار إذا تغيرت الرتبة
-                        if (oldRole !== currentUserRole) {
-                            const currentCat = document.getElementById('viewCatTitle').innerText;
-                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
-                                fetchProducts(currentCat);
-                            }
+                    // حفظ البيانات
+                    localStorage.setItem('oc_user', JSON.stringify({
+                        name: data.name, phone: data.phone, role: currentUserRole, email: email
+                    }));
+
+                    // تحديث واجهة الحساب الجانبية
+                    updateSidebar(data.name, data.phone, currentUserRole);
+
+                    // إخفاء زر التسجيل وإظهار أيقونة البروفايل
+                    document.getElementById('loginBtnContainer').style.display = 'none';
+                    document.getElementById('navProfileIcon').style.display = 'block';
+
+                    // تحديث الأسعار إذا تغيرت الرتبة
+                    if (oldRole !== currentUserRole) {
+                        const currentCat = document.getElementById('viewCatTitle').innerText;
+                        if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
+                            fetchProducts(currentCat);
                         }
-                    });
-                } else {
-                    // مستخدم جديد -> إظهار نافذة إكمال البيانات
-                    document.getElementById('profName').value = displayName || "";
-                    document.getElementById('profileOverlay').style.display = 'flex';
-                }
-            });
-        }
-
-        function updateSidebar(name, phone, role) {
-            document.getElementById('sideName').innerText = name;
-            document.getElementById('sidePhone').innerText = phone || "غير مسجل";
-            const statusBadge = document.getElementById('sideStatus');
-            
-            if(role === 'wholesale') {
-                statusBadge.innerText = "تاجر جملة";
-                statusBadge.className = "status-badge status-wholesale";
+                    }
+                });
             } else {
-                statusBadge.innerText = "زبون مفرق";
-                statusBadge.className = "status-badge status-retail";
+                // مستخدم جديد -> إظهار نافذة إكمال البيانات
+                document.getElementById('profName').value = displayName || "";
+                document.getElementById('profileOverlay').style.display = 'flex';
             }
-        }
-
-        // --- 3. حفظ بيانات المستخدم الجديد ---
-        window.saveProfileData = async () => {
-            const name = document.getElementById('profName').value;
-            const phone = document.getElementById('profPhone').value;
-
-            if(!name || !phone) return alert("الرجاء إدخال البيانات");
-
-            try {
-                await addDoc(collection(db, "users"), {
-                    email: currentUserEmail,
-                    name: name,
-                    phone: phone,
-                    role: 'retail', 
-                    joined: new Date()
-                });
-                document.getElementById('profileOverlay').style.display = 'none';
-                alert("تم التسجيل بنجاح!");
-            } catch (e) {
-                console.error("Error: ", e);
-            }
-        };
-
-        // --- 4. القائمة الجانبية وتسجيل الخروج ---
-        window.toggleSidebar = () => {
-            document.getElementById('accountSidebar').classList.toggle('active');
-        };
-
-        window.logoutUser = () => {
-            if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-                signOut(auth).then(() => {
-                    localStorage.removeItem('oc_user');
-                    location.reload(); // إعادة تحميل الصفحة لتعود لوضع الزائر
-                });
-            }
-        };
-
-        // التحقق عند فتح الصفحة
-        const savedUser = localStorage.getItem('oc_user');
-        if(savedUser) {
-            const userObj = JSON.parse(savedUser);
-            currentUserEmail = userObj.email;
-            currentUserRole = userObj.role;
-            monitorUserStatus(userObj.email, userObj.name);
-        } else {
-            // حالة الزائر
-            document.getElementById('loginBtnContainer').style.display = 'flex';
-            document.getElementById('navProfileIcon').style.display = 'none';
-        }
-
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
-            else { renderHomeView(); closeM(); }
         });
+    }
 
-        async function initStore() {
-            const snap = await getDocs(collection(db, "categories"));
-            const grid = document.getElementById('catGrid');
-            grid.innerHTML = "";
-            snap.forEach(d => {
-                const c = d.data();
+    function updateSidebar(name, phone, role) {
+        document.getElementById('sideName').innerText = name;
+        document.getElementById('sidePhone').innerText = phone || "غير مسجل";
+        const statusBadge = document.getElementById('sideStatus');
+
+        if(role === 'wholesale') {
+            statusBadge.innerText = "تاجر جملة";
+            statusBadge.className = "status-badge status-wholesale";
+        } else {
+            statusBadge.innerText = "زبون مفرق";
+            statusBadge.className = "status-badge status-retail";
+        }
+    }
+
+    // --- 3. حفظ بيانات المستخدم الجديد ---
+    window.saveProfileData = async () => {
+        const name = document.getElementById('profName').value;
+        const phone = document.getElementById('profPhone').value;
+
+        if(!name || !phone) return alert("الرجاء إدخال البيانات");
+
+        try {
+            await addDoc(collection(db, "users"), {
+                email: currentUserEmail,
+                name: name,
+                phone: phone,
+                role: 'retail',
+                joined: new Date()
+            });
+            document.getElementById('profileOverlay').style.display = 'none';
+            alert("تم التسجيل بنجاح!");
+        } catch (e) {
+            console.error("Error: ", e);
+        }
+    };
+
+    // --- 4. القائمة الجانبية وتسجيل الخروج ---
+    window.toggleSidebar = () => {
+        document.getElementById('accountSidebar').classList.toggle('active');
+    };
+
+    window.logoutUser = () => {
+        if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+            signOut(auth).then(() => {
+                localStorage.removeItem('oc_user');
+                location.reload(); // إعادة تحميل الصفحة لتعود لوضع الزائر
+            });
+        }
+    };
+
+    // التحقق عند فتح الصفحة
+    const savedUser = localStorage.getItem('oc_user');
+    if(savedUser) {
+        const userObj = JSON.parse(savedUser);
+        currentUserEmail = userObj.email;
+        currentUserRole = userObj.role;
+        monitorUserStatus(userObj.email, userObj.name);
+    } else {
+        // حالة الزائر
+        document.getElementById('loginBtnContainer').style.display = 'flex';
+        document.getElementById('navProfileIcon').style.display = 'none';
+    }
+
+    window.addEventListener('popstate', (e) => {
+        if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
+        else { renderHomeView(); closeM(); }
+    });
+
+    async function initStore() {
+        const snap = await getDocs(collection(db, "categories"));
+        const grid = document.getElementById('catGrid');
+        grid.innerHTML = "";
+        snap.forEach(d => {
+            const c = d.data();
+            grid.innerHTML += `
+                <div class="oc-glass-card" onclick="navToCat('${c.name}')">
+                    <img src="${c.image}">
+                    <div class="oc-card-body"><h3>${c.name}</h3></div>
+                </div>`;
+        });
+    }
+
+    window.navToCat = (n) => {
+        history.pushState({v:'p', n:n}, "");
+        renderProductsView(n);
+    };
+
+    function renderProductsView(n) {
+        document.getElementById('vHome').classList.add('hidden');
+        document.getElementById('vProd').classList.remove('hidden');
+        document.getElementById('viewCatTitle').innerText = n;
+        fetchProducts(n);
+    }
+
+    async function fetchProducts(catName) {
+        const grid = document.getElementById('prodGrid');
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري تحميل الأسعار...</p>";
+        const snap = await getDocs(collection(db, "products"));
+        grid.innerHTML = "";
+        productMemory = [];
+        let i = 0;
+        snap.forEach(d => {
+            const p = d.data();
+            if(p.category === catName) {
+                productMemory.push(p);
+                const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
+
                 grid.innerHTML += `
-                    <div class="oc-glass-card" onclick="navToCat('${c.name}')">
-                        <img src="${c.image}">
-                        <div class="oc-card-body"><h3>${c.name}</h3></div>
+                    <div class="oc-glass-card" onclick="openDetails(${i})">
+                        ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
+                        <img src="${p.image}">
+                        <div class="oc-card-body">
+                            <h3>${p.name}</h3>
+                            <div class="price">$${finalPrice}</div>
+                        </div>
                     </div>`;
-            });
-        }
+                i++;
+            }
+        });
+    }
 
-        window.navToCat = (n) => {
-            history.pushState({v:'p', n:n}, "");
-            renderProductsView(n);
-        };
+    window.openDetails = (index) => {
+        activeProduct = productMemory[index];
+        const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
+        activeProduct.displayPrice = finalPrice;
 
-        function renderProductsView(n) {
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.remove('hidden');
-            document.getElementById('viewCatTitle').innerText = n;
-            fetchProducts(n);
-        }
+        document.getElementById('qtyInput').value = 1;
 
-        async function fetchProducts(catName) {
-            const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>جاري تحميل الأسعار...</p>";
-            const snap = await getDocs(collection(db, "products"));
-            grid.innerHTML = "";
-            productMemory = [];
-            let i = 0;
-            snap.forEach(d => {
-                const p = d.data();
-                if(p.category === catName) {
-                    productMemory.push(p);
-                    const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
-                    
-                    grid.innerHTML += `
-                        <div class="oc-glass-card" onclick="openDetails(${i})">
-                            ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
-                            <img src="${p.image}">
-                            <div class="oc-card-body">
-                                <h3>${p.name}</h3>
-                                <div class="price">$${finalPrice}</div>
-                            </div>
-                        </div>`;
-                    i++;
-                }
-            });
-        }
+        history.pushState({v:'m'}, "");
+        document.getElementById('mImg').src = activeProduct.image;
+        document.getElementById('mTitle').innerText = activeProduct.name;
+        document.getElementById('mDesc').innerText = activeProduct.description || "";
+        document.getElementById('mPrice').innerText = "$" + finalPrice;
 
-        window.openDetails = (index) => {
-            activeProduct = productMemory[index];
-            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
-            activeProduct.displayPrice = finalPrice; 
+        updateWALink();
+        document.getElementById('modal').style.display = "flex";
+    };
 
-            document.getElementById('qtyInput').value = 1;
-            
-            history.pushState({v:'m'}, "");
-            document.getElementById('mImg').src = activeProduct.image;
-            document.getElementById('mTitle').innerText = activeProduct.name;
-            document.getElementById('mDesc').innerText = activeProduct.description || "";
-            document.getElementById('mPrice').innerText = "$" + finalPrice;
-            
-            updateWALink();
-            document.getElementById('modal').style.display = "flex";
-        };
+    window.updateQty = (val) => {
+        let current = parseInt(document.getElementById('qtyInput').value);
+        let next = current + val;
+        if(next < 1) return;
+        document.getElementById('qtyInput').value = next;
+        updateWALink();
+    };
 
-        window.updateQty = (val) => {
-            let current = parseInt(document.getElementById('qtyInput').value);
-            let next = current + val;
-            if(next < 1) return;
-            document.getElementById('qtyInput').value = next;
-            updateWALink();
-        };
+    function updateWALink() {
+        if(!activeProduct) return;
+        const qty = document.getElementById('qtyInput').value;
+        const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
 
-        function updateWALink() {
-            if(!activeProduct) return;
-            const qty = document.getElementById('qtyInput').value;
-            const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
-            
-            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
-            
-            const area = document.getElementById('waAction');
-            area.innerHTML = activeProduct.inStock ? 
-                `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn">اطلب الآن عبر WHATSAPP</a>` : 
-                `<div class="wa-btn" style="background:#555; box-shadow:none;">غير متوفر حالياً</div>`;
-        }
+        const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
+        const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
 
-        window.goBack = () => history.back();
-        function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
-        function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
+        const area = document.getElementById('waAction');
+        area.innerHTML = activeProduct.inStock ?
+            `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn">اطلب الآن عبر WHATSAPP</a>` :
+            `<div class="wa-btn" style="background:#555; box-shadow:none;">غير متوفر حالياً</div>`;
+    }
 
-        initStore();
-    </script>
+    window.goBack = () => history.back();
+    function renderHomeView() { document.getElementById('vHome').classList.remove('hidden'); document.getElementById('vProd').classList.add('hidden'); }
+    function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
+
+    initStore();
+</script>
+
 </body>
 </html>
