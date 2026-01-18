@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --blue: #090979; --cyan: #00d4ff; --dark: #020024; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 25px; border-top: 5px solid var(--blue); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        button { background: var(--blue); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: var(--cyan); }
+        .product-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+        .btn-delete { background: #e94560; width: auto; padding: 5px 15px; }
+        .btn-stock { background: #f39c12; width: auto; padding: 5px 15px; }
+    </style>
+</head>
+<body>
+
+<div style="max-width: 900px; margin: auto;">
+    <div class="card">
+        <h3><i class="fas fa-folder-plus"></i> إنشاء قسم جديد</h3>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="catInp" placeholder="اسم القسم (مثلاً: شواحن)">
+            <button onclick="saveCat()" style="width: 150px;">حفظ القسم</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-cart-plus"></i> إضافة بضاعة جديدة</h3>
+        <div class="grid">
+            <input type="text" id="pName" placeholder="اسم المنتج">
+            <select id="pCatList"><option value="">اختر القسم...</option></select>
+            <input type="number" id="pPrice" placeholder="السعر ($)">
+            <input type="text" id="pImg" placeholder="رابط الصورة المباشر">
+        </div>
+        <button onclick="saveProduct()">نشر في المتجر</button>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-list"></i> إدارة المخزون الحالي</h3>
+        <div id="inventory"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // كود Firebase الخاص بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+        authDomain: "o-cell-8bd7f.firebaseapp.com",
+        projectId: "o-cell-8bd7f",
+        storageBucket: "o-cell-8bd7f.firebasestorage.app",
+        messagingSenderId: "123702658364",
+        appId: "1:123702658364:web:f51ca179843af7bab24a39",
+        measurementId: "G-9G5Y056X75"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.saveCat = async () => {
+        const name = document.getElementById('catInp').value;
+        if(!name) return;
+        await addDoc(collection(db, "categories"), { name: name });
+        alert("تمت إضافة القسم بنجاح!");
+        location.reload();
+    };
+
+    async function init() {
+        const cSnap = await getDocs(collection(db, "categories"));
+        const sel = document.getElementById('pCatList');
+        cSnap.forEach(d => sel.innerHTML += `<option value="${d.data().name}">${d.data().name}</option>`);
+        loadInv();
+    }
+
+    window.saveProduct = async () => {
+        const data = {
+            name: document.getElementById('pName').value,
+            category: document.getElementById('pCatList').value,
+            price: document.getElementById('pPrice').value,
+            image: document.getElementById('pImg').value,
+            inStock: true
+        };
+        await addDoc(collection(db, "products"), data);
+        alert("تم نشر المنتج!");
+        loadInv();
+    };
+
+    window.loadInv = async () => {
+        const pSnap = await getDocs(collection(db, "products"));
+        const inv = document.getElementById('inventory');
+        inv.innerHTML = "";
+        pSnap.forEach(d => {
+            const p = d.data();
+            inv.innerHTML += `
+                <div class="product-row">
+                    <span>${p.name} - <b>$${p.price}</b></span>
+                    <div>
+                        <button class="btn-stock" onclick="changeStock('${d.id}', ${p.inStock})">${p.inStock ? 'متوفر' : 'منتهي'}</button>
+                        <button class="btn-delete" onclick="delProd('${d.id}')">حذف</button>
+                    </div>
+                </div>`;
+        });
+    };
+
+    window.delProd = async (id) => { if(confirm("حذف القطعة؟")) { await deleteDoc(doc(db, "products", id)); loadInv(); } };
+    window.changeStock = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInv(); };
+
+    init();
+</script>
+</body>
+</html>
+
