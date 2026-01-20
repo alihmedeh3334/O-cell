@@ -148,6 +148,24 @@
             transition: 0.2s;
         }
         .search-btn:hover { transform: translateY(-50%) scale(1.1); text-shadow: 0 0 10px var(--primary-accent); }
+        
+        /* New Result Count Badge Style */
+        .search-count {
+            position: absolute;
+            left: 35px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-accent);
+            color: #000;
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .search-count.visible { opacity: 1; }
 
         /* --- 5. Grid System & Cards --- */
         .oc-container { max-width: 1280px; margin: 0 auto; padding: 0 20px 100px; }
@@ -416,8 +434,9 @@
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." onkeyup="if(event.key==='Enter') doSearch()">
-            <button class="search-btn" onclick="doSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." oninput="handleInstantSearch()">
+            <span id="searchCounter" class="search-count">0</span>
+            <button class="search-btn" onclick="handleInstantSearch()">
                 <i class="fas fa-search"></i>
             </button>
         </div>
@@ -475,7 +494,8 @@
         const provider = new GoogleAuthProvider();
         const STORE_PHONE = "96178961175";
 
-        let productMemory = [];
+        let productMemory = []; // Stores products for the current view (category)
+        let allProductsCache = []; // NEW: Stores ALL products for instant search
         let activeProduct = null;
         let currentUserRole = 'retail'; 
         let currentUserEmail = null;
@@ -523,7 +543,7 @@
                             // إذا كنا في صفحة منتجات (سواء تصنيف أو بحث)
                             if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
                                 if(currentCat.startsWith("نتائج البحث:")) {
-                                    doSearch(); // إعادة البحث لتحديث الأسعار
+                                    handleInstantSearch(); // إعادة البحث لتحديث الأسعار
                                 } else {
                                     fetchProducts(currentCat);
                                 }
@@ -607,16 +627,24 @@
         });
 
         async function initStore() {
-            const snap = await getDocs(collection(db, "categories"));
+            // Initializing Categories
+            const catSnap = await getDocs(collection(db, "categories"));
             const grid = document.getElementById('catGrid');
             grid.innerHTML = "";
-            snap.forEach(d => {
+            catSnap.forEach(d => {
                 const c = d.data();
                 grid.innerHTML += `
                     <div class="oc-glass-card" onclick="navToCat('${c.name}')">
                         <div class="img-wrapper"><img src="${c.image}"></div>
                         <div class="oc-card-body"><h3>${c.name}</h3></div>
                     </div>`;
+            });
+
+            // NEW: Pre-cache all products for instant search
+            const prodSnap = await getDocs(collection(db, "products"));
+            allProductsCache = [];
+            prodSnap.forEach(d => {
+                allProductsCache.push(d.data());
             });
         }
 
@@ -638,52 +666,76 @@
         async function fetchProducts(catName) {
             const grid = document.getElementById('prodGrid');
             grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>جاري تحميل المنتجات...</p>";
-            const snap = await getDocs(collection(db, "products"));
+            // Use cache if available, otherwise fetch (but we fetched in initStore, so we can use cache usually, keeping logic simple for cat view)
+            // For category view, we filter from cache to save reads too, or fetch fresh. Let's fetch fresh to be safe or just use cache. 
+            // To stick to original logic structure but use cache for speed:
+            
             grid.innerHTML = "";
             productMemory = [];
             let i = 0;
-            snap.forEach(d => {
-                const p = d.data();
-                if(p.category === catName) {
-                    addProductToGrid(p, i);
-                    i++;
-                }
-            });
+            
+            // Using allProductsCache which is populated in initStore
+            if(allProductsCache.length > 0) {
+                 allProductsCache.forEach(p => {
+                    if(p.category === catName) {
+                        addProductToGrid(p, i);
+                        i++;
+                    }
+                });
+            } else {
+                 // Fallback if cache empty (rare)
+                 const snap = await getDocs(collection(db, "products"));
+                 snap.forEach(d => {
+                    const p = d.data();
+                    if(p.category === catName) {
+                        addProductToGrid(p, i);
+                        i++;
+                    }
+                 });
+            }
+            
             if(i === 0) grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لا توجد منتجات.</p>";
         }
 
-        // --- دالة البحث الجديدة ---
-        window.doSearch = async () => {
+        // --- NEW: Instant Search Logic ---
+        window.handleInstantSearch = () => {
             const term = document.getElementById('searchInput').value.trim().toLowerCase();
-            if(!term) return;
+            const counter = document.getElementById('searchCounter');
+            
+            if(!term) {
+                counter.classList.remove('visible');
+                counter.innerText = "0";
+                return; 
+            }
 
-            // الانتقال لواجهة المنتجات
-            history.pushState({v:'p', n:`نتائج البحث: ${term}`}, "");
+            // Filter locally from cache
+            const results = allProductsCache.filter(p => 
+                p.name.toLowerCase().includes(term) || (p.description && p.description.toLowerCase().includes(term))
+            );
+
+            // Update Counter
+            counter.innerText = results.length;
+            counter.classList.add('visible');
+
+            // Switch view to products
             document.getElementById('vHome').classList.add('hidden');
             document.getElementById('vProd').classList.remove('hidden');
             document.getElementById('viewCatTitle').innerText = `نتائج البحث: ${term}`;
 
             const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>جاري البحث...</p>";
-
-            // جلب كل المنتجات للبحث فيها (طريقة مبسطة)
-            const snap = await getDocs(collection(db, "products"));
             grid.innerHTML = "";
-            productMemory = []; // تصفير الذاكرة لنتائج البحث
-            let i = 0;
+            productMemory = []; // Reset local memory for modal usage
             
-            snap.forEach(d => {
-                const p = d.data();
-                // البحث في الاسم والوصف
-                if (p.name.toLowerCase().includes(term) || (p.description && p.description.toLowerCase().includes(term))) {
-                    addProductToGrid(p, i);
-                    i++;
-                }
-            });
-
-            if(i === 0) {
+            if (results.length === 0) {
                 grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لم يتم العثور على منتجات مطابقة.</p>";
+            } else {
+                results.forEach((p, index) => {
+                    addProductToGrid(p, index);
+                });
             }
+            
+            // Update history state without pushing new entry on every keystroke (replaceState)
+            history.replaceState({v:'p', n:`نتائج البحث: ${term}`}, "");
         }
 
         // دالة مساعدة لإضافة كارت المنتج (تستخدم للعرض العادي والبحث)
@@ -748,6 +800,7 @@
             document.getElementById('vHome').classList.remove('hidden'); 
             document.getElementById('vProd').classList.add('hidden'); 
             document.getElementById('searchInput').value = ""; // مسح البحث عند العودة
+            document.getElementById('searchCounter').classList.remove('visible'); // Hide counter
         }
         
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
