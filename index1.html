@@ -1,758 +1,109 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>O-Cell | Future Tech Store</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O-Cell | Future Tech Store</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        /* --- 1. Global Variables & Reset --- */
-        :root {
-            --bg-dark: #050505;
-            --bg-panel: #121212;
-            --primary-accent: #00d4ff;
-            --primary-glow: rgba(0, 212, 255, 0.4);
-            --glass-surface: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
-        body { 
-            background-color: var(--bg-dark);
-            /* خلفية متحركة فاخرة */
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 76, 140, 0.15), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.08), transparent 25%);
-            color: var(--text-main); 
-            font-family: 'Cairo', 'Poppins', sans-serif; 
-            min-height: 100vh;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* --- 2. Typography & Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-accent); }
-
-        h1, h2, h3 { font-weight: 800; letter-spacing: -0.5px; }
-        
-        /* --- 3. Header & Nav --- */
-        .oc-contact-nav {
-            background: rgba(18, 18, 18, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
-        }
-        .oc-contact-nav a { 
-            color: var(--text-main); text-decoration: none; font-size: 14px; font-weight: 600; 
-            transition: 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .oc-contact-nav a i { color: var(--primary-accent); }
-        .oc-contact-nav a:hover { color: var(--primary-accent); text-shadow: 0 0 10px var(--primary-glow); }
-
-        .profile-toggle {
-            cursor: pointer; font-size: 22px; color: var(--text-main); transition: 0.3s;
-            background: var(--glass-surface); width: 40px; height: 40px; 
-            display: none; align-items: center; justify-content: center; border-radius: 50%;
-            border: 1px solid var(--glass-border);
-        }
-        .profile-toggle:hover { background: var(--primary-accent); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
-
-        .oc-main-header { padding: 40px 0 20px; text-align: center; position: relative; }
-        .oc-neon-logo { 
-            font-family: 'Poppins', sans-serif; font-size: 3.5rem; color: white; margin: 0;
-            font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .oc-neon-logo span { 
-            color: transparent; 
-            background: linear-gradient(180deg, #fff, var(--primary-accent)); 
-            -webkit-background-clip: text; 
-            display: inline-block;
-        }
-
-        /* --- 4. Hero Section --- */
-        .oc-hero-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 60px 20px;
-            max-width: 600px;
-            margin: 20px auto 30px; /* Reduced bottom margin for search */
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            animation: floatUp 1s ease-out;
-        }
-        .oc-hero-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 60%);
-            animation: spin 10s linear infinite; pointer-events: none;
-        }
-        .oc-hero-card h2 { font-size: 2.5rem; margin-bottom: 10px; position: relative; z-index: 1; }
-        .oc-hero-card p { font-size: 1.1rem; color: var(--text-muted); position: relative; z-index: 1; }
-
-        /* --- New Search Bar Styles --- */
-        .search-box {
-            max-width: 500px;
-            margin: 0 auto 50px;
-            position: relative;
-            padding: 0 20px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 15px 50px 15px 20px;
-            border-radius: 50px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            color: white;
-            font-family: 'Cairo';
-            font-size: 1rem;
-            outline: none;
-            transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .search-input:focus {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--primary-accent);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-        }
-        .search-btn {
-            position: absolute;
-            right: 35px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: var(--primary-accent);
-            font-size: 18px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .search-btn:hover { transform: translateY(-50%) scale(1.1); text-shadow: 0 0 10px var(--primary-accent); }
-
-        /* --- 5. Grid System & Cards --- */
-        .oc-container { max-width: 1280px; margin: 0 auto; padding: 0 20px 100px; }
-        .oc-section-title { 
-            font-size: 1.8rem; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
-            color: var(--text-main);
-        }
-        .oc-section-title::before { content: ''; display: block; width: 6px; height: 30px; background: var(--primary-accent); border-radius: 4px; box-shadow: 0 0 15px var(--primary-accent); }
-
-        .oc-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 25px; 
-        }
-
-        .oc-glass-card {
-            background: var(--glass-surface);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            overflow: hidden;
-            transition: all 0.4s var(--transition-smooth);
-            cursor: pointer;
-            position: relative;
-            display: flex; flex-direction: column;
-            animation: fadeInCard 0.6s ease-out forwards;
-            opacity: 0; transform: translateY(20px);
-        }
-        .oc-glass-card:nth-child(n) { animation-delay: 0.1s; }
-
-        .oc-glass-card:hover { 
-            transform: translateY(-10px) scale(1.02); 
-            border-color: var(--primary-accent); 
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(0, 212, 255, 0.1);
-        }
-
-        .oc-glass-card .img-wrapper {
-            width: 100%; height: 220px; overflow: hidden; position: relative;
-            background: radial-gradient(circle, rgba(255,255,255,0.05), transparent);
-        }
-        .oc-glass-card img { 
-            width: 100%; height: 100%; object-fit: contain; padding: 20px;
-            transition: transform 0.6s var(--transition-smooth); 
-        }
-        .oc-glass-card:hover img { transform: scale(1.1); }
-
-        .oc-card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .oc-card-body h3 { font-size: 1.1rem; margin-bottom: 10px; color: #fff; font-weight: 600; line-height: 1.4; }
-        .oc-card-body .price { 
-            color: var(--primary-accent); font-weight: 800; font-size: 1.4rem; 
-            font-family: 'Poppins', sans-serif; display: block;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-        }
-
-        .sold-badge { 
-            position: absolute; top: 15px; left: 15px; 
-            background: #ff3b3b; color: white; padding: 5px 12px; 
-            border-radius: 12px; font-size: 0.75rem; font-weight: 800; 
-            z-index: 2; box-shadow: 0 5px 15px rgba(255, 59, 59, 0.4);
-        }
-
-        /* --- 6. Modal (Popup) --- */
-        .oc-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 5000;
-            justify-content: center; align-items: center; padding: 20px;
-            backdrop-filter: blur(8px);
-        }
-        .oc-modal-content {
-            background: #1a1a1a;
-            border: 1px solid var(--glass-border);
-            width: 100%; max-width: 500px;
-            border-radius: 30px; padding: 40px; text-align: center;
-            position: relative;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
-            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .oc-modal-content img { 
-            width: 100%; max-height: 300px; object-fit: contain; 
-            margin-bottom: 25px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-        }
-        .oc-modal h2 { font-size: 1.8rem; margin-bottom: 10px; color: white; }
-        .oc-modal p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 25px; }
-
-        /* Quantity Controls */
-        .qty-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 25px 0; }
-        .qty-controls {
-            background: #252525; border-radius: 15px; display: flex; align-items: center;
-            border: 1px solid #333; padding: 5px;
-        }
-        .qty-btn {
-            width: 40px; height: 40px; background: #333; border: none; color: white;
-            border-radius: 10px; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
-        }
-        .qty-btn:hover { background: var(--primary-accent); color: black; }
-        .qty-input {
-            width: 50px; background: transparent; border: none; color: white;
-            text-align: center; font-size: 1.2rem; font-weight: bold; font-family: 'Poppins';
-        }
-
-        .wa-btn {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            background: linear-gradient(45deg, var(--primary-accent), #0099cc);
-            color: #000; padding: 18px; border-radius: 18px; 
-            text-decoration: none; font-weight: 800; font-size: 1.1rem;
-            margin-top: 10px; transition: 0.3s;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.25);
-        }
-        .wa-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4); }
-
-        .back-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            padding: 12px 30px; border-radius: 50px; cursor: pointer; 
-            font-weight: 700; margin-bottom: 30px; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px;
-        }
-        .back-btn:hover { background: var(--primary-accent); color: black; }
-
-        /* --- 7. Sidebar & Overlays --- */
-        .oc-sidebar {
-            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
-            background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(20px);
-            border-left: 1px solid var(--glass-border);
-            z-index: 9999; transition: 0.5s var(--transition-smooth);
-            padding: 40px 30px; display: flex; flex-direction: column;
-            box-shadow: -20px 0 50px rgba(0,0,0,0.8);
-        }
-        .oc-sidebar.active { right: 0; }
-        
-        .sidebar-header { margin-bottom: 40px; text-align: center; }
-        .sidebar-header .avatar {
-            width: 80px; height: 80px; background: linear-gradient(135deg, #333, #111);
-            border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; color: var(--primary-accent); border: 2px solid var(--primary-accent);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .profile-info-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--glass-border); }
-        .profile-label { font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; margin-bottom: 5px; display: block; }
-        .profile-value { font-size: 1rem; font-weight: 700; color: white; }
-        
-        .status-badge { display: inline-block; padding: 6px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-top: 5px; }
-        .status-retail { background: #333; color: #aaa; }
-        .status-wholesale { background: rgba(0, 212, 255, 0.2); color: var(--primary-accent); border: 1px solid var(--primary-accent); }
-
-        .logout-btn {
-            margin-top: auto; background: transparent; color: #ff4d4d;
-            border: 2px solid #ff4d4d; padding: 15px; border-radius: 15px;
-            cursor: pointer; font-weight: 800; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .logout-btn:hover { background: #ff4d4d; color: white; }
-
-        /* Login Floater */
-        .login-float {
-            position: fixed; bottom: 30px; left: 30px; /* تم النقل لليسار */
-            background: var(--text-main); color: #000;
-            width: 60px; height: 60px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3); z-index: 2000;
-            cursor: pointer; font-size: 24px; transition: 0.3s;
-            border: 4px solid var(--primary-accent);
-            animation: pulseBtn 2s infinite;
-        }
-        .login-float:hover { transform: scale(1.1) rotate(10deg); }
-
-        /* Login Box */
-        #profileOverlay, #loginOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999; 
-            justify-content: center; align-items: center; padding: 20px;
-            backdrop-filter: blur(10px);
-        }
-        .login-box {
-            background: #151515; padding: 50px 30px; border-radius: 30px;
-            border: 1px solid var(--glass-border); text-align: center; width: 100%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.15);
-        }
-        .login-input {
-            width: 100%; padding: 18px; margin: 10px 0; border-radius: 15px; border: 1px solid #333;
-            background: #0a0a0a; color: white; text-align: center; font-size: 1rem;
-            transition: 0.3s;
-        }
-        .login-input:focus { border-color: var(--primary-accent); box-shadow: 0 0 15px rgba(0,212,255,0.1); }
-        .login-btn {
-            background: var(--primary-accent); color: #000; border: none; padding: 18px;
-            width: 100%; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 20px; font-size: 1.1rem;
-            transition: 0.3s;
-        }
-        .login-btn:hover { background: white; box-shadow: 0 0 20px var(--primary-glow); }
-
-        /* --- Animations Keyframes --- */
-        @keyframes fadeInCard { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes floatUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes modalPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(0, 212, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); } }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .hidden { display: none !important; }
-    </style>
+<style>
+body{background:#050505;color:#fff;font-family:Cairo;margin:0}
+.search-box{max-width:500px;margin:30px auto;position:relative}
+.search-input{width:100%;padding:15px 50px 15px 20px;border-radius:50px;background:#111;border:1px solid #333;color:#fff}
+.search-btn{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:none;border:none;color:#00d4ff}
+#searchCount{position:absolute;left:25px;top:50%;transform:translateY(-50%);color:#00d4ff;font-weight:700}
+.hidden{display:none}
+.oc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+.oc-glass-card{background:#111;border:1px solid #222;border-radius:20px;padding:15px;text-align:center;cursor:pointer}
+</style>
 </head>
+
 <body>
 
-    <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
-        <i class="fab fa-google"></i>
-    </div>
+<div class="search-box">
+    <input type="text" id="searchInput" class="search-input"
+           placeholder="ابحث عن منتج..."
+           oninput="instantSearch()">
+    <span id="searchCount"></span>
+    <button class="search-btn"><i class="fas fa-search"></i></button>
+</div>
 
-    <div id="profileOverlay">
-        <div class="login-box">
-            <h2 style="margin-bottom:10px; color:white;">إكمال التسجيل</h2>
-            <p style="margin-bottom:30px; font-size:14px; color:var(--text-muted);">يرجى إدخال بياناتك للمتابعة</p>
-            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
-            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
-            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
-        </div>
-    </div>
+<div id="vHome">
+    <h2 style="text-align:center">الأقسام</h2>
+</div>
 
-    <div id="accountSidebar" class="oc-sidebar">
-        <div class="close-sidebar" onclick="toggleSidebar()" style="position: absolute; top:20px; left:20px; cursor:pointer; font-size:24px;">✕</div>
-        
-        <div class="sidebar-header">
-            <div class="avatar"><i class="fas fa-user"></i></div>
-            <h3>حسابي</h3>
-            <p style="font-size:12px; opacity:0.6;">O-Cell Profile</p>
-        </div>
+<div id="vProd" class="hidden">
+    <h2 id="viewCatTitle" style="text-align:center"></h2>
+    <div id="prodGrid" class="oc-grid"></div>
+</div>
 
-        <div class="profile-info-item">
-            <span class="profile-label">الاسم</span>
-            <span class="profile-value" id="sideName">---</span>
-        </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        <div class="profile-info-item">
-            <span class="profile-label">رقم الهاتف</span>
-            <span class="profile-value" id="sidePhone">---</span>
-        </div>
+const firebaseConfig={
+ apiKey:"AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
+ authDomain:"o-cell-8bd7f.firebaseapp.com",
+ projectId:"o-cell-8bd7f"
+};
 
-        <div class="profile-info-item">
-            <span class="profile-label">حالة الحساب</span>
-            <span id="sideStatus" class="status-badge status-retail">زبون مفرق</span>
-        </div>
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
 
-        <button class="logout-btn" onclick="logoutUser()">
-            <span>تسجيل الخروج</span> <i class="fas fa-sign-out-alt"></i> 
-        </button>
-    </div>
+let productMemory=[];
 
-    <div class="oc-contact-nav">
-        <div class="profile-toggle" id="navProfileIcon" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </div>
-        <div>
-            <a href="tel:78961175" style="margin-left:15px;"><i class="fas fa-phone-alt"></i> 78961175</a>
-        </div>
-        <a href="https://maps.app.goo.gl/EJoXedJGapY6u3jKA" target="_blank" style="font-size:12px; font-weight:400; opacity:0.8;">
-            <i class="fas fa-map-marker-alt"></i> بيروت، المشرفية
-        </a>
-    </div>
+/* CACHE PRODUCTS ONCE */
+async function cacheProductsOnce(){
+ if(localStorage.getItem('oc_products_cache'))return;
+ const snap=await getDocs(collection(db,"products"));
+ const all=[];
+ snap.forEach(d=>all.push(d.data()));
+ localStorage.setItem('oc_products_cache',JSON.stringify(all));
+}
 
-    <header class="oc-main-header">
-        <h1 class="oc-neon-logo">CELL<span>-O</span></h1>
-    </header>
+/* INSTANT SEARCH */
+window.instantSearch=()=>{
+ const term=document.getElementById('searchInput').value.trim().toLowerCase();
+ const counter=document.getElementById('searchCount');
 
-    <div id="vHome">
-        <div class="oc-hero-card">
-            <h2>تلفونك عنا بيحكي!!</h2>
-            <P> يوجد توصيل الى جميع المناطق اللبنانية</p>
-        </div>
+ if(!term){
+   counter.innerText="";
+   document.getElementById('vProd').classList.add('hidden');
+   document.getElementById('vHome').classList.remove('hidden');
+   return;
+ }
 
-        <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." onkeyup="if(event.key==='Enter') doSearch()">
-            <button class="search-btn" onclick="doSearch()">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <div class="oc-container">
-            <div class="oc-section-title">تصفح الأقسام</div>
-            <div class="oc-grid" id="catGrid"></div>
-        </div>
-    </div>
+ const products=JSON.parse(localStorage.getItem('oc_products_cache')||"[]");
+ const results=products.filter(p=>p.name&&p.name.toLowerCase().includes(term));
 
-    <div id="vProd" class="hidden oc-container">
-        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-right"></i> العودة</button>
-        <h2 id="viewCatTitle" style="text-align:center; color:white; font-size: 2.5rem; margin-bottom: 40px; font-weight:900;"></h2>
-        <div class="oc-grid" id="prodGrid"></div>
-    </div>
+ counter.innerText=results.length;
 
-    <div id="modal" class="oc-modal" onclick="if(event.target==this) goBack()">
-        <div class="oc-modal-content">
-            <img id="mImg" src="">
-            <h2 id="mTitle"></h2>
-            <p id="mDesc"></p>
-            <div id="mPrice" class="price" style="font-size: 2.5rem; margin-bottom: 20px;"></div>
+ document.getElementById('vHome').classList.add('hidden');
+ document.getElementById('vProd').classList.remove('hidden');
+ document.getElementById('viewCatTitle').innerText=`نتائج البحث: ${term}`;
 
-            <div class="qty-container">
-                <span style="color:var(--text-muted); font-size:14px;">الكمية:</span>
-                <div class="qty-controls">
-                    <button class="qty-btn" onclick="updateQty(-1)">-</button>
-                    <input type="number" id="qtyInput" class="qty-input" value="1" readonly>
-                    <button class="qty-btn" onclick="updateQty(1)">+</button>
-                </div>
-            </div>
+ const grid=document.getElementById('prodGrid');
+ grid.innerHTML="";
+ productMemory=[];
 
-            <div id="waAction"></div>
-            <button onclick="goBack()" style="background:none; border:none; color:var(--text-muted); margin-top:25px; cursor:pointer; font-size:14px;">إغلاق النافذة</button>
-        </div>
-    </div>
+ results.forEach((p,i)=>{
+   productMemory.push(p);
+   grid.innerHTML+=`
+     <div class="oc-glass-card">
+       <h3>${p.name}</h3>
+       <div style="color:#00d4ff;font-weight:700">$${p.price}</div>
+     </div>`;
+ });
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+ if(results.length===0){
+   grid.innerHTML="<p style='grid-column:1/-1;text-align:center;color:#888'>لا نتائج</p>";
+ }
+};
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
-            authDomain: "o-cell-8bd7f.firebaseapp.com",
-            projectId: "o-cell-8bd7f",
-            storageBucket: "o-cell-8bd7f.firebasestorage.app",
-            messagingSenderId: "123702658364",
-            appId: "1:123702658364:web:f51ca179843af7bab24a39",
-            measurementId: "G-9G5Y056X75"
-        };
+cacheProductsOnce();
+</script>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        const STORE_PHONE = "96178961175";
-
-        let productMemory = [];
-        let activeProduct = null;
-        let currentUserRole = 'retail'; 
-        let currentUserEmail = null;
-
-        // --- 1. تسجيل الدخول ---
-        window.loginWithGoogle = () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUserEmail = user.email;
-                    monitorUserStatus(user.email, user.displayName);
-                }).catch((error) => {
-                    console.error("Login Failed", error);
-                    alert("فشل تسجيل الدخول.");
-                });
-        };
-
-        // --- 2. المراقبة الحية وتحديث الواجهة ---
-        function monitorUserStatus(email, displayName) {
-            const q = query(collection(db, "users"), where("email", "==", email));
-            
-            onSnapshot(q, (snapshot) => {
-                if (!snapshot.empty) {
-                    // المستخدم موجود
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const oldRole = currentUserRole;
-                        currentUserRole = data.role || 'retail';
-                        
-                        // حفظ البيانات
-                        localStorage.setItem('oc_user', JSON.stringify({
-                            name: data.name, phone: data.phone, role: currentUserRole, email: email
-                        }));
-
-                        // تحديث واجهة الحساب الجانبية
-                        updateSidebar(data.name, data.phone, currentUserRole);
-                        
-                        // إخفاء زر التسجيل وإظهار أيقونة البروفايل
-                        document.getElementById('loginBtnContainer').style.display = 'none';
-                        document.getElementById('navProfileIcon').style.display = 'flex';
-
-                        // تحديث الأسعار إذا تغيرت الرتبة
-                        if (oldRole !== currentUserRole) {
-                            const currentCat = document.getElementById('viewCatTitle').innerText;
-                            // إذا كنا في صفحة منتجات (سواء تصنيف أو بحث)
-                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
-                                if(currentCat.startsWith("نتائج البحث:")) {
-                                    doSearch(); // إعادة البحث لتحديث الأسعار
-                                } else {
-                                    fetchProducts(currentCat);
-                                }
-                            }
-                        }
-                    });
-                } else {
-                    // مستخدم جديد -> إظهار نافذة إكمال البيانات
-                    document.getElementById('profName').value = displayName || "";
-                    document.getElementById('profileOverlay').style.display = 'flex';
-                }
-            });
-        }
-
-        function updateSidebar(name, phone, role) {
-            document.getElementById('sideName').innerText = name;
-            document.getElementById('sidePhone').innerText = phone || "غير مسجل";
-            const statusBadge = document.getElementById('sideStatus');
-            
-            if(role === 'wholesale') {
-                statusBadge.innerText = "تاجر جملة";
-                statusBadge.className = "status-badge status-wholesale";
-            } else {
-                statusBadge.innerText = "زبون مفرق";
-                statusBadge.className = "status-badge status-retail";
-            }
-        }
-
-        // --- 3. حفظ بيانات المستخدم الجديد ---
-        window.saveProfileData = async () => {
-            const name = document.getElementById('profName').value;
-            const phone = document.getElementById('profPhone').value;
-
-            if(!name || !phone) return alert("الرجاء إدخال البيانات");
-
-            try {
-                await addDoc(collection(db, "users"), {
-                    email: currentUserEmail,
-                    name: name,
-                    phone: phone,
-                    role: 'retail', 
-                    joined: new Date()
-                });
-                document.getElementById('profileOverlay').style.display = 'none';
-                alert("تم التسجيل بنجاح!");
-            } catch (e) {
-                console.error("Error: ", e);
-            }
-        };
-
-        // --- 4. القائمة الجانبية وتسجيل الخروج ---
-        window.toggleSidebar = () => {
-            document.getElementById('accountSidebar').classList.toggle('active');
-        };
-
-        window.logoutUser = () => {
-            if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-                signOut(auth).then(() => {
-                    localStorage.removeItem('oc_user');
-                    location.reload(); // إعادة تحميل الصفحة لتعود لوضع الزائر
-                });
-            }
-        };
-
-        // التحقق عند فتح الصفحة
-        const savedUser = localStorage.getItem('oc_user');
-        if(savedUser) {
-            const userObj = JSON.parse(savedUser);
-            currentUserEmail = userObj.email;
-            currentUserRole = userObj.role;
-            monitorUserStatus(userObj.email, userObj.name);
-        } else {
-            // حالة الزائر
-            document.getElementById('loginBtnContainer').style.display = 'flex';
-            document.getElementById('navProfileIcon').style.display = 'none';
-        }
-
-        window.addEventListener('popstate', (e) => {
-            if (e.state && e.state.v === 'p') renderProductsView(e.state.n, false);
-            else { renderHomeView(); closeM(); }
-        });
-
-        async function initStore() {
-            const snap = await getDocs(collection(db, "categories"));
-            const grid = document.getElementById('catGrid');
-            grid.innerHTML = "";
-            snap.forEach(d => {
-                const c = d.data();
-                grid.innerHTML += `
-                    <div class="oc-glass-card" onclick="navToCat('${c.name}')">
-                        <div class="img-wrapper"><img src="${c.image}"></div>
-                        <div class="oc-card-body"><h3>${c.name}</h3></div>
-                    </div>`;
-            });
-        }
-
-        window.navToCat = (n) => {
-            history.pushState({v:'p', n:n}, "");
-            renderProductsView(n);
-        };
-
-        function renderProductsView(n) {
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.remove('hidden');
-            document.getElementById('viewCatTitle').innerText = n;
-            // إذا كان العنوان يحتوي على "نتائج البحث" لا نقوم بالتحميل العادي للتصنيفات
-            if(!n.startsWith("نتائج البحث:")) {
-                fetchProducts(n);
-            }
-        }
-
-        async function fetchProducts(catName) {
-            const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>جاري تحميل المنتجات...</p>";
-            const snap = await getDocs(collection(db, "products"));
-            grid.innerHTML = "";
-            productMemory = [];
-            let i = 0;
-            snap.forEach(d => {
-                const p = d.data();
-                if(p.category === catName) {
-                    addProductToGrid(p, i);
-                    i++;
-                }
-            });
-            if(i === 0) grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لا توجد منتجات.</p>";
-        }
-
-        // --- دالة البحث الجديدة ---
-        window.doSearch = async () => {
-            const term = document.getElementById('searchInput').value.trim().toLowerCase();
-            if(!term) return;
-
-            // الانتقال لواجهة المنتجات
-            history.pushState({v:'p', n:`نتائج البحث: ${term}`}, "");
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.remove('hidden');
-            document.getElementById('viewCatTitle').innerText = `نتائج البحث: ${term}`;
-
-            const grid = document.getElementById('prodGrid');
-            grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>جاري البحث...</p>";
-
-            // جلب كل المنتجات للبحث فيها (طريقة مبسطة)
-            const snap = await getDocs(collection(db, "products"));
-            grid.innerHTML = "";
-            productMemory = []; // تصفير الذاكرة لنتائج البحث
-            let i = 0;
-            
-            snap.forEach(d => {
-                const p = d.data();
-                // البحث في الاسم والوصف
-                if (p.name.toLowerCase().includes(term) || (p.description && p.description.toLowerCase().includes(term))) {
-                    addProductToGrid(p, i);
-                    i++;
-                }
-            });
-
-            if(i === 0) {
-                grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لم يتم العثور على منتجات مطابقة.</p>";
-            }
-        }
-
-        // دالة مساعدة لإضافة كارت المنتج (تستخدم للعرض العادي والبحث)
-        function addProductToGrid(p, index) {
-            productMemory.push(p);
-            const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
-            const grid = document.getElementById('prodGrid');
-            
-            grid.innerHTML += `
-                <div class="oc-glass-card" onclick="openDetails(${index})">
-                    ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
-                    <div class="img-wrapper"><img src="${p.image}"></div>
-                    <div class="oc-card-body">
-                        <h3>${p.name}</h3>
-                        <div class="price">$${finalPrice}</div>
-                    </div>
-                </div>`;
-        }
-
-        window.openDetails = (index) => {
-            activeProduct = productMemory[index];
-            const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
-            activeProduct.displayPrice = finalPrice; 
-
-            document.getElementById('qtyInput').value = 1;
-            
-            history.pushState({v:'m'}, "");
-            document.getElementById('mImg').src = activeProduct.image;
-            document.getElementById('mTitle').innerText = activeProduct.name;
-            document.getElementById('mDesc').innerText = activeProduct.description || "";
-            document.getElementById('mPrice').innerText = "$" + finalPrice;
-            
-            updateWALink();
-            document.getElementById('modal').style.display = "flex";
-        };
-
-        window.updateQty = (val) => {
-            let current = parseInt(document.getElementById('qtyInput').value);
-            let next = current + val;
-            if(next < 1) return;
-            document.getElementById('qtyInput').value = next;
-            updateWALink();
-        };
-
-        function updateWALink() {
-            if(!activeProduct) return;
-            const qty = document.getElementById('qtyInput').value;
-            const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
-            
-            const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
-            const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
-            
-            const area = document.getElementById('waAction');
-            area.innerHTML = activeProduct.inStock ? 
-                `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp" style="font-size:20px;"></i> اطلب الآن عبر WHATSAPP</a>` : 
-                `<div class="wa-btn" style="background:#333; box-shadow:none; color:#777; cursor:not-allowed;">غير متوفر حالياً</div>`;
-        }
-
-        window.goBack = () => history.back();
-        
-        function renderHomeView() { 
-            document.getElementById('vHome').classList.remove('hidden'); 
-            document.getElementById('vProd').classList.add('hidden'); 
-            document.getElementById('searchInput').value = ""; // مسح البحث عند العودة
-        }
-        
-        function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
-
-        initStore();
-    </script>
 </body>
 </html>
