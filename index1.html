@@ -28,7 +28,6 @@
 
         body { 
             background-color: var(--bg-dark);
-            /* خلفية متحركة فاخرة */
             background-image: 
                 radial-gradient(circle at 15% 50%, rgba(0, 76, 140, 0.15), transparent 25%),
                 radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.08), transparent 25%);
@@ -96,7 +95,7 @@
             border-radius: 30px;
             padding: 60px 20px;
             max-width: 600px;
-            margin: 20px auto 30px; /* Reduced bottom margin for search */
+            margin: 20px auto 30px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -110,7 +109,6 @@
         .oc-hero-card h2 { font-size: 2.5rem; margin-bottom: 10px; position: relative; z-index: 1; }
         .oc-hero-card p { font-size: 1.1rem; color: var(--text-muted); position: relative; z-index: 1; }
 
-        /* --- New Search Bar Styles --- */
         .search-box {
             max-width: 500px;
             margin: 0 auto 50px;
@@ -224,6 +222,7 @@
             position: relative;
             box-shadow: 0 30px 80px rgba(0,0,0,0.8);
             animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh; overflow-y: auto;
         }
         .oc-modal-content img { 
             width: 100%; max-height: 300px; object-fit: contain; 
@@ -248,15 +247,24 @@
             text-align: center; font-size: 1.2rem; font-weight: bold; font-family: 'Poppins';
         }
 
+        /* Split Action Buttons */
+        .action-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        
         .wa-btn {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             background: linear-gradient(45deg, var(--primary-accent), #0099cc);
             color: #000; padding: 18px; border-radius: 18px; 
-            text-decoration: none; font-weight: 800; font-size: 1.1rem;
-            margin-top: 10px; transition: 0.3s;
+            text-decoration: none; font-weight: 800; font-size: 1rem;
+            transition: 0.3s;
             box-shadow: 0 10px 30px rgba(0, 212, 255, 0.25);
         }
-        .wa-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4); }
+        .add-cart-btn {
+            background: rgba(255,255,255,0.05); color: #fff;
+            border: 1px solid var(--glass-border); padding: 18px; border-radius: 18px;
+            font-weight: 800; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .add-cart-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
         .back-btn {
             background: rgba(255,255,255,0.1); border: none; color: white;
@@ -300,21 +308,41 @@
         }
         .logout-btn:hover { background: #ff4d4d; color: white; }
 
-        /* Login Floater */
-        .login-float {
-            position: fixed; bottom: 30px; left: 30px; /* تم النقل لليسار */
-            background: var(--text-main); color: #000;
+        /* Floaters */
+        .login-float, .cart-float {
+            position: fixed; bottom: 30px;
             width: 60px; height: 60px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3); z-index: 2000;
-            cursor: pointer; font-size: 24px; transition: 0.3s;
+            z-index: 2000; cursor: pointer; font-size: 24px; transition: 0.3s;
             border: 4px solid var(--primary-accent);
             animation: pulseBtn 2s infinite;
         }
-        .login-float:hover { transform: scale(1.1) rotate(10deg); }
+        .login-float { left: 30px; background: var(--text-main); color: #000; }
+        .cart-float { 
+            left: 100px; background: #000; color: var(--primary-accent); 
+            display: flex; flex-direction: column;
+        }
+        .cart-count { 
+            position: absolute; top: -5px; right: -5px; background: #ff3b3b; 
+            color: white; font-size: 12px; width: 22px; height: 22px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; border: 2px solid #000;
+        }
+        .cart-total-float { font-size: 10px; font-weight: 900; margin-top: -2px; }
+
+        /* Cart Modal Styles */
+        .cart-item {
+            display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.03);
+            padding: 15px; border-radius: 20px; margin-bottom: 10px; border: 1px solid var(--glass-border);
+        }
+        .cart-item img { width: 50px !important; height: 50px !important; margin-bottom: 0 !important; border-radius: 10px; }
+        .cart-item-info { flex-grow: 1; text-align: right; }
+        .cart-item-info h4 { font-size: 0.9rem; margin: 0; }
+        .cart-item-info span { color: var(--primary-accent); font-weight: bold; font-size: 0.8rem; }
+        .remove-item { color: #ff4d4d; cursor: pointer; padding: 5px; }
 
         /* Login Box */
-        #profileOverlay, #loginOverlay {
+        #profileOverlay, #loginOverlay, #cartOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 9999; 
             justify-content: center; align-items: center; padding: 20px;
@@ -338,7 +366,7 @@
         }
         .login-btn:hover { background: white; box-shadow: 0 0 20px var(--primary-glow); }
 
-        /* --- Animations Keyframes --- */
+        /* Animations */
         @keyframes fadeInCard { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes floatUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes modalPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
@@ -349,155 +377,15 @@
     </style>
 </head>
 <body>
-```html
-<!-- ========= CART SYSTEM (ADDED INSIDE SAME FILE) ========= -->
-
-<!-- Cart Floating Button -->
-<div id="cartBtn" style="
-position:fixed;
-bottom:30px;
-right:30px;
-background:#00d4ff;
-color:#000;
-width:60px;
-height:60px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:22px;
-font-weight:900;
-cursor:pointer;
-z-index:3000;
-box-shadow:0 10px 30px rgba(0,212,255,.4);
-">
-<i class="fas fa-shopping-cart"></i>
-<span id="cartCount" style="
-position:absolute;
-top:-5px;
-right:-5px;
-background:red;
-color:#fff;
-font-size:12px;
-padding:3px 7px;
-border-radius:50%;
-display:none;
-">0</span>
-</div>
-
-<!-- Cart Modal -->
-<div id="cartModal" class="oc-modal">
-    <div class="oc-modal-content">
-        <h2>سلة المشتريات</h2>
-        <div id="cartItems" style="text-align:right;margin:20px 0"></div>
-        <h3 id="cartTotal" style="margin:20px 0"></h3>
-        <a id="cartWA" class="wa-btn" target="_blank">
-            <i class="fab fa-whatsapp"></i> إتمام الطلب
-        </a>
-        <button onclick="closeCart()" style="margin-top:20px;background:none;border:none;color:#aaa;cursor:pointer">
-            إغلاق
-        </button>
-    </div>
-</div>
-
-<script type="module">
-/* ========= CART LOGIC ========= */
-
-let cart = JSON.parse(localStorage.getItem("oc_cart") || "[]");
-
-const cartBtn = document.getElementById("cartBtn");
-const cartModal = document.getElementById("cartModal");
-const cartItemsBox = document.getElementById("cartItems");
-const cartTotalBox = document.getElementById("cartTotal");
-const cartCount = document.getElementById("cartCount");
-
-function saveCart(){
-    localStorage.setItem("oc_cart", JSON.stringify(cart));
-    updateCartCount();
-}
-
-function updateCartCount(){
-    const totalQty = cart.reduce((s,i)=>s+i.qty,0);
-    cartCount.innerText = totalQty;
-    cartCount.style.display = totalQty ? "block":"none";
-}
-
-window.addToCart = (product)=>{
-    const found = cart.find(i=>i.name===product.name);
-    if(found){
-        found.qty++;
-    }else{
-        cart.push({...product,qty:1});
-    }
-    saveCart();
-};
-
-function openCart(){
-    cartModal.style.display="flex";
-    renderCart();
-}
-
-function closeCart(){
-    cartModal.style.display="none";
-}
-
-cartBtn.onclick=openCart;
-
-function renderCart(){
-    cartItemsBox.innerHTML="";
-    let total=0;
-    cart.forEach((p,i)=>{
-        total+=p.qty*p.price;
-        cartItemsBox.innerHTML+=`
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-            <div>
-                <strong>${p.name}</strong><br>
-                <small>$${p.price} × ${p.qty}</small>
-            </div>
-            <button onclick="removeFromCart(${i})" style="background:red;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer">
-                حذف
-            </button>
-        </div>`;
-    });
-    cartTotalBox.innerText = "الإجمالي: $" + total.toFixed(2);
-
-    const msg = encodeURIComponent(
-        cart.map(p=>`- ${p.name} × ${p.qty} = $${(p.qty*p.price).toFixed(2)}`).join("\n")
-        + `\n\nالإجمالي: $${total.toFixed(2)}`
-    );
-
-    cartWA.href = `https://wa.me/96178961175?text=${msg}`;
-}
-
-window.removeFromCart = (i)=>{
-    cart.splice(i,1);
-    saveCart();
-    renderCart();
-};
-
-updateCartCount();
-
-/* ========= HOOK PRODUCT CARD ========= */
-/* ADD THIS INSIDE addProductToGrid CARD BUTTON */
-window.hookAddCart = (i)=>{
-    addToCart(productMemory[i]);
-};
-</script>
-
-<!-- ======== MODIFY PRODUCT CARD BUTTON ======== -->
-<!-- INSIDE addProductToGrid() CARD BODY ADD THIS BUTTON -->
-<!--
-<button onclick="event.stopPropagation();hookAddCart(${index})"
-style="margin-top:10px;padding:10px;border:none;border-radius:12px;
-background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
-أضف للسلة
-</button>
--->
-
-```
 
     <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
         <i class="fab fa-google"></i>
+    </div>
+
+    <div id="cartBtnContainer" class="cart-float" onclick="openCart()">
+        <div class="cart-count" id="cartCount">0</div>
+        <i class="fas fa-shopping-cart"></i>
+        <div class="cart-total-float" id="cartTotalFloat">$0</div>
     </div>
 
     <div id="profileOverlay">
@@ -507,6 +395,25 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
             <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
             <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
+        </div>
+    </div>
+
+    <div id="cartOverlay" onclick="if(event.target==this) closeCart()">
+        <div class="oc-modal-content">
+            <h2 style="margin-bottom:20px;"><i class="fas fa-shopping-basket" style="color:var(--primary-accent)"></i> سلة المشتريات</h2>
+            <div id="cartItemsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+                </div>
+            <div id="cartEmptyMsg" class="hidden" style="padding: 20px; color: #888;">السلة فارغة حالياً</div>
+            <div style="border-top: 1px solid #333; padding-top: 20px; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; font-size:1.5rem; font-weight:900;">
+                    <span>الإجمالي:</span>
+                    <span id="cartTotalFull" style="color:var(--primary-accent)">$0</span>
+                </div>
+            </div>
+            <button id="sendCartWa" class="wa-btn" style="width:100%" onclick="sendCartToWhatsApp()">
+                <i class="fab fa-whatsapp"></i> اطلب المجموعة عبر واتساب
+            </button>
+            <button onclick="closeCart()" style="background:none; border:none; color:var(--text-muted); margin-top:20px; cursor:pointer;">إغلاق السلة</button>
         </div>
     </div>
 
@@ -595,7 +502,9 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
                 </div>
             </div>
 
-            <div id="waAction"></div>
+            <div id="waAction" class="action-split">
+                </div>
+            
             <button onclick="goBack()" style="background:none; border:none; color:var(--text-muted); margin-top:25px; cursor:pointer; font-size:14px;">إغلاق النافذة</button>
         </div>
     </div>
@@ -625,8 +534,106 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
         let activeProduct = null;
         let currentUserRole = 'retail'; 
         let currentUserEmail = null;
+        
+        // --- Cart Logic ---
+        let cart = JSON.parse(localStorage.getItem('oc_cart')) || [];
 
-        // --- 1. تسجيل الدخول ---
+        function updateCartUI() {
+            const count = cart.reduce((acc, item) => acc + item.qty, 0);
+            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartTotalFloat').innerText = "$" + total.toFixed(2);
+            document.getElementById('cartTotalFull').innerText = "$" + total.toFixed(2);
+            
+            localStorage.setItem('oc_cart', JSON.stringify(cart));
+            renderCartItems();
+        }
+
+        window.addToCart = () => {
+            if(!activeProduct) return;
+            const qty = parseInt(document.getElementById('qtyInput').value);
+            const price = parseFloat(activeProduct.displayPrice);
+            
+            const existing = cart.find(item => item.name === activeProduct.name);
+            if(existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({
+                    name: activeProduct.name,
+                    price: price,
+                    qty: qty,
+                    image: activeProduct.image
+                });
+            }
+            updateCartUI();
+            alert("تمت الإضافة إلى السلة");
+            goBack();
+        };
+
+        function renderCartItems() {
+            const list = document.getElementById('cartItemsList');
+            const emptyMsg = document.getElementById('cartEmptyMsg');
+            const sendBtn = document.getElementById('sendCartWa');
+            
+            list.innerHTML = "";
+            if(cart.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                sendBtn.style.display = 'none';
+                return;
+            }
+            
+            emptyMsg.classList.add('hidden');
+            sendBtn.style.display = 'flex';
+            
+            cart.forEach((item, index) => {
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.image}">
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <span>${item.qty} × $${item.price}</span>
+                        </div>
+                        <div class="remove-item" onclick="removeFromCart(${index})">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.removeFromCart = (index) => {
+            cart.splice(index, 1);
+            updateCartUI();
+        };
+
+        window.openCart = () => {
+            document.getElementById('cartOverlay').style.display = 'flex';
+        };
+
+        window.closeCart = () => {
+            document.getElementById('cartOverlay').style.display = 'none';
+        };
+
+        window.sendCartToWhatsApp = () => {
+            if(cart.length === 0) return;
+            
+            let msg = "مرحباً O-Cell، أود طلب المجموعة التالية:\n\n";
+            let total = 0;
+            
+            cart.forEach(item => {
+                const sub = item.price * item.qty;
+                msg += `- ${item.name}\n  الكمية: ${item.qty} × $${item.price} = $${sub.toFixed(2)}\n`;
+                total += sub;
+            });
+            
+            const userType = currentUserRole === 'wholesale' ? '\n(أسعار جملة)' : '';
+            msg += `\n*الإجمالي النهائي: $${total.toFixed(2)}* ${userType}`;
+            
+            window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        // --- Auth & Store Logic (Original) ---
         window.loginWithGoogle = () => {
             signInWithPopup(auth, provider)
                 .then((result) => {
@@ -639,45 +646,29 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
                 });
         };
 
-        // --- 2. المراقبة الحية وتحديث الواجهة ---
         function monitorUserStatus(email, displayName) {
             const q = query(collection(db, "users"), where("email", "==", email));
-            
             onSnapshot(q, (snapshot) => {
                 if (!snapshot.empty) {
-                    // المستخدم موجود
                     snapshot.forEach((doc) => {
                         const data = doc.data();
                         const oldRole = currentUserRole;
                         currentUserRole = data.role || 'retail';
-                        
-                        // حفظ البيانات
                         localStorage.setItem('oc_user', JSON.stringify({
                             name: data.name, phone: data.phone, role: currentUserRole, email: email
                         }));
-
-                        // تحديث واجهة الحساب الجانبية
                         updateSidebar(data.name, data.phone, currentUserRole);
-                        
-                        // إخفاء زر التسجيل وإظهار أيقونة البروفايل
                         document.getElementById('loginBtnContainer').style.display = 'none';
                         document.getElementById('navProfileIcon').style.display = 'flex';
-
-                        // تحديث الأسعار إذا تغيرت الرتبة
                         if (oldRole !== currentUserRole) {
                             const currentCat = document.getElementById('viewCatTitle').innerText;
-                            // إذا كنا في صفحة منتجات (سواء تصنيف أو بحث)
                             if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
-                                if(currentCat.startsWith("نتائج البحث:")) {
-                                    doSearch(); // إعادة البحث لتحديث الأسعار
-                                } else {
-                                    fetchProducts(currentCat);
-                                }
+                                if(currentCat.startsWith("نتائج البحث:")) doSearch();
+                                else fetchProducts(currentCat);
                             }
                         }
                     });
                 } else {
-                    // مستخدم جديد -> إظهار نافذة إكمال البيانات
                     document.getElementById('profName').value = displayName || "";
                     document.getElementById('profileOverlay').style.display = 'flex';
                 }
@@ -688,7 +679,6 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             document.getElementById('sideName').innerText = name;
             document.getElementById('sidePhone').innerText = phone || "غير مسجل";
             const statusBadge = document.getElementById('sideStatus');
-            
             if(role === 'wholesale') {
                 statusBadge.innerText = "تاجر جملة";
                 statusBadge.className = "status-badge status-wholesale";
@@ -698,53 +688,36 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             }
         }
 
-        // --- 3. حفظ بيانات المستخدم الجديد ---
         window.saveProfileData = async () => {
             const name = document.getElementById('profName').value;
             const phone = document.getElementById('profPhone').value;
-
             if(!name || !phone) return alert("الرجاء إدخال البيانات");
-
             try {
                 await addDoc(collection(db, "users"), {
-                    email: currentUserEmail,
-                    name: name,
-                    phone: phone,
-                    role: 'retail', 
-                    joined: new Date()
+                    email: currentUserEmail, name: name, phone: phone, role: 'retail', joined: new Date()
                 });
                 document.getElementById('profileOverlay').style.display = 'none';
                 alert("تم التسجيل بنجاح!");
-            } catch (e) {
-                console.error("Error: ", e);
-            }
+            } catch (e) { console.error(e); }
         };
 
-        // --- 4. القائمة الجانبية وتسجيل الخروج ---
-        window.toggleSidebar = () => {
-            document.getElementById('accountSidebar').classList.toggle('active');
-        };
+        window.toggleSidebar = () => document.getElementById('accountSidebar').classList.toggle('active');
 
         window.logoutUser = () => {
             if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
                 signOut(auth).then(() => {
                     localStorage.removeItem('oc_user');
-                    location.reload(); // إعادة تحميل الصفحة لتعود لوضع الزائر
+                    location.reload();
                 });
             }
         };
 
-        // التحقق عند فتح الصفحة
         const savedUser = localStorage.getItem('oc_user');
         if(savedUser) {
             const userObj = JSON.parse(savedUser);
             currentUserEmail = userObj.email;
             currentUserRole = userObj.role;
             monitorUserStatus(userObj.email, userObj.name);
-        } else {
-            // حالة الزائر
-            document.getElementById('loginBtnContainer').style.display = 'flex';
-            document.getElementById('navProfileIcon').style.display = 'none';
         }
 
         window.addEventListener('popstate', (e) => {
@@ -764,6 +737,7 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
                         <div class="oc-card-body"><h3>${c.name}</h3></div>
                     </div>`;
             });
+            updateCartUI();
         }
 
         window.navToCat = (n) => {
@@ -775,10 +749,7 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             document.getElementById('vHome').classList.add('hidden');
             document.getElementById('vProd').classList.remove('hidden');
             document.getElementById('viewCatTitle').innerText = n;
-            // إذا كان العنوان يحتوي على "نتائج البحث" لا نقوم بالتحميل العادي للتصنيفات
-            if(!n.startsWith("نتائج البحث:")) {
-                fetchProducts(n);
-            }
+            if(!n.startsWith("نتائج البحث:")) fetchProducts(n);
         }
 
         async function fetchProducts(catName) {
@@ -790,54 +761,37 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             let i = 0;
             snap.forEach(d => {
                 const p = d.data();
-                if(p.category === catName) {
-                    addProductToGrid(p, i);
-                    i++;
-                }
+                if(p.category === catName) { addProductToGrid(p, i); i++; }
             });
             if(i === 0) grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لا توجد منتجات.</p>";
         }
 
-        // --- دالة البحث الجديدة ---
         window.doSearch = async () => {
             const term = document.getElementById('searchInput').value.trim().toLowerCase();
             if(!term) return;
-
-            // الانتقال لواجهة المنتجات
             history.pushState({v:'p', n:`نتائج البحث: ${term}`}, "");
             document.getElementById('vHome').classList.add('hidden');
             document.getElementById('vProd').classList.remove('hidden');
             document.getElementById('viewCatTitle').innerText = `نتائج البحث: ${term}`;
-
             const grid = document.getElementById('prodGrid');
             grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>جاري البحث...</p>";
-
-            // جلب كل المنتجات للبحث فيها (طريقة مبسطة)
             const snap = await getDocs(collection(db, "products"));
             grid.innerHTML = "";
-            productMemory = []; // تصفير الذاكرة لنتائج البحث
+            productMemory = [];
             let i = 0;
-            
             snap.forEach(d => {
                 const p = d.data();
-                // البحث في الاسم والوصف
                 if (p.name.toLowerCase().includes(term) || (p.description && p.description.toLowerCase().includes(term))) {
-                    addProductToGrid(p, i);
-                    i++;
+                    addProductToGrid(p, i); i++;
                 }
             });
-
-            if(i === 0) {
-                grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لم يتم العثور على منتجات مطابقة.</p>";
-            }
+            if(i === 0) grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#888;'>لم يتم العثور على منتجات مطابقة.</p>";
         }
 
-        // دالة مساعدة لإضافة كارت المنتج (تستخدم للعرض العادي والبحث)
         function addProductToGrid(p, index) {
             productMemory.push(p);
             const finalPrice = currentUserRole === 'wholesale' ? (p.priceWholesale || p.price) : p.price;
             const grid = document.getElementById('prodGrid');
-            
             grid.innerHTML += `
                 <div class="oc-glass-card" onclick="openDetails(${index})">
                     ${!p.inStock ? '<div class="sold-badge">نافذ</div>' : ''}
@@ -853,15 +807,12 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             activeProduct = productMemory[index];
             const finalPrice = currentUserRole === 'wholesale' ? (activeProduct.priceWholesale || activeProduct.price) : activeProduct.price;
             activeProduct.displayPrice = finalPrice; 
-
             document.getElementById('qtyInput').value = 1;
-            
             history.pushState({v:'m'}, "");
             document.getElementById('mImg').src = activeProduct.image;
             document.getElementById('mTitle').innerText = activeProduct.name;
             document.getElementById('mDesc').innerText = activeProduct.description || "";
             document.getElementById('mPrice').innerText = "$" + finalPrice;
-            
             updateWALink();
             document.getElementById('modal').style.display = "flex";
         };
@@ -878,24 +829,26 @@ background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
             if(!activeProduct) return;
             const qty = document.getElementById('qtyInput').value;
             const total = (parseFloat(activeProduct.displayPrice) * parseInt(qty)).toFixed(2);
-            
             const userType = currentUserRole === 'wholesale' ? '(سعر جملة)' : '';
             const msg = encodeURIComponent(`مرحباً O-Cell، أود طلب:\n- المنتج: ${activeProduct.name}\n- الكمية: ${qty}\n- السعر الإجمالي: $${total} ${userType}`);
             
             const area = document.getElementById('waAction');
-            area.innerHTML = activeProduct.inStock ? 
-                `<a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp" style="font-size:20px;"></i> اطلب الآن عبر WHATSAPP</a>` : 
-                `<div class="wa-btn" style="background:#333; box-shadow:none; color:#777; cursor:not-allowed;">غير متوفر حالياً</div>`;
+            if(activeProduct.inStock) {
+                area.innerHTML = `
+                    <button class="add-cart-btn" onclick="addToCart()"><i class="fas fa-cart-plus"></i> للسلة</button>
+                    <a href="https://wa.me/${STORE_PHONE}?text=${msg}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp"></i> اطلب الآن</a>
+                `;
+            } else {
+                area.innerHTML = `<div class="wa-btn" style="grid-column: 1/-1; background:#333; box-shadow:none; color:#777; cursor:not-allowed;">غير متوفر حالياً</div>`;
+            }
         }
 
         window.goBack = () => history.back();
-        
         function renderHomeView() { 
             document.getElementById('vHome').classList.remove('hidden'); 
             document.getElementById('vProd').classList.add('hidden'); 
-            document.getElementById('searchInput').value = ""; // مسح البحث عند العودة
+            document.getElementById('searchInput').value = ""; 
         }
-        
         function closeM() { document.getElementById('modal').style.display = "none"; activeProduct = null; }
 
         initStore();
