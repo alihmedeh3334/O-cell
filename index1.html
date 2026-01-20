@@ -349,6 +349,152 @@
     </style>
 </head>
 <body>
+```html
+<!-- ========= CART SYSTEM (ADDED INSIDE SAME FILE) ========= -->
+
+<!-- Cart Floating Button -->
+<div id="cartBtn" style="
+position:fixed;
+bottom:30px;
+right:30px;
+background:#00d4ff;
+color:#000;
+width:60px;
+height:60px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+font-weight:900;
+cursor:pointer;
+z-index:3000;
+box-shadow:0 10px 30px rgba(0,212,255,.4);
+">
+<i class="fas fa-shopping-cart"></i>
+<span id="cartCount" style="
+position:absolute;
+top:-5px;
+right:-5px;
+background:red;
+color:#fff;
+font-size:12px;
+padding:3px 7px;
+border-radius:50%;
+display:none;
+">0</span>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="oc-modal">
+    <div class="oc-modal-content">
+        <h2>سلة المشتريات</h2>
+        <div id="cartItems" style="text-align:right;margin:20px 0"></div>
+        <h3 id="cartTotal" style="margin:20px 0"></h3>
+        <a id="cartWA" class="wa-btn" target="_blank">
+            <i class="fab fa-whatsapp"></i> إتمام الطلب
+        </a>
+        <button onclick="closeCart()" style="margin-top:20px;background:none;border:none;color:#aaa;cursor:pointer">
+            إغلاق
+        </button>
+    </div>
+</div>
+
+<script type="module">
+/* ========= CART LOGIC ========= */
+
+let cart = JSON.parse(localStorage.getItem("oc_cart") || "[]");
+
+const cartBtn = document.getElementById("cartBtn");
+const cartModal = document.getElementById("cartModal");
+const cartItemsBox = document.getElementById("cartItems");
+const cartTotalBox = document.getElementById("cartTotal");
+const cartCount = document.getElementById("cartCount");
+
+function saveCart(){
+    localStorage.setItem("oc_cart", JSON.stringify(cart));
+    updateCartCount();
+}
+
+function updateCartCount(){
+    const totalQty = cart.reduce((s,i)=>s+i.qty,0);
+    cartCount.innerText = totalQty;
+    cartCount.style.display = totalQty ? "block":"none";
+}
+
+window.addToCart = (product)=>{
+    const found = cart.find(i=>i.name===product.name);
+    if(found){
+        found.qty++;
+    }else{
+        cart.push({...product,qty:1});
+    }
+    saveCart();
+};
+
+function openCart(){
+    cartModal.style.display="flex";
+    renderCart();
+}
+
+function closeCart(){
+    cartModal.style.display="none";
+}
+
+cartBtn.onclick=openCart;
+
+function renderCart(){
+    cartItemsBox.innerHTML="";
+    let total=0;
+    cart.forEach((p,i)=>{
+        total+=p.qty*p.price;
+        cartItemsBox.innerHTML+=`
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div>
+                <strong>${p.name}</strong><br>
+                <small>$${p.price} × ${p.qty}</small>
+            </div>
+            <button onclick="removeFromCart(${i})" style="background:red;color:#fff;border:none;border-radius:8px;padding:5px 10px;cursor:pointer">
+                حذف
+            </button>
+        </div>`;
+    });
+    cartTotalBox.innerText = "الإجمالي: $" + total.toFixed(2);
+
+    const msg = encodeURIComponent(
+        cart.map(p=>`- ${p.name} × ${p.qty} = $${(p.qty*p.price).toFixed(2)}`).join("\n")
+        + `\n\nالإجمالي: $${total.toFixed(2)}`
+    );
+
+    cartWA.href = `https://wa.me/96178961175?text=${msg}`;
+}
+
+window.removeFromCart = (i)=>{
+    cart.splice(i,1);
+    saveCart();
+    renderCart();
+};
+
+updateCartCount();
+
+/* ========= HOOK PRODUCT CARD ========= */
+/* ADD THIS INSIDE addProductToGrid CARD BUTTON */
+window.hookAddCart = (i)=>{
+    addToCart(productMemory[i]);
+};
+</script>
+
+<!-- ======== MODIFY PRODUCT CARD BUTTON ======== -->
+<!-- INSIDE addProductToGrid() CARD BODY ADD THIS BUTTON -->
+<!--
+<button onclick="event.stopPropagation();hookAddCart(${index})"
+style="margin-top:10px;padding:10px;border:none;border-radius:12px;
+background:#00d4ff;color:#000;font-weight:800;cursor:pointer">
+أضف للسلة
+</button>
+-->
+
+```
 
     <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
         <i class="fab fa-google"></i>
