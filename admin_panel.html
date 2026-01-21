@@ -158,8 +158,23 @@
 </head>
 <body>
 
-<div class="admin-container">
+<div id="auth-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top: 0; left: 0; width: 100%; background: linear-gradient(135deg, var(--oc-white) 0%, var(--oc-light-cyan) 100%); z-index: 9999;">
+    <div class="admin-card" style="text-align: center; max-width: 400px; width: 90%;">
+        <h3><i class="fas fa-shield-alt"></i> تسجيل دخول الإدارة</h3>
+        <p style="margin-bottom: 20px; color: #666;">يجب تسجيل الدخول بحساب Google المصرح له للتحكم في الأسعار والمخزون.</p>
+        <button id="google-login-btn" class="btn-submit" style="background: #4285F4; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <i class="fab fa-google"></i> تسجيل الدخول عبر Google
+        </button>
+    </div>
+</div>
+
+<div class="admin-container" id="admin-content" style="display: none;">
     
+    <div class="admin-card" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3><i class="fas fa-user-shield"></i> لوحة التحكم</h3>
+        <button onclick="logout()" class="badge badge-danger" style="font-size: 14px; padding: 10px 20px;">تسجيل خروج</button>
+    </div>
+
     <div class="admin-card">
         <h3><i class="fas fa-users-cog"></i> إدارة الحسابات والأسعار</h3>
         <div class="form-grid">
@@ -222,6 +237,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // إضافة مكتبة الـ Authentication
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -235,6 +252,53 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // ---------------------------------------------------------
+    // هام جداً: ضع الـ UID الخاص بك هنا
+    // ---------------------------------------------------------
+    const adminUID = "aflEaWMjtIfsKkMBz2AAOx73Gkf1"; 
+    // ---------------------------------------------------------
+
+    const authScreen = document.getElementById('auth-screen');
+    const adminContent = document.getElementById('admin-content');
+
+    // مراقبة حالة تسجيل الدخول
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // التحقق من أن المستخدم هو الآدمن
+            if (user.uid === adminUID) {
+                authScreen.style.display = 'none';
+                adminContent.style.display = 'block';
+                initAdmin(); // تحميل البيانات فقط بعد التأكد من الهوية
+            } else {
+                alert("عذراً، هذا الحساب ليس لديه صلاحيات الإدارة.");
+                signOut(auth);
+            }
+        } else {
+            authScreen.style.display = 'flex';
+            adminContent.style.display = 'none';
+        }
+    });
+
+    // زر تسجيل الدخول
+    document.getElementById('google-login-btn').onclick = async () => {
+        try {
+            await signInWithPopup(auth, provider);
+        } catch (error) {
+            console.error(error);
+            alert("فشل تسجيل الدخول: " + error.message);
+        }
+    };
+
+    // زر تسجيل الخروج
+    window.logout = () => {
+        if(confirm("تسجيل الخروج؟")) {
+            signOut(auth);
+            location.reload();
+        }
+    };
 
     let allCategories = [];
     let allProducts = [];
@@ -244,11 +308,11 @@
     window.saveNewUser = async () => {
         const name = document.getElementById('userName').value;
         const email = document.getElementById('userEmail').value;
-        const phone = document.getElementById('userPhone').value; // تمت إضافة استلام الرقم
+        const phone = document.getElementById('userPhone').value; 
         const role = document.getElementById('userRole').value;
         if(!name || !email) return alert("أكمل بيانات الحساب");
         
-        await addDoc(collection(db, "users"), { name, email, phone, role }); // حفظنا الرقم أيضاً
+        await addDoc(collection(db, "users"), { name, email, phone, role });
         alert("تمت إضافة الحساب");
         loadUsers();
     };
@@ -298,7 +362,7 @@
         const img = document.getElementById('catImage').value;
         if(!name || !img) return alert("أكمل البيانات");
         await addDoc(collection(db, "categories"), { name, image: img });
-        location.reload();
+        location.reload(); // إعادة تحميل بسيطة لتحديث القائمة
     };
     
     window.editCategory = async (id, currentName, currentImg) => {
@@ -353,6 +417,8 @@
         const select = document.getElementById('prodCat');
         const catEditList = document.getElementById('categoryEditList');
         allCategories = [];
+        select.innerHTML = '<option value="">-- اختر القسم --</option>'; // تفريغ القائمة قبل التعبئة
+        catEditList.innerHTML = '';
         
         catSnap.forEach(d => {
             const data = d.data();
@@ -406,7 +472,7 @@
     window.toggleS = async (id, s) => { await updateDoc(doc(db, "products", id), { inStock: !s }); loadInventory(); };
     window.delP = async (id) => { if(confirm("حذف المنتج؟")) { await deleteDoc(doc(db, "products", id)); loadInventory(); } };
 
-    initAdmin();
+    // لاحظ أننا أزلنا استدعاء initAdmin() من هنا لأنه سيتم استدعاؤه تلقائياً بعد تسجيل الدخول الناجح
 </script>
 </body>
 </html>
