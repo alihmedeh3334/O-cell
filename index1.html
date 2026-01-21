@@ -318,8 +318,11 @@
             animation: pulseBtn 2s infinite;
         }
         .login-float { left: 30px; background: var(--text-main); color: #000; }
+        
+        /* التعديل المطلوب: السلة على اليمين بالأسفل */
         .cart-float { 
-            left: 100px; background: #000; color: var(--primary-accent); 
+            right: 30px; /* نقل الزر إلى اليمين */
+            background: #000; color: var(--primary-accent); 
             display: flex; flex-direction: column;
         }
         .cart-count { 
@@ -855,3 +858,4 @@
     </script>
 </body>
 </html>
+
