@@ -381,9 +381,8 @@
 </head>
 <body>
 
-    <!-- === زر تسجيل الدخول بالهاتف (بدل Google) === -->
-    <div id="phoneLoginBtn" class="login-float" onclick="openPhoneLogin()">
-        <i class="fas fa-mobile-alt"></i>
+    <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
+        <i class="fab fa-google"></i>
     </div>
 
     <div id="cartBtnContainer" class="cart-float" onclick="openCart()">
@@ -392,54 +391,13 @@
         <div class="cart-total-float" id="cartTotalFloat">$0</div>
     </div>
 
-    <!-- === نافذة OTP للهاتف === -->
-    <div id="phoneLoginOverlay" class="oc-modal">
-        <div class="oc-modal-content">
-            <h2 style="margin-bottom:20px;"><i class="fas fa-mobile-alt" style="color:var(--primary-accent)"></i> تسجيل الدخول برقم الهاتف</h2>
-            
-            <!-- الخطوة 1: إدخال الرقم -->
-            <div id="phoneStep1">
-                <input type="tel" id="phoneNumber" class="login-input" 
-                       placeholder="+961 71 234 567" style="direction: ltr; text-align: center;">
-                <button class="login-btn" onclick="sendOTP()">
-                    <i class="fas fa-paper-plane"></i> إرسال رمز التحقق
-                </button>
-                <p style="color:var(--text-muted); font-size:12px; margin-top:15px;">
-                    سنرسل لك رمز OTP عبر SMS
-                </p>
-            </div>
-            
-            <!-- الخطوة 2: إدخال الكود -->
-            <div id="phoneStep2" style="display:none;">
-                <input type="number" id="otpCode" class="login-input" 
-                       placeholder="أدخل الرمز المكون من 6 أرقام" maxlength="6">
-                <button class="login-btn" onclick="verifyOTP()">
-                    <i class="fas fa-check-circle"></i> تأكيد الرمز
-                </button>
-                <button onclick="resendOTP()" style="background:none; border:none; color:var(--primary-accent); margin-top:10px; cursor:pointer;">
-                    إعادة إرسال الرمز
-                </button>
-            </div>
-            
-            <button onclick="closePhoneLogin()" style="background:none; border:none; color:var(--text-muted); margin-top:20px; cursor:pointer;">
-                إلغاء
-            </button>
-        </div>
-    </div>
-
-    <!-- === نافذة إكمال التسجيل (للمرة الأولى) === -->
-    <div id="completeProfileOverlay" class="oc-modal">
-        <div class="oc-modal-content">
+    <div id="profileOverlay">
+        <div class="login-box">
             <h2 style="margin-bottom:10px; color:white;">إكمال التسجيل</h2>
             <p style="margin-bottom:30px; font-size:14px; color:var(--text-muted);">يرجى إدخال بياناتك للمتابعة</p>
-            
-            <input type="text" id="completeName" class="login-input" placeholder="الاسم الكامل">
-            <input type="text" id="completeAddress" class="login-input" placeholder="العنوان (المدينة والمنطقة)">
-            <input type="tel" id="completePhone" class="login-input" placeholder="رقم الهاتف للتأكيد" readonly>
-            
-            <button class="login-btn" onclick="saveCompleteProfile()">
-                <i class="fas fa-save"></i> حفظ ومتابعة للتسوق
-            </button>
+            <input type="text" id="profName" class="login-input" placeholder="الاسم الكامل">
+            <input type="tel" id="profPhone" class="login-input" placeholder="رقم الهاتف">
+            <button class="login-btn" onclick="saveProfileData()">حفظ ومتابعة</button>
         </div>
     </div>
 
@@ -479,11 +437,6 @@
         <div class="profile-info-item">
             <span class="profile-label">رقم الهاتف</span>
             <span class="profile-value" id="sidePhone">---</span>
-        </div>
-
-        <div class="profile-info-item">
-            <span class="profile-label">العنوان</span>
-            <span class="profile-value" id="sideAddress">---</span>
         </div>
 
         <div class="profile-info-item">
@@ -562,14 +515,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, query, where, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { 
-            getAuth, 
-            signOut,
-            signInWithPhoneNumber,
-            RecaptchaVerifier,
-            PhoneAuthProvider,
-            signInWithCredential
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
@@ -584,14 +530,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
         let activeProduct = null;
         let currentUserRole = 'retail'; 
-        let currentUserPhone = null;
-        let confirmationResult = null;
-        let recaptchaVerifier = null;
+        let currentUserEmail = null;
         
         // --- Cart Logic ---
         let cart = JSON.parse(localStorage.getItem('oc_cart')) || [];
@@ -691,138 +636,51 @@
             window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
-        // --- Phone OTP Auth Logic ---
-        window.openPhoneLogin = () => {
-            document.getElementById('phoneLoginOverlay').style.display = 'flex';
-            
-            // إعداد reCAPTCHA
-            if (!recaptchaVerifier) {
-                recaptchaVerifier = new RecaptchaVerifier(auth, 'phoneStep1', {
-                    'size': 'invisible',
-                    'callback': () => {}
+        // --- Auth & Store Logic (Original) ---
+        window.loginWithGoogle = () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    currentUserEmail = user.email;
+                    monitorUserStatus(user.email, user.displayName);
+                }).catch((error) => {
+                    console.error("Login Failed", error);
+                    alert("فشل تسجيل الدخول.");
                 });
-            }
         };
 
-        window.sendOTP = async () => {
-            const phoneNumber = document.getElementById('phoneNumber').value.trim();
-            if (!phoneNumber) return alert("أدخل رقم الهاتف");
-            
-            try {
-                confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
-                
-                // الانتقال لمرحلة إدخال الكود
-                document.getElementById('phoneStep1').style.display = 'none';
-                document.getElementById('phoneStep2').style.display = 'block';
-                alert("تم إرسال الرمز إلى هاتفك");
-            } catch (error) {
-                console.error("Error sending OTP:", error);
-                alert("خطأ في إرسال الرمز: " + error.message);
-            }
-        };
-
-        window.verifyOTP = async () => {
-            const otp = document.getElementById('otpCode').value;
-            if (!otp || otp.length !== 6) return alert("أدخل رمز مكون من 6 أرقام");
-            
-            try {
-                const result = await confirmationResult.confirm(otp);
-                const user = result.user;
-                
-                // حفظ رقم الهاتف
-                currentUserPhone = user.phoneNumber;
-                
-                // التحقق إذا كان المستخدم موجود في قاعدة البيانات
-                checkUserExists(currentUserPhone);
-                
-            } catch (error) {
-                alert("الرمز غير صحيح أو انتهت صلاحيته");
-            }
-        };
-
-        async function checkUserExists(phoneNumber) {
-            const q = query(collection(db, "users"), where("phone", "==", phoneNumber));
-            const snapshot = await getDocs(q);
-            
-            if (!snapshot.empty) {
-                // المستخدم موجود - تحديث البيانات
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    currentUserRole = data.role || 'retail';
-                    localStorage.setItem('oc_user', JSON.stringify({
-                        name: data.name, 
-                        phone: data.phone, 
-                        address: data.address,
-                        role: currentUserRole
-                    }));
-                    
-                    updateSidebar(data.name, data.phone, data.address, currentUserRole);
-                    document.getElementById('phoneLoginBtn').style.display = 'none';
-                    document.getElementById('navProfileIcon').style.display = 'flex';
-                    
-                    // إغلاق نافذة OTP
-                    closePhoneLogin();
-                    alert(`مرحباً بعودتك ${data.name}!`);
-                });
-            } else {
-                // مستخدم جديد - فتح نافذة إكمال التسجيل
-                document.getElementById('completePhone').value = phoneNumber;
-                document.getElementById('completeProfileOverlay').style.display = 'flex';
-                document.getElementById('phoneLoginOverlay').style.display = 'none';
-            }
+        function monitorUserStatus(email, displayName) {
+            const q = query(collection(db, "users"), where("email", "==", email));
+            onSnapshot(q, (snapshot) => {
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const oldRole = currentUserRole;
+                        currentUserRole = data.role || 'retail';
+                        localStorage.setItem('oc_user', JSON.stringify({
+                            name: data.name, phone: data.phone, role: currentUserRole, email: email
+                        }));
+                        updateSidebar(data.name, data.phone, currentUserRole);
+                        document.getElementById('loginBtnContainer').style.display = 'none';
+                        document.getElementById('navProfileIcon').style.display = 'flex';
+                        if (oldRole !== currentUserRole) {
+                            const currentCat = document.getElementById('viewCatTitle').innerText;
+                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
+                                if(currentCat.startsWith("نتائج البحث:")) doSearch();
+                                else fetchProducts(currentCat);
+                            }
+                        }
+                    });
+                } else {
+                    document.getElementById('profName').value = displayName || "";
+                    document.getElementById('profileOverlay').style.display = 'flex';
+                }
+            });
         }
 
-        window.saveCompleteProfile = async () => {
-            const name = document.getElementById('completeName').value;
-            const address = document.getElementById('completeAddress').value;
-            const phone = document.getElementById('completePhone').value;
-            
-            if(!name || !address || !phone) return alert("يرجى إدخال جميع البيانات");
-            
-            try {
-                await addDoc(collection(db, "users"), {
-                    phone: phone,
-                    name: name,
-                    address: address,
-                    role: 'retail',
-                    joined: new Date()
-                });
-                
-                localStorage.setItem('oc_user', JSON.stringify({
-                    name: name, 
-                    phone: phone, 
-                    address: address,
-                    role: 'retail'
-                }));
-                
-                updateSidebar(name, phone, address, 'retail');
-                document.getElementById('phoneLoginBtn').style.display = 'none';
-                document.getElementById('navProfileIcon').style.display = 'flex';
-                document.getElementById('completeProfileOverlay').style.display = 'none';
-                
-                alert("تم التسجيل بنجاح! مرحباً بك في O-Cell");
-            } catch (e) { 
-                console.error(e);
-                alert("حدث خطأ في حفظ البيانات");
-            }
-        };
-
-        window.resendOTP = () => {
-            sendOTP();
-        };
-
-        window.closePhoneLogin = () => {
-            document.getElementById('phoneLoginOverlay').style.display = 'none';
-            document.getElementById('phoneStep1').style.display = 'block';
-            document.getElementById('phoneStep2').style.display = 'none';
-            document.getElementById('phoneNumber').value = '';
-            document.getElementById('otpCode').value = '';
-        };
-
-        function updateSidebar(name, phone, address, role) {
+        function updateSidebar(name, phone, role) {
             document.getElementById('sideName').innerText = name;
             document.getElementById('sidePhone').innerText = phone || "غير مسجل";
-            document.getElementById('sideAddress').innerText = address || "غير مسجل";
             const statusBadge = document.getElementById('sideStatus');
             if(role === 'wholesale') {
                 statusBadge.innerText = "تاجر جملة";
@@ -832,6 +690,19 @@
                 statusBadge.className = "status-badge status-retail";
             }
         }
+
+        window.saveProfileData = async () => {
+            const name = document.getElementById('profName').value;
+            const phone = document.getElementById('profPhone').value;
+            if(!name || !phone) return alert("الرجاء إدخال البيانات");
+            try {
+                await addDoc(collection(db, "users"), {
+                    email: currentUserEmail, name: name, phone: phone, role: 'retail', joined: new Date()
+                });
+                document.getElementById('profileOverlay').style.display = 'none';
+                alert("تم التسجيل بنجاح!");
+            } catch (e) { console.error(e); }
+        };
 
         window.toggleSidebar = () => document.getElementById('accountSidebar').classList.toggle('active');
 
@@ -844,15 +715,12 @@
             }
         };
 
-        // التحقق من تسجيل الدخول السابق
         const savedUser = localStorage.getItem('oc_user');
         if(savedUser) {
             const userObj = JSON.parse(savedUser);
-            currentUserPhone = userObj.phone;
+            currentUserEmail = userObj.email;
             currentUserRole = userObj.role;
-            updateSidebar(userObj.name, userObj.phone, userObj.address, userObj.role);
-            document.getElementById('phoneLoginBtn').style.display = 'none';
-            document.getElementById('navProfileIcon').style.display = 'flex';
+            monitorUserStatus(userObj.email, userObj.name);
         }
 
         window.addEventListener('popstate', (e) => {
