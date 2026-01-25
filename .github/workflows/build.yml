@@ -26,6 +26,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # هذه الخطوة لحل مشكلة المجلد التي ظهرت لك
+      - name: Prepare Web Directory
+        run: |
+          mkdir -p www
+          cp -r *.html *.js *.css www/ || true
+
       - name: Initialize Capacitor Android
         run: |
           npx cap add android
