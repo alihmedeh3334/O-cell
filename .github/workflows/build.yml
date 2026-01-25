@@ -26,14 +26,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # هذه الخطوة لحل مشكلة المجلد التي ظهرت لك
-      - name: Prepare Web Directory
+      # خطوة التنظيف والتحضير الجديدة
+      - name: Clean and Prepare Web Directory
         run: |
+          rm -rf www
           mkdir -p www
           cp -r *.html *.js *.css www/ || true
+          # تأكد أن الملف الأساسي الآن اسمه index.html
+          ls -l www/
 
       - name: Initialize Capacitor Android
         run: |
+          rm -rf android # مسح مجلد أندرويد القديم تماماً لبنائه من جديد
           npx cap add android
           npx cap copy android
           npx cap sync android
