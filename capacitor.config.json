@@ -1,7 +1,6 @@
 {
   "appId": "com.ocellstore.app",
   "appName": "O Cell Store",
-  "webDir": ".",
+  "webDir": "www",
   "bundledWebRuntime": false
 }
-
