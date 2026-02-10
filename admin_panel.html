@@ -500,8 +500,8 @@
                 </select>
             </div>
             <div>
-                <input type="number" id="prodPriceRetail" placeholder="سعر المفرق ($)" min="0" step="0.01">
-                <small style="color: #666; font-size: 12px;">السعر للزبون العادي</small>
+                <input type="number" id="prodPrice" placeholder="سعر المفرق ($)" min="0" step="0.01">
+                <small style="color: #666; font-size: 12px;">السعر للزبون العادي (يخزن كـ price)</small>
             </div>
             <div>
                 <input type="number" id="prodPriceWholesale" placeholder="سعر الجملة ($)" min="0" step="0.01">
@@ -540,6 +540,9 @@
             <button onclick="filterByStock('outOfStock')" class="badge badge-gray">النافذة فقط</button>
             <button onclick="exportInventory()" class="badge" style="background: #9c27b0; color: white;">
                 <i class="fas fa-file-export"></i> تصدير الجرد
+            </button>
+            <button onclick="fixProductPrices()" class="badge" style="background: #4caf50; color: white;">
+                <i class="fas fa-wrench"></i> إصلاح الأسعار
             </button>
         </div>
         
@@ -700,7 +703,7 @@
 
     // ================== التعديلات الأساسية ==================
 
-    // إدارة المستخدمين - FIXED
+    // إدارة المستخدمين
     window.saveNewUser = async () => {
         const name = document.getElementById('userName').value.trim();
         const email = document.getElementById('userEmail').value.trim();
@@ -724,7 +727,6 @@
             btn.innerHTML = '<span class="loading"></span> جاري الحفظ...';
             btn.disabled = true;
             
-            // بيانات بسيطة بدون حقول معقدة
             const userData = { 
                 name, 
                 email: email.toLowerCase(),
@@ -732,8 +734,6 @@
                 role,
                 createdAt: new Date().toISOString()
             };
-            
-            console.log("📝 محاولة إضافة مستخدم:", userData);
             
             await addDoc(collection(db, "users"), userData);
             
@@ -755,12 +755,9 @@
         }
     };
 
-    // تحميل المستخدمين - FIXED
+    // تحميل المستخدمين
     async function loadUsers() {
         try {
-            console.log("🔄 جاري تحميل المستخدمين...");
-            
-            // استخدام collection بدون orderBy
             const usersRef = collection(db, "users");
             const snap = await getDocs(usersRef);
             const list = document.getElementById('userList');
@@ -768,19 +765,15 @@
             
             list.innerHTML = "";
             
-            console.log(`📊 عدد المستندات: ${snap.size}`);
-            
             if(snap.empty) {
                 list.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#666;">لا يوجد مستخدمين مسجلين بعد.</td></tr>`;
                 return;
             }
 
-            let counter = 0;
             snap.forEach(d => {
                 const u = d.data();
                 const userId = d.id;
                 
-                // بيانات افتراضية
                 const userData = {
                     id: userId,
                     name: u.name || "بدون اسم",
@@ -812,11 +805,7 @@
                             </button>
                         </td>
                     </tr>`;
-                
-                counter++;
             });
-            
-            console.log(`✅ تم تحميل ${counter} مستخدم بنجاح`);
             
         } catch (error) {
             console.error("❌ خطأ في تحميل المستخدمين:", error);
@@ -929,12 +918,12 @@
         }
     };
 
-    // إدارة المنتجات
+    // إدارة المنتجات - التعديل الرئيسي هنا
     window.saveNewProduct = async () => {
         const data = {
             name: document.getElementById('prodName').value.trim(),
             category: document.getElementById('prodCat').value,
-            priceRetail: parseFloat(document.getElementById('prodPriceRetail').value) || 0,
+            price: parseFloat(document.getElementById('prodPrice').value) || 0, // التعديل: من priceRetail إلى price
             priceWholesale: parseFloat(document.getElementById('prodPriceWholesale').value) || 0,
             image: document.getElementById('prodImg').value.trim(),
             description: document.getElementById('prodDesc').value.trim(),
@@ -943,7 +932,7 @@
             lastUpdated: new Date().toISOString()
         };
 
-        if(!data.name || !data.category || !data.priceRetail) {
+        if(!data.name || !data.category || !data.price) {
             showAlert("الرجاء إدخال البيانات الأساسية", 'error');
             return;
         }
@@ -969,8 +958,9 @@
                 showAlert(`تم إضافة المنتج "${data.name}"`, 'success');
             }
             
+            // مسح الحقول
             document.getElementById('prodName').value = '';
-            document.getElementById('prodPriceRetail').value = '';
+            document.getElementById('prodPrice').value = '';
             document.getElementById('prodPriceWholesale').value = '';
             document.getElementById('prodImg').value = '';
             document.getElementById('prodDesc').value = '';
@@ -993,7 +983,8 @@
         
         document.getElementById('prodName').value = p.name || '';
         document.getElementById('prodCat').value = p.category || '';
-        document.getElementById('prodPriceRetail').value = p.priceRetail || '';
+        // التعديل: استخدام price بدلاً من priceRetail
+        document.getElementById('prodPrice').value = p.price || p.priceRetail || '';
         document.getElementById('prodPriceWholesale').value = p.priceWholesale || '';
         document.getElementById('prodImg').value = p.image || '';
         document.getElementById('prodDesc').value = p.description || '';
@@ -1012,7 +1003,7 @@
         editingProductId = null;
         document.getElementById('prodName').value = '';
         document.getElementById('prodCat').value = '';
-        document.getElementById('prodPriceRetail').value = '';
+        document.getElementById('prodPrice').value = '';
         document.getElementById('prodPriceWholesale').value = '';
         document.getElementById('prodImg').value = '';
         document.getElementById('prodDesc').value = '';
@@ -1104,6 +1095,9 @@
                     const stockStatus = p.inStock ? 'متوفر' : 'نافذ';
                     const stockClass = p.inStock ? 'badge-green' : 'badge-gray';
                     const stockQty = p.stock || 0;
+                    // التعديل: استخدام price بدلاً من priceRetail
+                    const retailPrice = p.price || p.priceRetail || 0;
+                    const wholesalePrice = p.priceWholesale || 0;
                     
                     html += `<div class="inv-row">
                         <div style="flex: 1;">
@@ -1112,8 +1106,8 @@
                                 <div>
                                     <b>${p.name}</b>
                                     <div style="font-size:12px; color:#666; margin-top:5px;">
-                                        مفرق: <strong>$${p.priceRetail}</strong> | 
-                                        جملة: <strong>${p.priceWholesale ? '$' + p.priceWholesale : '-'}</strong> |
+                                        مفرق: <strong>$${retailPrice}</strong> | 
+                                        جملة: <strong>${wholesalePrice ? '$' + wholesalePrice : '-'}</strong> |
                                         المخزون: <strong>${stockQty}</strong>
                                     </div>
                                 </div>
@@ -1147,8 +1141,9 @@
                 </div>`;
             
             uncategorized.forEach(p => {
+                const retailPrice = p.price || p.priceRetail || 0;
                 html += `<div class="inv-row">
-                    <span><b>${p.name}</b> - مفرق: $${p.priceRetail}</span>
+                    <span><b>${p.name}</b> - مفرق: $${retailPrice}</span>
                     <div>
                         <button class="badge badge-edit" onclick="prepareEditProduct('${p.id}')">تعديل</button>
                         <button class="badge badge-danger" onclick="delP('${p.id}', '${p.name}')">حذف</button>
@@ -1237,7 +1232,8 @@
         let csv = "اسم المنتج,القسم,سعر المفرق,سعر الجملة,المخزون,الحالة\n";
         
         allProducts.forEach(p => {
-            csv += `"${p.name}","${p.category || 'بدون قسم'}",${p.priceRetail},${p.priceWholesale || ''},${p.stock || 0},"${p.inStock ? 'متوفر' : 'نافذ'}"\n`;
+            const retailPrice = p.price || p.priceRetail || 0;
+            csv += `"${p.name}","${p.category || 'بدون قسم'}",${retailPrice},${p.priceWholesale || ''},${p.stock || 0},"${p.inStock ? 'متوفر' : 'نافذ'}"\n`;
         });
         
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1253,6 +1249,36 @@
         document.body.removeChild(link);
         
         showAlert("تم تصدير الجرد", 'success');
+    };
+
+    // وظيفة إصلاح الأسعار
+    window.fixProductPrices = async () => {
+        if(confirm("هل تريد إصلاح جميع أسعار المنتجات؟ سيتم نسخ قيمة priceRetail إلى price للمنتجات التي لديها priceRetail فقط.")) {
+            try {
+                const prodSnap = await getDocs(collection(db, "products"));
+                const batch = [];
+                
+                prodSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.priceRetail && !data.price) {
+                        batch.push(updateDoc(doc(db, "products", docSnap.id), {
+                            price: data.priceRetail,
+                            lastUpdated: new Date().toISOString()
+                        }));
+                    }
+                });
+                
+                if (batch.length > 0) {
+                    await Promise.all(batch);
+                    showAlert(`تم إصلاح ${batch.length} منتج`, 'success');
+                    await loadInventory();
+                } else {
+                    showAlert("جميع المنتجات بحالة سليمة", 'info');
+                }
+            } catch (error) {
+                showAlert(`خطأ في إصلاح الأسعار: ${error.message}`, 'error');
+            }
+        }
     };
 
     // ========== أدوات التصحيح ==========
