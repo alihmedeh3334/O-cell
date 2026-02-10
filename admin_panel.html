@@ -556,7 +556,6 @@
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Firebase Configuration - في الإصدار النهائي استخدم Environment Variables
     const firebaseConfig = {
         apiKey: "AIzaSyCnzm7b0mEiszDck9d_KvOfVMN2WguQs8w",
         authDomain: "o-cell-8bd7f.firebaseapp.com",
@@ -572,10 +571,10 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // قائمة البريد الإلكتروني للمشرفين - أضف بريدك هنا
+    // قائمة البريد الإلكتروني للمشرفين
     const ADMIN_EMAILS = [
-        "alihmedeh310@gmail.com",  // ⬅️ ضع بريدك الرئيسي هنا
-        "alihmedeh41@gmail.com"      // ⬅️ يمكنك إضافة بريد آخر
+        "alihmedeh310@gmail.com",
+        "alihmedeh41@gmail.com"
     ];
 
     const authScreen = document.getElementById('auth-screen');
@@ -588,29 +587,24 @@
     let editingProductId = null;
     let currentAdmin = null;
 
-    // مراقبة حالة تسجيل الدخول مع تحسين النظام الأمني
+    // مراقبة حالة تسجيل الدخول
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentAdmin = user;
             
-            // التحقق من أن المستخدم له صلاحية الإدارة
             if (ADMIN_EMAILS.includes(user.email)) {
                 authScreen.style.display = 'none';
                 adminContent.style.display = 'block';
                 authError.style.display = 'none';
                 
-                // تحديث رسالة الترحيب
                 document.getElementById('adminWelcome').innerHTML = 
                     `مرحباً <strong>${user.displayName || user.email}</strong> | آخر دخول: ${new Date().toLocaleString('ar-LB')}`;
                 
-                // تحميل البيانات
                 await initAdmin();
                 await loadStats();
                 
-                // إضافة تنبيه نجاح تسجيل الدخول
                 showAlert(`تم تسجيل الدخول بنجاح كمسؤول`, 'success');
             } else {
-                // المستخدم ليس من المشرفين
                 authError.style.display = 'flex';
                 authError.querySelector('span').textContent = 
                     `البريد ${user.email} ليس لديه صلاحية الدخول إلى لوحة التحكم`;
@@ -662,7 +656,7 @@
         }
     };
 
-    // --- وظائف التنبيهات ---
+    // وظائف التنبيهات
     function showAlert(message, type = 'info') {
         const alertsContainer = document.getElementById('alertsContainer');
         const alertId = 'alert-' + Date.now();
@@ -680,7 +674,6 @@
         
         alertsContainer.prepend(alertDiv);
         
-        // إزالة التنبيه تلقائياً بعد 5 ثواني
         setTimeout(() => {
             if (document.getElementById(alertId)) {
                 document.getElementById(alertId).remove();
@@ -688,31 +681,26 @@
         }, 5000);
     }
 
-    // --- إحصائيات النظام ---
+    // إحصائيات النظام
     async function loadStats() {
         try {
-            // عدد المستخدمين
             const usersCount = await getCountFromServer(collection(db, "users"));
             document.getElementById('statUsers').textContent = usersCount.data().count;
             
-            // عدد المنتجات
             const productsCount = await getCountFromServer(collection(db, "products"));
             document.getElementById('statProducts').textContent = productsCount.data().count;
             
-            // عدد الأقسام
             const categoriesCount = await getCountFromServer(collection(db, "categories"));
             document.getElementById('statCategories').textContent = categoriesCount.data().count;
-            
-            // عدد الطلبات (إذا كان لديك collection للطلبات)
-            // const ordersCount = await getCountFromServer(collection(db, "orders"));
-            // document.getElementById('statOrders').textContent = ordersCount.data().count;
             
         } catch (error) {
             console.error("خطأ في تحميل الإحصائيات:", error);
         }
     }
 
-    // --- إدارة المستخدمين ---
+    // ================== التعديلات الأساسية ==================
+
+    // إدارة المستخدمين - FIXED
     window.saveNewUser = async () => {
         const name = document.getElementById('userName').value.trim();
         const email = document.getElementById('userEmail').value.trim();
@@ -724,7 +712,6 @@
             return;
         }
         
-        // التحقق من صيغة البريد الإلكتروني
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             showAlert("صيغة البريد الإلكتروني غير صحيحة", 'error');
@@ -737,17 +724,19 @@
             btn.innerHTML = '<span class="loading"></span> جاري الحفظ...';
             btn.disabled = true;
             
-            await addDoc(collection(db, "users"), { 
+            // بيانات بسيطة بدون حقول معقدة
+            const userData = { 
                 name, 
-                email, 
-                phone: phone || null, 
+                email: email.toLowerCase(),
+                phone: phone || "", 
                 role,
-                createdBy: currentAdmin.email,
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString()
-            });
+                createdAt: new Date().toISOString()
+            };
             
-            // تنظيف الحقول
+            console.log("📝 محاولة إضافة مستخدم:", userData);
+            
+            await addDoc(collection(db, "users"), userData);
+            
             document.getElementById('userName').value = '';
             document.getElementById('userEmail').value = '';
             document.getElementById('userPhone').value = '';
@@ -759,53 +748,78 @@
             btn.innerHTML = originalText;
             btn.disabled = false;
         } catch (error) {
+            console.error("❌ خطأ في إضافة المستخدم:", error);
             showAlert(`خطأ في إضافة المستخدم: ${error.message}`, 'error');
             document.getElementById('saveUserBtn').innerHTML = '<i class="fas fa-user-plus"></i> إضافة حساب يدوياً';
             document.getElementById('saveUserBtn').disabled = false;
         }
     };
 
+    // تحميل المستخدمين - FIXED
     async function loadUsers() {
         try {
-            const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-            const snap = await getDocs(q);
+            console.log("🔄 جاري تحميل المستخدمين...");
+            
+            // استخدام collection بدون orderBy
+            const usersRef = collection(db, "users");
+            const snap = await getDocs(usersRef);
             const list = document.getElementById('userList');
             allUsers = [];
             
             list.innerHTML = "";
+            
+            console.log(`📊 عدد المستندات: ${snap.size}`);
             
             if(snap.empty) {
                 list.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#666;">لا يوجد مستخدمين مسجلين بعد.</td></tr>`;
                 return;
             }
 
+            let counter = 0;
             snap.forEach(d => {
                 const u = d.data();
-                allUsers.push({ id: d.id, ...u });
+                const userId = d.id;
                 
-                const roleText = u.role === 'wholesale' ? 'تاجر جملة' : 'زبون مفرق';
-                const roleClass = u.role === 'wholesale' ? 'wholesale' : 'retail';
-                const createdDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString('ar-LB') : 'غير معروف';
+                // بيانات افتراضية
+                const userData = {
+                    id: userId,
+                    name: u.name || "بدون اسم",
+                    email: u.email || "بدون بريد",
+                    phone: u.phone || "غير مسجل",
+                    role: u.role || "retail",
+                    createdAt: u.createdAt || new Date().toISOString()
+                };
+                
+                allUsers.push(userData);
+                
+                const roleText = userData.role === 'wholesale' ? 'تاجر جملة' : 'زبون مفرق';
+                const roleClass = userData.role === 'wholesale' ? 'wholesale' : 'retail';
                 
                 list.innerHTML += `
                     <tr>
-                        <td><strong>${u.name}</strong></td>
-                        <td style="direction:ltr; font-family: monospace;">${u.email}</td>
-                        <td>${u.phone || '<span style="color:#999">غير مسجل</span>'}</td>
+                        <td><strong>${userData.name}</strong></td>
+                        <td style="direction:ltr; font-family: monospace;">${userData.email}</td>
+                        <td>${userData.phone}</td>
                         <td>
-                            <button class="role-badge ${roleClass}" onclick="toggleUserRole('${d.id}', '${u.role}')">
+                            <button class="role-badge ${roleClass}" onclick="toggleUserRole('${userId}', '${userData.role}')">
                                 ${roleText}
                             </button>
                         </td>
-                        <td>${createdDate}</td>
+                        <td>${new Date(userData.createdAt).toLocaleDateString('ar-LB')}</td>
                         <td>
-                            <button class="btn-delete-account" onclick="deleteUser('${d.id}', '${u.name}')">
+                            <button class="btn-delete-account" onclick="deleteUser('${userId}', '${userData.name}')">
                                 <i class="fas fa-trash-alt"></i> حذف
                             </button>
                         </td>
                     </tr>`;
+                
+                counter++;
             });
+            
+            console.log(`✅ تم تحميل ${counter} مستخدم بنجاح`);
+            
         } catch (error) {
+            console.error("❌ خطأ في تحميل المستخدمين:", error);
             showAlert(`خطأ في تحميل المستخدمين: ${error.message}`, 'error');
         }
     }
@@ -825,7 +839,6 @@
             }
         });
         
-        // إظهار رسالة إذا لم توجد نتائج
         if (!hasResults && term) {
             document.getElementById('userList').innerHTML = `
                 <tr><td colspan="6" style="text-align:center; padding:20px; color:#666;">
@@ -844,10 +857,9 @@
             try {
                 await updateDoc(doc(db, "users", id), { 
                     role: next,
-                    lastUpdated: new Date().toISOString(),
-                    updatedBy: currentAdmin.email
+                    lastUpdated: new Date().toISOString()
                 });
-                showAlert(`تم تغيير صلاحية المستخدم إلى ${next === 'wholesale' ? 'تاجر جملة' : 'زبون مفرق'}`, 'success');
+                showAlert(`تم تغيير صلاحية المستخدم`, 'success');
                 loadUsers();
             } catch (error) {
                 showAlert(`خطأ في تغيير الصلاحية: ${error.message}`, 'error');
@@ -856,10 +868,10 @@
     };
 
     window.deleteUser = async (id, userName) => {
-        if(confirm(`هل أنت متأكد من حذف المستخدم "${userName}" نهائياً؟\n\nهذا الإجراء لا يمكن التراجع عنه.`)) {
+        if(confirm(`هل أنت متأكد من حذف المستخدم "${userName}"؟`)) {
             try {
                 await deleteDoc(doc(db, "users", id));
-                showAlert(`تم حذف المستخدم "${userName}" بنجاح`, 'success');
+                showAlert(`تم حذف المستخدم "${userName}"`, 'success');
                 loadUsers();
                 loadStats();
             } catch (error) {
@@ -868,7 +880,7 @@
         }
     };
 
-    // --- إدارة الأقسام ---
+    // إدارة الأقسام
     window.saveNewCategory = async () => {
         const name = document.getElementById('catName').value.trim();
         const img = document.getElementById('catImage').value.trim();
@@ -882,14 +894,11 @@
             await addDoc(collection(db, "categories"), { 
                 name, 
                 image: img,
-                createdBy: currentAdmin.email,
-                createdAt: new Date().toISOString(),
-                productCount: 0
+                createdAt: new Date().toISOString()
             });
             
-            showAlert(`تم إضافة قسم "${name}" بنجاح`, 'success');
+            showAlert(`تم إضافة قسم "${name}"`, 'success');
             
-            // تنظيف الحقول
             document.getElementById('catName').value = '';
             document.getElementById('catImage').value = '';
             
@@ -910,19 +919,17 @@
         try {
             await updateDoc(doc(db, "categories", id), { 
                 name: newName, 
-                image: newImg,
-                lastUpdated: new Date().toISOString(),
-                updatedBy: currentAdmin.email
+                image: newImg
             });
             
-            showAlert(`تم تحديث قسم "${newName}" بنجاح`, 'success');
+            showAlert(`تم تحديث قسم "${newName}"`, 'success');
             await initAdmin();
         } catch (error) {
             showAlert(`خطأ في تحديث القسم: ${error.message}`, 'error');
         }
     };
 
-    // --- إدارة المنتجات ---
+    // إدارة المنتجات
     window.saveNewProduct = async () => {
         const data = {
             name: document.getElementById('prodName').value.trim(),
@@ -937,7 +944,7 @@
         };
 
         if(!data.name || !data.category || !data.priceRetail) {
-            showAlert("الرجاء إدخال البيانات الأساسية (الاسم، القسم، سعر المفرق)", 'error');
+            showAlert("الرجاء إدخال البيانات الأساسية", 'error');
             return;
         }
 
@@ -948,27 +955,20 @@
             btn.disabled = true;
             
             if(editingProductId) {
-                // تحديث منتج موجود
-                await updateDoc(doc(db, "products", editingProductId), {
-                    ...data,
-                    updatedBy: currentAdmin.email
-                });
-                showAlert(`تم تحديث المنتج "${data.name}" بنجاح`, 'success');
+                await updateDoc(doc(db, "products", editingProductId), data);
+                showAlert(`تم تحديث المنتج "${data.name}"`, 'success');
                 editingProductId = null;
                 document.getElementById('cancelEditBtn').style.display = 'none';
             } else {
-                // إضافة منتج جديد
                 await addDoc(collection(db, "products"), {
                     ...data,
-                    createdBy: currentAdmin.email,
                     createdAt: new Date().toISOString(),
                     views: 0,
                     sales: 0
                 });
-                showAlert(`تم إضافة المنتج "${data.name}" بنجاح`, 'success');
+                showAlert(`تم إضافة المنتج "${data.name}"`, 'success');
             }
             
-            // تنظيف الحقول
             document.getElementById('prodName').value = '';
             document.getElementById('prodPriceRetail').value = '';
             document.getElementById('prodPriceWholesale').value = '';
@@ -1003,7 +1003,6 @@
         document.getElementById('mainProdBtn').innerHTML = '<i class="fas fa-save"></i> حفظ التعديلات';
         document.getElementById('cancelEditBtn').style.display = 'block';
         
-        // التمرير للنموذج
         document.querySelector('.admin-card:nth-child(5)').scrollIntoView({ behavior: 'smooth' });
         
         showAlert(`جاري تعديل المنتج: ${p.name}`, 'info');
@@ -1024,10 +1023,11 @@
         showAlert("تم إلغاء التعديل", 'info');
     };
 
-    // --- تهيئة النظام ---
+    // تهيئة النظام
     async function initAdmin() {
         try {
-            // تحميل الأقسام
+            console.log("🚀 بدء تهيئة لوحة التحكم...");
+            
             const catSnap = await getDocs(collection(db, "categories"));
             const select = document.getElementById('prodCat');
             const catEditList = document.getElementById('categoryEditList');
@@ -1037,7 +1037,7 @@
             catEditList.innerHTML = '';
             
             if (catSnap.empty) {
-                catEditList.innerHTML = '<p style="color:#666; text-align:center; width:100%;">لا توجد أقسام بعد. أضف قسم أولاً.</p>';
+                catEditList.innerHTML = '<p style="color:#666; text-align:center; width:100%;">لا توجد أقسام بعد.</p>';
             } else {
                 catSnap.forEach(d => {
                     const data = d.data();
@@ -1059,6 +1059,8 @@
             
             await loadUsers();
             await loadInventory();
+            
+            console.log("✅ تهيئة لوحة التحكم مكتملة");
             
         } catch (error) {
             showAlert(`خطأ في تهيئة النظام: ${error.message}`, 'error');
@@ -1136,7 +1138,6 @@
             }
         });
         
-        // المنتجات بدون قسم
         const uncategorized = products.filter(p => !p.category || !allCategories.find(c => c.name === p.category));
         if (uncategorized.length > 0) {
             let html = `<div class="category-group">
@@ -1185,7 +1186,7 @@
     };
 
     window.toggleS = async (id, currentStock, currentQty) => {
-        const newQty = prompt("الكمية الجديدة في المخزون:", currentQty);
+        const newQty = prompt("الكمية الجديدة:", currentQty);
         if (newQty === null) return;
         
         const qty = parseInt(newQty);
@@ -1197,12 +1198,10 @@
         try {
             await updateDoc(doc(db, "products", id), { 
                 inStock: qty > 0,
-                stock: qty,
-                lastUpdated: new Date().toISOString(),
-                updatedBy: currentAdmin.email
+                stock: qty
             });
             
-            showAlert(`تم تحديث المخزون إلى ${qty} وحدة`, 'success');
+            showAlert(`تم تحديث المخزون إلى ${qty}`, 'success');
             await loadInventory();
         } catch (error) {
             showAlert(`خطأ في تحديث المخزون: ${error.message}`, 'error');
@@ -1210,10 +1209,10 @@
     };
     
     window.delP = async (id, productName) => {
-        if(confirm(`هل أنت متأكد من حذف المنتج "${productName}" نهائياً؟\n\nهذا الإجراء لا يمكن التراجع عنه.`)) {
+        if(confirm(`هل أنت متأكد من حذف المنتج "${productName}"؟`)) {
             try {
                 await deleteDoc(doc(db, "products", id));
-                showAlert(`تم حذف المنتج "${productName}" بنجاح`, 'success');
+                showAlert(`تم حذف المنتج "${productName}"`, 'success');
                 await loadInventory();
                 await loadStats();
             } catch (error) {
@@ -1222,13 +1221,13 @@
         }
     };
 
-    // --- وظائف مساعدة ---
+    // وظائف مساعدة
     window.refreshAll = async () => {
         try {
             showAlert("جاري تحديث جميع البيانات...", 'info');
             await initAdmin();
             await loadStats();
-            showAlert("تم تحديث جميع البيانات بنجاح", 'success');
+            showAlert("تم تحديث جميع البيانات", 'success');
         } catch (error) {
             showAlert(`خطأ في التحديث: ${error.message}`, 'error');
         }
@@ -1253,12 +1252,66 @@
         link.click();
         document.body.removeChild(link);
         
-        showAlert("تم تصدير الجرد بنجاح", 'success');
+        showAlert("تم تصدير الجرد", 'success');
     };
+
+    // ========== أدوات التصحيح ==========
+    window.debugUsers = async () => {
+        console.log("🔍 بدء فحص قاعدة بيانات المستخدمين...");
+        
+        try {
+            const snapshot = await getDocs(collection(db, "users"));
+            
+            console.log(`📊 العدد الكلي: ${snapshot.size} مستخدم`);
+            
+            if (snapshot.empty) {
+                console.log("⚠️ قاعدة بيانات المستخدمين فارغة!");
+                showAlert("قاعدة بيانات المستخدمين فارغة", 'warning');
+                return;
+            }
+            
+            console.group("📋 تفاصيل المستخدمين:");
+            snapshot.forEach((doc, index) => {
+                console.log(`👤 ${index + 1}. (${doc.id})`, doc.data());
+            });
+            console.groupEnd();
+            
+            showAlert(`تم فحص القاعدة. يوجد ${snapshot.size} مستخدم`, 'success');
+            
+            await loadUsers();
+            
+        } catch (error) {
+            console.error("❌ خطأ في فحص المستخدمين:", error);
+            showAlert(`خطأ في الفحص: ${error.message}`, 'error');
+        }
+    };
+
+    // إضافة زر تصغير إلى الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        const debugBtn = document.createElement('button');
+        debugBtn.innerHTML = '🔧 فحص المستخدمين';
+        debugBtn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        `;
+        debugBtn.onclick = window.debugUsers;
+        debugBtn.id = 'debugBtn';
+        
+        document.body.appendChild(debugBtn);
+    });
 
     // تهيئة النظام عند تحميل الصفحة
     document.addEventListener('DOMContentLoaded', () => {
-        // إضافة تأثيرات تحميل
         const cards = document.querySelectorAll('.admin-card');
         cards.forEach((card, index) => {
             card.style.animationDelay = `${index * 0.1}s`;
