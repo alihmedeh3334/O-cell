@@ -39,60 +39,8 @@
             line-height: 1.6;
         }
 
-        /* --- Splash Screen --- */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 1s ease;
-            pointer-events: none;
-        }
-        #splash-screen.fade-out {
-            opacity: 0;
-        }
-        .splash-content {
-            text-align: center;
-            animation: pulseGlow 2s infinite alternate;
-        }
-        .splash-logo {
-            font-family: 'Poppins', sans-serif;
-            font-size: 4rem;
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 30px var(--primary-accent), 0 0 60px var(--primary-accent);
-            margin-bottom: 20px;
-        }
-        .splash-logo span {
-            color: transparent;
-            background: linear-gradient(180deg, #fff, var(--primary-accent));
-            -webkit-background-clip: text;
-        }
-        .spinner-circle {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary-accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes pulseGlow {
-            0% { opacity: 0.8; }
-            100% { opacity: 1; text-shadow: 0 0 50px var(--primary-accent), 0 0 100px var(--primary-accent); }
-        }
-
         /* --- 2. Typography & Scrollbar --- */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-accent); }
@@ -122,7 +70,7 @@
         .profile-toggle {
             cursor: pointer; font-size: 22px; color: var(--text-main); transition: 0.3s;
             background: var(--glass-surface); width: 40px; height: 40px; 
-            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+            display: none; align-items: center; justify-content: center; border-radius: 50%;
             border: 1px solid var(--glass-border);
         }
         .profile-toggle:hover { background: var(--primary-accent); color: #000; box-shadow: 0 0 15px var(--primary-glow); }
@@ -132,12 +80,6 @@
             font-family: 'Poppins', sans-serif; font-size: 3.5rem; color: white; margin: 0;
             font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
             text-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: perspective(500px) rotateX(5deg);
-            animation: float3d 5s infinite alternate ease-in-out;
-        }
-        @keyframes float3d {
-            0% { transform: perspective(500px) rotateX(5deg) translateY(0); }
-            100% { transform: perspective(500px) rotateX(8deg) translateY(-10px); }
         }
         .oc-neon-logo span { 
             color: transparent; 
@@ -159,11 +101,6 @@
             position: relative;
             overflow: hidden;
             animation: floatUp 1s ease-out;
-            transform-style: preserve-3d;
-            transition: transform 0.5s;
-        }
-        .oc-hero-card:hover {
-            transform: perspective(1000px) rotateX(2deg) rotateY(2deg);
         }
         .oc-hero-card::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -199,7 +136,7 @@
         }
         .search-btn {
             position: absolute;
-            left: 35px; /* RTL */
+            right: 35px;
             top: 50%;
             transform: translateY(-50%);
             background: transparent;
@@ -211,43 +148,7 @@
         }
         .search-btn:hover { transform: translateY(-50%) scale(1.1); text-shadow: 0 0 10px var(--primary-accent); }
 
-        /* --- 5. Categories Horizontal Scroll --- */
-        .cat-horizontal-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding: 10px 0 20px;
-            margin-bottom: 30px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-        .cat-horizontal-scroll::-webkit-scrollbar { height: 4px; }
-        .cat-horizontal-scroll::-webkit-scrollbar-thumb { background: var(--primary-accent); border-radius: 10px; }
-
-        .cat-chip {
-            flex: 0 0 auto;
-            background: var(--glass-surface);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 12px 30px;
-            font-weight: 700;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: 0.3s;
-            scroll-snap-align: start;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .cat-chip:hover {
-            background: var(--primary-accent);
-            color: #000;
-            border-color: var(--primary-accent);
-            transform: scale(1.05) translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0, 212, 255, 0.3);
-        }
-
-        /* --- 6. Grid System & Cards --- */
+        /* --- 5. Grid System & Cards --- */
         .oc-container { max-width: 1280px; margin: 0 auto; padding: 0 20px 100px; }
         .oc-section-title { 
             font-size: 1.8rem; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;
@@ -273,14 +174,13 @@
             display: flex; flex-direction: column;
             animation: fadeInCard 0.6s ease-out forwards;
             opacity: 0; transform: translateY(20px);
-            transform-style: preserve-3d;
         }
         .oc-glass-card:nth-child(n) { animation-delay: 0.1s; }
 
         .oc-glass-card:hover { 
-            transform: translateY(-10px) scale(1.02) rotateX(2deg); 
+            transform: translateY(-10px) scale(1.02); 
             border-color: var(--primary-accent); 
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 30px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5), 0 0 20px rgba(0, 212, 255, 0.1);
         }
 
         .oc-glass-card .img-wrapper {
@@ -308,7 +208,7 @@
             z-index: 2; box-shadow: 0 5px 15px rgba(255, 59, 59, 0.4);
         }
 
-        /* --- 7. Modal (Popup) --- */
+        /* --- 6. Modal (Popup) --- */
         .oc-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 5000;
@@ -324,7 +224,6 @@
             box-shadow: 0 30px 80px rgba(0,0,0,0.8);
             animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 90vh; overflow-y: auto;
-            transform-origin: center;
         }
         .oc-modal-content img { 
             width: 100%; max-height: 300px; object-fit: contain; 
@@ -375,7 +274,7 @@
         }
         .back-btn:hover { background: var(--primary-accent); color: black; }
 
-        /* --- 8. Sidebar & Overlays --- */
+        /* --- 7. Sidebar & Overlays --- */
         .oc-sidebar {
             position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
             background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(20px);
@@ -402,26 +301,6 @@
         .status-retail { background: #333; color: #aaa; }
         .status-wholesale { background: rgba(0, 212, 255, 0.2); color: var(--primary-accent); border: 1px solid var(--primary-accent); }
 
-        /* Google Login Button in Sidebar */
-        .google-login-sidebar {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: 0.3s;
-            font-weight: 700;
-        }
-        .google-login-sidebar:hover {
-            background: var(--primary-accent);
-            color: #000;
-        }
-
         .logout-btn {
             margin-top: auto; background: transparent; color: #ff4d4d;
             border: 2px solid #ff4d4d; padding: 15px; border-radius: 15px;
@@ -431,13 +310,18 @@
         .logout-btn:hover { background: #ff4d4d; color: white; }
 
         /* Floaters */
-        .cart-float { 
-            position: fixed; bottom: 30px; right: 30px;
+        .login-float, .cart-float {
+            position: fixed; bottom: 30px;
             width: 60px; height: 60px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             z-index: 2000; cursor: pointer; font-size: 24px; transition: 0.3s;
             border: 4px solid var(--primary-accent);
             animation: pulseBtn 2s infinite;
+        }
+        .login-float { left: 30px; background: var(--text-main); color: #000; }
+        
+        .cart-float { 
+            right: 30px;
             background: #000; color: var(--primary-accent); 
             display: flex; flex-direction: column;
         }
@@ -541,6 +425,9 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        .hidden {
+            display: none !important;
+        }
         .spinner {
             display: inline-block;
             width: 16px;
@@ -549,6 +436,9 @@
             border-radius: 50%;
             border-top-color: #000;
             animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Animations */
@@ -562,22 +452,17 @@
 </head>
 <body>
 
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <div class="splash-content">
-            <div class="splash-logo">CELL<span>-O</span></div>
-            <div class="spinner-circle"></div>
-        </div>
+    <div id="loginBtnContainer" class="login-float" onclick="loginWithGoogle()">
+        <i class="fab fa-google"></i>
     </div>
 
-    <!-- Cart Float Button (remains) -->
     <div id="cartBtnContainer" class="cart-float" onclick="openCart()">
         <div class="cart-count" id="cartCount">0</div>
         <i class="fas fa-shopping-cart"></i>
         <div class="cart-total-float" id="cartTotalFloat">$0</div>
     </div>
 
-    <!-- Profile Overlay (for phone input) -->
+    <!-- Improved Profile Overlay -->
     <div id="profileOverlay" onclick="if(event.target==this) closeProfileOverlay()">
         <div class="login-box">
             <button class="close-btn" onclick="closeProfileOverlay()"><i class="fas fa-times"></i></button>
@@ -602,7 +487,6 @@
         </div>
     </div>
 
-    <!-- Cart Overlay -->
     <div id="cartOverlay" onclick="if(event.target==this) closeCart()">
         <div class="oc-modal-content">
             <h2 style="margin-bottom:20px;"><i class="fas fa-shopping-basket" style="color:var(--primary-accent)"></i> سلة المشتريات</h2>
@@ -622,7 +506,6 @@
         </div>
     </div>
 
-    <!-- Sidebar (Account) -->
     <div id="accountSidebar" class="oc-sidebar">
         <div class="close-sidebar" onclick="toggleSidebar()" style="position: absolute; top:20px; left:20px; cursor:pointer; font-size:24px;">✕</div>
         
@@ -630,12 +513,6 @@
             <div class="avatar"><i class="fas fa-user"></i></div>
             <h3>حسابي</h3>
             <p style="font-size:12px; opacity:0.6;">O-Cell Profile</p>
-        </div>
-
-        <!-- Google Login Button inside sidebar (hidden if logged in) -->
-        <div id="googleLoginSidebar" class="google-login-sidebar" onclick="loginWithGoogle()">
-            <i class="fab fa-google"></i>
-            <span>تسجيل الدخول بجوجل</span>
         </div>
 
         <div class="profile-info-item">
@@ -677,26 +554,18 @@
     <div id="vHome">
         <div class="oc-hero-card">
             <h2>تلفونك عنا بيحكي!!</h2>
-            <p> يوجد توصيل الى جميع المناطق اللبنانية</p>
+            <P> يوجد توصيل الى جميع المناطق اللبنانية</p>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." oninput="instantSearch()">
+            <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن منتج..." onkeyup="if(event.key==='Enter') doSearch()">
             <button class="search-btn" onclick="doSearch()">
                 <i class="fas fa-search"></i>
             </button>
         </div>
-
-        <!-- Horizontal Categories -->
         <div class="oc-container">
             <div class="oc-section-title">تصفح الأقسام</div>
-            <div class="cat-horizontal-scroll" id="catHorizontal"></div>
-        </div>
-
-        <!-- Products Grid (will be shown when category selected) -->
-        <div id="homeProducts" class="oc-container hidden">
-            <h2 id="selectedCatTitle" style="text-align:center; margin-bottom:20px;"></h2>
-            <div class="oc-grid" id="catProductsGrid"></div>
+            <div class="oc-grid" id="catGrid"></div>
         </div>
     </div>
 
@@ -751,7 +620,6 @@
         const STORE_PHONE = "96178961175";
 
         let productMemory = [];
-        let categories = [];
         let activeProduct = null;
         let currentUserRole = 'retail'; 
         let currentUserEmail = null;
@@ -759,315 +627,22 @@
         // --- Cart Logic ---
         let cart = JSON.parse(localStorage.getItem('oc_cart')) || [];
 
-        // --- Cache for Images (using Cache API) ---
-        async function getCachedImage(url) {
-            try {
-                const cache = await caches.open('oc-images-v1');
-                const cachedResponse = await cache.match(url);
-                if (cachedResponse) {
-                    const blob = await cachedResponse.blob();
-                    return URL.createObjectURL(blob);
-                } else {
-                    const response = await fetch(url);
-                    if (response.ok) {
-                        cache.put(url, response.clone());
-                        return url; // return original URL, browser will cache now
-                    } else {
-                        return url;
-                    }
-                }
-            } catch (e) {
-                console.warn('Cache failed:', e);
-                return url;
-            }
+        function updateCartUI() {
+            const count = cart.reduce((acc, item) => acc + item.qty, 0);
+            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            
+            document.getElementById('cartCount').innerText = count;
+            document.getElementById('cartTotalFloat').innerText = "$" + total.toFixed(2);
+            document.getElementById('cartTotalFull').innerText = "$" + total.toFixed(2);
+            
+            localStorage.setItem('oc_cart', JSON.stringify(cart));
+            renderCartItems();
         }
 
-        // --- Splash Screen ---
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('splash-screen').classList.add('fade-out');
-                setTimeout(() => {
-                    document.getElementById('splash-screen').style.display = 'none';
-                }, 1000);
-            }, 2000); // Show for 2 seconds
-        });
-
-        // --- Toggle Sidebar ---
-        window.toggleSidebar = () => {
-            document.getElementById('accountSidebar').classList.toggle('active');
-        };
-
-        // --- Google Login (moved to sidebar) ---
-        window.loginWithGoogle = () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    currentUserEmail = user.email;
-                    monitorUserStatus(user.email, user.displayName);
-                }).catch((error) => {
-                    console.error("Login Failed", error);
-                    alert("فشل تسجيل الدخول.");
-                });
-        };
-
-        function monitorUserStatus(email, displayName) {
-            const q = query(collection(db, "users"), where("email", "==", email));
-            onSnapshot(q, (snapshot) => {
-                if (!snapshot.empty) {
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const oldRole = currentUserRole;
-                        currentUserRole = data.role || 'retail';
-                        localStorage.setItem('oc_user', JSON.stringify({
-                            name: data.name, phone: data.phone, role: currentUserRole, email: email
-                        }));
-                        updateSidebar(data.name, data.phone, currentUserRole);
-                        document.getElementById('googleLoginSidebar').style.display = 'none';
-                        document.getElementById('navProfileIcon').style.display = 'flex';
-                        if (oldRole !== currentUserRole) {
-                            const currentCat = document.getElementById('viewCatTitle').innerText;
-                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
-                                if(currentCat.startsWith("نتائج البحث:")) doSearch();
-                                else fetchProducts(currentCat);
-                            }
-                        }
-                    });
-                } else {
-                    document.getElementById('profName').value = displayName || "";
-                    document.getElementById('profileOverlay').style.display = 'flex';
-                }
-            });
-        }
-
-        function updateSidebar(name, phone, role) {
-            document.getElementById('sideName').innerText = name;
-            document.getElementById('sidePhone').innerText = phone || "غير مسجل";
-            const statusBadge = document.getElementById('sideStatus');
-            if(role === 'wholesale') {
-                statusBadge.innerText = "تاجر جملة";
-                statusBadge.className = "status-badge status-wholesale";
-            } else {
-                statusBadge.innerText = "زبون مفرق";
-                statusBadge.className = "status-badge status-retail";
-            }
-        }
-
-        window.validatePhoneInput = function() {
-            const phoneInput = document.getElementById('profPhone');
-            const errorDiv = document.getElementById('phoneError');
-            const phone = phoneInput.value.trim();
-            if (phone === '') {
-                errorDiv.innerText = '';
-                phoneInput.classList.remove('error');
-                return true;
-            }
-            if (isValidLebanesePhone(phone)) {
-                errorDiv.innerText = '';
-                phoneInput.classList.remove('error');
-                return true;
-            } else {
-                errorDiv.innerText = 'رقم هاتف لبناني غير صحيح (مثال: 71234567 أو 03123456)';
-                phoneInput.classList.add('error');
-                return false;
-            }
-        };
-
-        window.closeProfileOverlay = function() {
-            document.getElementById('profileOverlay').style.display = 'none';
-        };
-
-        window.saveProfileData = async () => {
-            const name = document.getElementById('profName').value.trim();
-            const phone = document.getElementById('profPhone').value.trim();
-            const errorDiv = document.getElementById('phoneError');
-            const btn = document.getElementById('saveProfileBtn');
-            const spinner = document.getElementById('spinner');
-
-            errorDiv.innerText = '';
-            document.getElementById('profPhone').classList.remove('error');
-            document.getElementById('profName').classList.remove('error');
-
-            if (!name) {
-                errorDiv.innerText = 'الرجاء إدخال الاسم الكامل';
-                document.getElementById('profName').classList.add('error');
-                return;
-            }
-            if (!phone) {
-                errorDiv.innerText = 'الرجاء إدخال رقم الهاتف';
-                document.getElementById('profPhone').classList.add('error');
-                return;
-            }
-            if (!isValidLebanesePhone(phone)) {
-                errorDiv.innerText = 'رقم هاتف لبناني غير صحيح (مثال: 71234567 أو 03123456)';
-                document.getElementById('profPhone').classList.add('error');
-                return;
-            }
-
-            btn.disabled = true;
-            spinner.style.display = 'inline-block';
-
-            try {
-                const phoneQuery = query(collection(db, "users"), where("phone", "==", phone));
-                const phoneSnapshot = await getDocs(phoneQuery);
-                if (!phoneSnapshot.empty) {
-                    errorDiv.innerText = 'رقم الهاتف مسجل مسبقاً. الرجاء استخدام رقم آخر أو تسجيل الدخول.';
-                    document.getElementById('profPhone').classList.add('error');
-                    btn.disabled = false;
-                    spinner.style.display = 'none';
-                    return;
-                }
-
-                await setDoc(doc(db, "users", currentUserEmail), {
-                    email: currentUserEmail,
-                    name: name,
-                    phone: phone,
-                    role: 'retail',
-                    joined: new Date()
-                });
-
-                document.getElementById('profileOverlay').style.display = 'none';
-            } catch (e) {
-                console.error(e);
-                alert('حدث خطأ في الحفظ');
-                btn.disabled = false;
-                spinner.style.display = 'none';
-            }
-        };
-
-        // --- Fetch Categories from Firestore (assuming categories are derived from products) ---
-        async function fetchCategories() {
-            // Assuming we have a collection 'products' with field 'category'
-            const productsRef = collection(db, "products");
-            const snapshot = await getDocs(productsRef);
-            const cats = new Set();
-            productMemory = [];
-            snapshot.forEach(doc => {
-                const p = { id: doc.id, ...doc.data() };
-                productMemory.push(p);
-                if (p.category) cats.add(p.category);
-            });
-            categories = Array.from(cats);
-            renderCategories(categories);
-        }
-
-        function renderCategories(cats) {
-            const container = document.getElementById('catHorizontal');
-            container.innerHTML = '';
-            cats.forEach(cat => {
-                const chip = document.createElement('div');
-                chip.className = 'cat-chip';
-                chip.innerText = cat;
-                chip.onclick = () => selectCategory(cat);
-                container.appendChild(chip);
-            });
-        }
-
-        window.selectCategory = (category) => {
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.remove('hidden');
-            document.getElementById('viewCatTitle').innerText = category;
-            fetchProducts(category);
-        };
-
-        async function fetchProducts(category) {
-            const grid = document.getElementById('prodGrid');
-            grid.innerHTML = '<div style="grid-column:1/-1; text-align:center;">جاري التحميل...</div>';
-            const filtered = productMemory.filter(p => p.category === category);
-            renderProducts(filtered, grid);
-        }
-
-        window.doSearch = () => {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            if (!query) return;
-            document.getElementById('vHome').classList.add('hidden');
-            document.getElementById('vProd').classList.remove('hidden');
-            document.getElementById('viewCatTitle').innerText = `نتائج البحث: "${query}"`;
-            const filtered = productMemory.filter(p => p.name.toLowerCase().includes(query));
-            renderProducts(filtered, document.getElementById('prodGrid'));
-        };
-
-        window.instantSearch = () => {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            if (!query) {
-                // If search box empty, maybe show home?
-                return;
-            }
-            // Show results instantly in homeProducts grid
-            document.getElementById('vHome').classList.remove('hidden');
-            document.getElementById('vProd').classList.add('hidden');
-            const homeGrid = document.getElementById('catProductsGrid');
-            const filtered = productMemory.filter(p => p.name.toLowerCase().includes(query));
-            document.getElementById('selectedCatTitle').innerText = `نتائج البحث الفوري`;
-            document.getElementById('homeProducts').classList.remove('hidden');
-            renderProducts(filtered, homeGrid);
-        };
-
-        function renderProducts(products, gridElement) {
-            if (products.length === 0) {
-                gridElement.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;">لا توجد منتجات</div>';
-                return;
-            }
-            gridElement.innerHTML = '';
-            products.forEach(async (p) => {
-                const card = document.createElement('div');
-                card.className = 'oc-glass-card';
-                card.onclick = () => showProductModal(p);
-                const imgSrc = await getCachedImage(p.image); // cache attempt
-                card.innerHTML = `
-                    <div class="img-wrapper">
-                        <img src="${imgSrc}" alt="${p.name}" loading="lazy">
-                    </div>
-                    <div class="oc-card-body">
-                        <h3>${p.name}</h3>
-                        <span class="price">$${p.price}</span>
-                    </div>
-                    ${p.sold ? '<div class="sold-badge">مباع</div>' : ''}
-                `;
-                gridElement.appendChild(card);
-            });
-        }
-
-        window.showProductModal = (product) => {
-            activeProduct = product;
-            document.getElementById('mImg').src = product.image;
-            document.getElementById('mTitle').innerText = product.name;
-            document.getElementById('mDesc').innerText = product.description || 'وصف قريباً';
-            document.getElementById('mPrice').innerText = '$' + product.price;
-            document.getElementById('qtyInput').value = 1;
-
-            const waDiv = document.getElementById('waAction');
-            if (product.sold) {
-                waDiv.innerHTML = '<div style="grid-column:span2; background:#ff3b3b; padding:18px; border-radius:18px;">للأسف هذا المنتج مباع</div>';
-            } else {
-                waDiv.innerHTML = `
-                    <a href="https://wa.me/${STORE_PHONE}?text=${encodeURIComponent('أريد شراء: ' + product.name)}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp"></i> شراء مباشر</a>
-                    <button class="add-cart-btn" onclick="addToCart()"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
-                `;
-            }
-            document.getElementById('modal').style.display = 'flex';
-        };
-
-        window.goBack = () => {
-            document.getElementById('modal').style.display = 'none';
-            // if in product view and back button pressed, go to home
-            if (!document.getElementById('vProd').classList.contains('hidden')) {
-                document.getElementById('vProd').classList.add('hidden');
-                document.getElementById('vHome').classList.remove('hidden');
-            }
-        };
-
-        window.updateQty = (delta) => {
-            const input = document.getElementById('qtyInput');
-            let val = parseInt(input.value) + delta;
-            if (val < 1) val = 1;
-            input.value = val;
-        };
-
-        // --- Cart functions ---
         window.addToCart = () => {
             if(!activeProduct) return;
             const qty = parseInt(document.getElementById('qtyInput').value);
-            const price = parseFloat(activeProduct.price);
+            const price = parseFloat(activeProduct.displayPrice);
             
             const existing = cart.find(item => item.name === activeProduct.name);
             if(existing) {
@@ -1084,18 +659,6 @@
             alert("تمت الإضافة إلى السلة");
             goBack();
         };
-
-        function updateCartUI() {
-            const count = cart.reduce((acc, item) => acc + item.qty, 0);
-            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            
-            document.getElementById('cartCount').innerText = count;
-            document.getElementById('cartTotalFloat').innerText = "$" + total.toFixed(2);
-            document.getElementById('cartTotalFull').innerText = "$" + total.toFixed(2);
-            
-            localStorage.setItem('oc_cart', JSON.stringify(cart));
-            renderCartItems();
-        }
 
         function renderCartItems() {
             const list = document.getElementById('cartItemsList');
@@ -1159,16 +722,156 @@
             window.open(`https://wa.me/${STORE_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
-        // Initialize
-        fetchCategories();
+        // --- Improved Auth & Profile ---
+        window.loginWithGoogle = () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    currentUserEmail = user.email;
+                    monitorUserStatus(user.email, user.displayName);
+                }).catch((error) => {
+                    console.error("Login Failed", error);
+                    alert("فشل تسجيل الدخول.");
+                });
+        };
 
-        // Check local user
-        const savedUser = localStorage.getItem('oc_user');
-        if (savedUser) {
-            const u = JSON.parse(savedUser);
-            updateSidebar(u.name, u.phone, u.role);
-            document.getElementById('googleLoginSidebar').style.display = 'none';
+        function monitorUserStatus(email, displayName) {
+            const q = query(collection(db, "users"), where("email", "==", email));
+            onSnapshot(q, (snapshot) => {
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const oldRole = currentUserRole;
+                        currentUserRole = data.role || 'retail';
+                        localStorage.setItem('oc_user', JSON.stringify({
+                            name: data.name, phone: data.phone, role: currentUserRole, email: email
+                        }));
+                        updateSidebar(data.name, data.phone, currentUserRole);
+                        document.getElementById('loginBtnContainer').style.display = 'none';
+                        document.getElementById('navProfileIcon').style.display = 'flex';
+                        if (oldRole !== currentUserRole) {
+                            const currentCat = document.getElementById('viewCatTitle').innerText;
+                            if(!document.getElementById('vProd').classList.contains('hidden') && currentCat) {
+                                if(currentCat.startsWith("نتائج البحث:")) doSearch();
+                                else fetchProducts(currentCat);
+                            }
+                        }
+                    });
+                } else {
+                    document.getElementById('profName').value = displayName || "";
+                    document.getElementById('profileOverlay').style.display = 'flex';
+                }
+            });
         }
-    </script>
-</body>
-</html>
+
+        function updateSidebar(name, phone, role) {
+            document.getElementById('sideName').innerText = name;
+            document.getElementById('sidePhone').innerText = phone || "غير مسجل";
+            const statusBadge = document.getElementById('sideStatus');
+            if(role === 'wholesale') {
+                statusBadge.innerText = "تاجر جملة";
+                statusBadge.className = "status-badge status-wholesale";
+            } else {
+                statusBadge.innerText = "زبون مفرق";
+                statusBadge.className = "status-badge status-retail";
+            }
+        }
+
+        // دالة التحقق من الرقم اللبناني
+        function isValidLebanesePhone(phone) {
+            // إزالة أية مسافات أو رموز غير أرقام
+            const cleaned = phone.replace(/\D/g, '');
+            // أنماط الأرقام اللبنانية: 03xxxxxx, 70xxxxxx, 71xxxxxx, 76xxxxxx, 78xxxxxx, 79xxxxxx, 81xxxxxx (8 أرقام)
+            // أو 3xxxxxx, 7xxxxxx (7 أرقام) بعد إزالة الصفر الأول
+            const patterns = [
+                /^(?:03|70|71|76|78|79|81)\d{6}$/, // صيغة 03xxxxxx
+                /^(?:3|7|8)\d{6}$/, // صيغة 3xxxxxx (بدون الصفر الأول)
+                /^\+961(3|70|71|76|78|79|81)\d{6}$/, // صيغة مع مفتاح لبنان
+            ];
+            return patterns.some(pattern => pattern.test(cleaned));
+        }
+
+        window.validatePhoneInput = function() {
+            const phoneInput = document.getElementById('profPhone');
+            const errorDiv = document.getElementById('phoneError');
+            const phone = phoneInput.value.trim();
+            if (phone === '') {
+                errorDiv.innerText = '';
+                phoneInput.classList.remove('error');
+                return true; // لا نطلب ملء الحقل حتى يضغط حفظ
+            }
+            if (isValidLebanesePhone(phone)) {
+                errorDiv.innerText = '';
+                phoneInput.classList.remove('error');
+                return true;
+            } else {
+                errorDiv.innerText = 'رقم هاتف لبناني غير صحيح (مثال: 71234567 أو 03123456)';
+                phoneInput.classList.add('error');
+                return false;
+            }
+        };
+
+        window.closeProfileOverlay = function() {
+            document.getElementById('profileOverlay').style.display = 'none';
+            // تسجيل الخروج تلقائياً إذا أغلق النافذة دون حفظ (يمكنك تعديل هذا السلوك)
+            // لكننا سنكتفي بالإخفاء فقط.
+        };
+
+        window.saveProfileData = async () => {
+            const name = document.getElementById('profName').value.trim();
+            const phone = document.getElementById('profPhone').value.trim();
+            const errorDiv = document.getElementById('phoneError');
+            const btn = document.getElementById('saveProfileBtn');
+            const spinner = document.getElementById('spinner');
+
+            // إعادة تعيين الأخطاء
+            errorDiv.innerText = '';
+            document.getElementById('profPhone').classList.remove('error');
+            document.getElementById('profName').classList.remove('error');
+
+            // التحقق من المدخلات
+            if (!name) {
+                errorDiv.innerText = 'الرجاء إدخال الاسم الكامل';
+                document.getElementById('profName').classList.add('error');
+                return;
+            }
+            if (!phone) {
+                errorDiv.innerText = 'الرجاء إدخال رقم الهاتف';
+                document.getElementById('profPhone').classList.add('error');
+                return;
+            }
+            if (!isValidLebanesePhone(phone)) {
+                errorDiv.innerText = 'رقم هاتف لبناني غير صحيح (مثال: 71234567 أو 03123456)';
+                document.getElementById('profPhone').classList.add('error');
+                return;
+            }
+
+            // تعطيل الزر وإظهار السبينر
+            btn.disabled = true;
+            spinner.style.display = 'inline-block';
+
+            try {
+                // التحقق من أن الرقم غير مستخدم مسبقاً
+                const phoneQuery = query(collection(db, "users"), where("phone", "==", phone));
+                const phoneSnapshot = await getDocs(phoneQuery);
+                if (!phoneSnapshot.empty) {
+                    errorDiv.innerText = 'رقم الهاتف مسجل مسبقاً. الرجاء استخدام رقم آخر أو تسجيل الدخول.';
+                    document.getElementById('profPhone').classList.add('error');
+                    btn.disabled = false;
+                    spinner.style.display = 'none';
+                    return;
+                }
+
+                // حفظ المستخدم باستخدام setDoc لتجنب التكرار
+                await setDoc(doc(db, "users", currentUserEmail), {
+                    email: currentUserEmail,
+                    name: name,
+                    phone: phone,
+                    role: 'retail',
+                    joined: new Date()
+                });
+
+                document.getElementById('profileOverlay').style.display = 'none';
+                // لا نحتاج لرسالة نجاح لأن onSnapshot سيعمل
+            } catch (e) {
+                
